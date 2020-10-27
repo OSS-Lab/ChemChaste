@@ -1,0 +1,2 @@
+Domain : Cell
+ZerothOrderReaction : Oxygen -> 0 | kf = 0.1

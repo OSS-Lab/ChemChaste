@@ -1,0 +1,3 @@
+# initial conditions for Membrane model: state,subdomain,value,perturb?
+U,Bulk,2.0,false
+V,Bulk,0.75,false

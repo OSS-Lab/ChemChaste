@@ -1,0 +1,2 @@
+Domain : Cell
+MassActionReaction : A + B -> 2A | kf = 1

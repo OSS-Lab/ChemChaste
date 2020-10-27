@@ -1,0 +1,2 @@
+Domain : Bulk
+ZerothOrderReaction : U -> U ; kf = 0.0

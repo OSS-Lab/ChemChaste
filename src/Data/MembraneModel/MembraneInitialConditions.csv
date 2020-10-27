@@ -1,0 +1,17 @@
+# initial conditions for Membrane model: state,subdomain,value,perturb?
+A,Bulk,0,false
+A,Membrane,0,false
+A,Cell_A,0,false
+A,Cell_B,0,false
+A_Complex,Bulk,0,false
+A_Complex,Membrane,0,false
+A_Complex,Cell_A,0,false
+A_Complex,Cell_B,5.0,false
+B,Bulk,0,false
+B,Membrane,0,false
+B,Cell_A,5.0,false
+B,Cell_B,0,false
+Biomass,Bulk,0,false
+Biomass,Membrane,1.0,false
+Biomass,Cell_A,0,false
+Biomass,Cell_B,0,false

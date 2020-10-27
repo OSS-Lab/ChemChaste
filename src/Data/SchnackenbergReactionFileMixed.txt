@@ -1,0 +1,4 @@
+Domain : Bulk
+ZerothOrderReaction : 2U + V -> 3U | kf = 0.1
+ZerothOrderReversibleReaction : 0 <-> U | kr = 0.2 kf = 0.1
+ZerothOrderReaction : 0 -> V | kf = 0.3

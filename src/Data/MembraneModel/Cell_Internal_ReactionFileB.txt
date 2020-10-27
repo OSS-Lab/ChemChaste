@@ -1,0 +1,2 @@
+Domain : Cell
+MassActionReaction : 2A -> Biomass | kf = 1

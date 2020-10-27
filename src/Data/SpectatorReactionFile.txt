@@ -1,0 +1,4 @@
+Domain : Cell
+SpectatorDependentReaction : 2Alpha + Beta -> 3Alpha | kf = 0.1 Spectator = B 
+SpectatorDependentReaction : 2Alpha -> 2Alpha | Spectator = A kf = 0.1 Spectator = C
+SpectatorDependentReaction : 2A -> A | Spectator = A kf = 0.1

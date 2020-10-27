@@ -1,0 +1,13 @@
+# initial conditions for the states: state,subdomain,value,perturb?
+U,Bulk,1.0,false
+U,Cell,1.5,false
+V,Bulk,1.0,false
+V,Cell,2.0,false
+A,Bulk,1.0,false
+B,Bulk,1.0,false
+B,Cell,1.7,false
+Alpha,Bulk,1.0,false
+Alpha,Cell,1.0,false
+Beta,Bulk,2.0,false
+Beta,Cell,1.0,false
+Oxygen,Cell,1.0,false

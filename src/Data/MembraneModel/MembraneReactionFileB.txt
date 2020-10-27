@@ -1,0 +1,2 @@
+Domain : Membrane
+SpectatorDependentReaction: A_Complex -> A | kf = 0.1 Spectator = Biomass
