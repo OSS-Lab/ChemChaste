@@ -130,11 +130,9 @@ void MassActionReaction::UpdateReaction()
 
 void MassActionReaction::UpdateReactionRate(AbstractChemistry* systemChemistry, const std::vector<double>& currentSystemConc)
 {
-    // custom inheritence based on reversibility?
 
     double kf = mForwardReactionRateConstant;
     double kr = mReverseReactionRateConstant;
-    //std::cout<<"Update reaction rate: "<<kf<<" "<<kr<<" gibbs "<<mIsGibbs<<std::endl;
 
     if(mIsGibbs)
     {
@@ -200,7 +198,7 @@ void MassActionReaction::ParseReactionInformation(std::string reaction_informati
         }
     }
     else
-    {   //std::cout<<"here - reversible"<<std::endl;
+    {  
         if(reaction_information.find(mGibbsDelimiter) != std::string::npos)
         {
             size_t pos= reaction_information.find(mGibbsDelimiter);

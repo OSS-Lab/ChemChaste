@@ -49,30 +49,30 @@ CMAKE_SOURCE_DIR = /home/chaste/src
 CMAKE_BINARY_DIR = /home/chaste
 
 # Include any dependencies generated for this target.
-include projects/ChemicalChaste/test/CMakeFiles/TestChemicalChaste.dir/depend.make
+include projects/ChemChaste/test/CMakeFiles/TestChemicalChaste.dir/depend.make
 
 # Include the progress variables for this target.
-include projects/ChemicalChaste/test/CMakeFiles/TestChemicalChaste.dir/progress.make
+include projects/ChemChaste/test/CMakeFiles/TestChemicalChaste.dir/progress.make
 
 # Include the compile flags for this target's objects.
-include projects/ChemicalChaste/test/CMakeFiles/TestChemicalChaste.dir/flags.make
+include projects/ChemChaste/test/CMakeFiles/TestChemicalChaste.dir/flags.make
 
-projects/ChemicalChaste/test/TestChemicalChaste.cpp: src/projects/ChemicalChaste/test/TestChemicalChaste.hpp
+projects/ChemChaste/test/TestChemicalChaste.cpp: src/projects/ChemChaste/test/TestChemicalChaste.hpp
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/chaste/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating TestChemicalChaste.cpp"
-	cd /home/chaste/projects/ChemicalChaste/test && /usr/bin/python /home/chaste/cxxtest/cxxtestgen.py --error-printer -o /home/chaste/projects/ChemicalChaste/test/TestChemicalChaste.cpp /home/chaste/src/projects/ChemicalChaste/test/TestChemicalChaste.hpp
+	cd /home/chaste/projects/ChemChaste/test && /usr/bin/python /home/chaste/cxxtest/cxxtestgen.py --error-printer -o /home/chaste/projects/ChemChaste/test/TestChemicalChaste.cpp /home/chaste/src/projects/ChemChaste/test/TestChemicalChaste.hpp
 
-projects/ChemicalChaste/test/CMakeFiles/TestChemicalChaste.dir/TestChemicalChaste.cpp.o: projects/ChemicalChaste/test/CMakeFiles/TestChemicalChaste.dir/flags.make
-projects/ChemicalChaste/test/CMakeFiles/TestChemicalChaste.dir/TestChemicalChaste.cpp.o: projects/ChemicalChaste/test/TestChemicalChaste.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/chaste/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object projects/ChemicalChaste/test/CMakeFiles/TestChemicalChaste.dir/TestChemicalChaste.cpp.o"
-	cd /home/chaste/projects/ChemicalChaste/test && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/TestChemicalChaste.dir/TestChemicalChaste.cpp.o -c /home/chaste/projects/ChemicalChaste/test/TestChemicalChaste.cpp
+projects/ChemChaste/test/CMakeFiles/TestChemicalChaste.dir/TestChemicalChaste.cpp.o: projects/ChemChaste/test/CMakeFiles/TestChemicalChaste.dir/flags.make
+projects/ChemChaste/test/CMakeFiles/TestChemicalChaste.dir/TestChemicalChaste.cpp.o: projects/ChemChaste/test/TestChemicalChaste.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/chaste/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object projects/ChemChaste/test/CMakeFiles/TestChemicalChaste.dir/TestChemicalChaste.cpp.o"
+	cd /home/chaste/projects/ChemChaste/test && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/TestChemicalChaste.dir/TestChemicalChaste.cpp.o -c /home/chaste/projects/ChemChaste/test/TestChemicalChaste.cpp
 
-projects/ChemicalChaste/test/CMakeFiles/TestChemicalChaste.dir/TestChemicalChaste.cpp.i: cmake_force
+projects/ChemChaste/test/CMakeFiles/TestChemicalChaste.dir/TestChemicalChaste.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/TestChemicalChaste.dir/TestChemicalChaste.cpp.i"
-	cd /home/chaste/projects/ChemicalChaste/test && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/chaste/projects/ChemicalChaste/test/TestChemicalChaste.cpp > CMakeFiles/TestChemicalChaste.dir/TestChemicalChaste.cpp.i
+	cd /home/chaste/projects/ChemChaste/test && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/chaste/projects/ChemChaste/test/TestChemicalChaste.cpp > CMakeFiles/TestChemicalChaste.dir/TestChemicalChaste.cpp.i
 
-projects/ChemicalChaste/test/CMakeFiles/TestChemicalChaste.dir/TestChemicalChaste.cpp.s: cmake_force
+projects/ChemChaste/test/CMakeFiles/TestChemicalChaste.dir/TestChemicalChaste.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/TestChemicalChaste.dir/TestChemicalChaste.cpp.s"
-	cd /home/chaste/projects/ChemicalChaste/test && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/chaste/projects/ChemicalChaste/test/TestChemicalChaste.cpp -o CMakeFiles/TestChemicalChaste.dir/TestChemicalChaste.cpp.s
+	cd /home/chaste/projects/ChemChaste/test && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/chaste/projects/ChemChaste/test/TestChemicalChaste.cpp -o CMakeFiles/TestChemicalChaste.dir/TestChemicalChaste.cpp.s
 
 # Object files for target TestChemicalChaste
 TestChemicalChaste_OBJECTS = \
@@ -81,129 +81,129 @@ TestChemicalChaste_OBJECTS = \
 # External object files for target TestChemicalChaste
 TestChemicalChaste_EXTERNAL_OBJECTS =
 
-projects/ChemicalChaste/test/TestChemicalChaste: projects/ChemicalChaste/test/CMakeFiles/TestChemicalChaste.dir/TestChemicalChaste.cpp.o
-projects/ChemicalChaste/test/TestChemicalChaste: projects/ChemicalChaste/test/CMakeFiles/TestChemicalChaste.dir/build.make
-projects/ChemicalChaste/test/TestChemicalChaste: projects/ChemicalChaste/libchaste_project_ChemicalChaste.so
-projects/ChemicalChaste/test/TestChemicalChaste: cell_based/libchaste_cell_based.so
-projects/ChemicalChaste/test/TestChemicalChaste: pde/libchaste_pde.so
-projects/ChemicalChaste/test/TestChemicalChaste: ode/libchaste_ode.so
-projects/ChemicalChaste/test/TestChemicalChaste: mesh/libchaste_mesh.so
-projects/ChemicalChaste/test/TestChemicalChaste: linalg/libchaste_linalg.so
-projects/ChemicalChaste/test/TestChemicalChaste: io/libchaste_io.so
-projects/ChemicalChaste/test/TestChemicalChaste: global/libchaste_global.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libboost_filesystem.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libboost_system.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libboost_serialization.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libboost_program_options.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/petscdir/petsc3.9/x86_64-linux-gnu-real/lib/libpetsc_real.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libdmumps.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libzmumps.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libsmumps.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libcmumps.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libmumps_common.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libpord.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libscalapack-openmpi.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libumfpack.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libamd.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libcholmod.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libklu.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libsuperlu.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libsuperlu_dist.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libHYPRE_IJ_mv.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libHYPRE_parcsr_ls.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libHYPRE_sstruct_ls.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libHYPRE_sstruct_mv.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libHYPRE_struct_ls.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libHYPRE_struct_mv.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libHYPRE_utilities.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libfftw3.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libfftw3_mpi.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/liblapack.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libblas.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/hdf5/openmpi/libhdf5.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libptesmumps.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libptscotch.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libptscotcherr.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi_usempif08.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi_usempi_ignore_tkr.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi_mpifh.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/gcc/x86_64-linux-gnu/8/libgfortran.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libm.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/gcc/x86_64-linux-gnu/8/libgcc_s.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/gcc/x86_64-linux-gnu/8/libquadmath.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libpthread.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/gcc/x86_64-linux-gnu/8/libstdc++.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libdl.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libsz.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libz.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/libparmetis.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libmetis.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libsundials_cvode.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libsundials_nvecserial.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi_cxx.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/liblapack.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libblas.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/hdf5/openmpi/libhdf5.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libptesmumps.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libptscotch.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libptscotcherr.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi_usempif08.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi_usempi_ignore_tkr.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi_mpifh.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/gcc/x86_64-linux-gnu/8/libgfortran.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libm.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/gcc/x86_64-linux-gnu/8/libgcc_s.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/gcc/x86_64-linux-gnu/8/libquadmath.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libpthread.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/gcc/x86_64-linux-gnu/8/libstdc++.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libdl.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libsz.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libz.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/libparmetis.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libmetis.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libsundials_cvode.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libsundials_nvecserial.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi_cxx.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libvtkFiltersGeneric-6.3.so.6.3.0
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libvtkFiltersGeometry-6.3.so.6.3.0
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libvtkFiltersModeling-6.3.so.6.3.0
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libvtkFiltersSources-6.3.so.6.3.0
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libvtkFiltersGeneral-6.3.so.6.3.0
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libvtkFiltersCore-6.3.so.6.3.0
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libvtkCommonComputationalGeometry-6.3.so.6.3.0
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libvtkIOParallelXML-6.3.so.6.3.0
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libvtkIOXML-6.3.so.6.3.0
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libvtkIOGeometry-6.3.so.6.3.0
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libvtkIOXMLParser-6.3.so.6.3.0
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libexpat.so
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libvtkParallelCore-6.3.so.6.3.0
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libvtkIOLegacy-6.3.so.6.3.0
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libvtkIOCore-6.3.so.6.3.0
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libvtkCommonExecutionModel-6.3.so.6.3.0
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libvtkCommonDataModel-6.3.so.6.3.0
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libvtkCommonMisc-6.3.so.6.3.0
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libvtkCommonSystem-6.3.so.6.3.0
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libvtksys-6.3.so.6.3.0
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libvtkCommonTransforms-6.3.so.6.3.0
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libvtkCommonMath-6.3.so.6.3.0
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libvtkCommonCore-6.3.so.6.3.0
-projects/ChemicalChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libxerces-c.so
-projects/ChemicalChaste/test/TestChemicalChaste: projects/ChemicalChaste/test/CMakeFiles/TestChemicalChaste.dir/link.txt
+projects/ChemChaste/test/TestChemicalChaste: projects/ChemChaste/test/CMakeFiles/TestChemicalChaste.dir/TestChemicalChaste.cpp.o
+projects/ChemChaste/test/TestChemicalChaste: projects/ChemChaste/test/CMakeFiles/TestChemicalChaste.dir/build.make
+projects/ChemChaste/test/TestChemicalChaste: projects/ChemChaste/libchaste_project_ChemicalChaste.so
+projects/ChemChaste/test/TestChemicalChaste: cell_based/libchaste_cell_based.so
+projects/ChemChaste/test/TestChemicalChaste: pde/libchaste_pde.so
+projects/ChemChaste/test/TestChemicalChaste: ode/libchaste_ode.so
+projects/ChemChaste/test/TestChemicalChaste: mesh/libchaste_mesh.so
+projects/ChemChaste/test/TestChemicalChaste: linalg/libchaste_linalg.so
+projects/ChemChaste/test/TestChemicalChaste: io/libchaste_io.so
+projects/ChemChaste/test/TestChemicalChaste: global/libchaste_global.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libboost_filesystem.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libboost_system.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libboost_serialization.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libboost_program_options.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/petscdir/petsc3.9/x86_64-linux-gnu-real/lib/libpetsc_real.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libdmumps.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libzmumps.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libsmumps.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libcmumps.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libmumps_common.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libpord.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libscalapack-openmpi.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libumfpack.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libamd.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libcholmod.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libklu.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libsuperlu.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libsuperlu_dist.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libHYPRE_IJ_mv.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libHYPRE_parcsr_ls.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libHYPRE_sstruct_ls.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libHYPRE_sstruct_mv.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libHYPRE_struct_ls.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libHYPRE_struct_mv.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libHYPRE_utilities.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libfftw3.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libfftw3_mpi.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/liblapack.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libblas.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/hdf5/openmpi/libhdf5.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libptesmumps.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libptscotch.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libptscotcherr.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi_usempif08.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi_usempi_ignore_tkr.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi_mpifh.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/gcc/x86_64-linux-gnu/8/libgfortran.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libm.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/gcc/x86_64-linux-gnu/8/libgcc_s.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/gcc/x86_64-linux-gnu/8/libquadmath.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libpthread.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/gcc/x86_64-linux-gnu/8/libstdc++.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libdl.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libsz.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libz.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/libparmetis.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libmetis.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libsundials_cvode.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libsundials_nvecserial.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi_cxx.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/liblapack.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libblas.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/hdf5/openmpi/libhdf5.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libptesmumps.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libptscotch.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libptscotcherr.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi_usempif08.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi_usempi_ignore_tkr.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi_mpifh.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/gcc/x86_64-linux-gnu/8/libgfortran.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libm.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/gcc/x86_64-linux-gnu/8/libgcc_s.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/gcc/x86_64-linux-gnu/8/libquadmath.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libpthread.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/gcc/x86_64-linux-gnu/8/libstdc++.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libdl.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libsz.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libz.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/libparmetis.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libmetis.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libsundials_cvode.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libsundials_nvecserial.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi_cxx.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libvtkFiltersGeneric-6.3.so.6.3.0
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libvtkFiltersGeometry-6.3.so.6.3.0
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libvtkFiltersModeling-6.3.so.6.3.0
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libvtkFiltersSources-6.3.so.6.3.0
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libvtkFiltersGeneral-6.3.so.6.3.0
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libvtkFiltersCore-6.3.so.6.3.0
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libvtkCommonComputationalGeometry-6.3.so.6.3.0
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libvtkIOParallelXML-6.3.so.6.3.0
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libvtkIOXML-6.3.so.6.3.0
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libvtkIOGeometry-6.3.so.6.3.0
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libvtkIOXMLParser-6.3.so.6.3.0
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libexpat.so
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libvtkParallelCore-6.3.so.6.3.0
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libvtkIOLegacy-6.3.so.6.3.0
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libvtkIOCore-6.3.so.6.3.0
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libvtkCommonExecutionModel-6.3.so.6.3.0
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libvtkCommonDataModel-6.3.so.6.3.0
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libvtkCommonMisc-6.3.so.6.3.0
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libvtkCommonSystem-6.3.so.6.3.0
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libvtksys-6.3.so.6.3.0
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libvtkCommonTransforms-6.3.so.6.3.0
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libvtkCommonMath-6.3.so.6.3.0
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libvtkCommonCore-6.3.so.6.3.0
+projects/ChemChaste/test/TestChemicalChaste: /usr/lib/x86_64-linux-gnu/libxerces-c.so
+projects/ChemChaste/test/TestChemicalChaste: projects/ChemChaste/test/CMakeFiles/TestChemicalChaste.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/chaste/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX executable TestChemicalChaste"
-	cd /home/chaste/projects/ChemicalChaste/test && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/TestChemicalChaste.dir/link.txt --verbose=$(VERBOSE)
+	cd /home/chaste/projects/ChemChaste/test && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/TestChemicalChaste.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
-projects/ChemicalChaste/test/CMakeFiles/TestChemicalChaste.dir/build: projects/ChemicalChaste/test/TestChemicalChaste
+projects/ChemChaste/test/CMakeFiles/TestChemicalChaste.dir/build: projects/ChemChaste/test/TestChemicalChaste
 
-.PHONY : projects/ChemicalChaste/test/CMakeFiles/TestChemicalChaste.dir/build
+.PHONY : projects/ChemChaste/test/CMakeFiles/TestChemicalChaste.dir/build
 
-projects/ChemicalChaste/test/CMakeFiles/TestChemicalChaste.dir/clean:
-	cd /home/chaste/projects/ChemicalChaste/test && $(CMAKE_COMMAND) -P CMakeFiles/TestChemicalChaste.dir/cmake_clean.cmake
-.PHONY : projects/ChemicalChaste/test/CMakeFiles/TestChemicalChaste.dir/clean
+projects/ChemChaste/test/CMakeFiles/TestChemicalChaste.dir/clean:
+	cd /home/chaste/projects/ChemChaste/test && $(CMAKE_COMMAND) -P CMakeFiles/TestChemicalChaste.dir/cmake_clean.cmake
+.PHONY : projects/ChemChaste/test/CMakeFiles/TestChemicalChaste.dir/clean
 
-projects/ChemicalChaste/test/CMakeFiles/TestChemicalChaste.dir/depend: projects/ChemicalChaste/test/TestChemicalChaste.cpp
-	cd /home/chaste && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/chaste/src /home/chaste/src/projects/ChemicalChaste/test /home/chaste /home/chaste/projects/ChemicalChaste/test /home/chaste/projects/ChemicalChaste/test/CMakeFiles/TestChemicalChaste.dir/DependInfo.cmake --color=$(COLOR)
-.PHONY : projects/ChemicalChaste/test/CMakeFiles/TestChemicalChaste.dir/depend
+projects/ChemChaste/test/CMakeFiles/TestChemicalChaste.dir/depend: projects/ChemChaste/test/TestChemicalChaste.cpp
+	cd /home/chaste && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/chaste/src /home/chaste/src/projects/ChemChaste/test /home/chaste /home/chaste/projects/ChemChaste/test /home/chaste/projects/ChemChaste/test/CMakeFiles/TestChemicalChaste.dir/DependInfo.cmake --color=$(COLOR)
+.PHONY : projects/ChemChaste/test/CMakeFiles/TestChemicalChaste.dir/depend
 

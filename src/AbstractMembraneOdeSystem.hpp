@@ -152,9 +152,10 @@ void AbstractMembraneOdeSystem::EvaluateYDerivatives(double time, const std::vec
 
     std::vector<double> cellConcentrations(number_of_cell_states,0.0);
     std::vector<double> changeCellConcentrations(number_of_cell_states,0.0);
-    
 
     // parse the different concentration state vectors from the solver output to the different concentration systems
+    
+    /*
     std::string this_state="";
     for(unsigned i=0; i<number_of_bulk_states; i++)
     {
@@ -170,16 +171,16 @@ void AbstractMembraneOdeSystem::EvaluateYDerivatives(double time, const std::vec
         }
 
     }
-
+    
     for(unsigned i=0; i<number_of_cell_states; i++)
     {
 
-        cellConcentrations[i] = rY.at(i+mPdeStateVariableRegister->GetNumberOfStateVariables());
+        cellConcentrations[i] = rY.at(i+number_of_bulk_states);
 
         this_state = mpMembraneReactionSystem->GetCellChemistry()->GetChemicalNamesByIndex(i);
 
     }
-
+*/
     // reset rDY
     for(unsigned i=0; i<rDY.size();i++)
     {
@@ -191,7 +192,7 @@ void AbstractMembraneOdeSystem::EvaluateYDerivatives(double time, const std::vec
         CheckConcentration(bulkConcentrations);
         CheckConcentration(cellConcentrations);
     }
-    
+ 
     mpMembraneReactionSystem -> ReactSystem(bulkConcentrations, cellConcentrations, changeBulkConcentrations, changeCellConcentrations);
 
     // reform rDY for passing to the solver

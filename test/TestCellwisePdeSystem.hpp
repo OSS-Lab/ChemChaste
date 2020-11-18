@@ -210,7 +210,7 @@ public:
         /*
         std::cout<<"TestChemicalDomainFieldForCellCoupling"<<std::endl;
         // Variables for the user modify
-        std::string dataFileRoot = "/home/chaste/projects/ChemicalChaste/src/Data/CellwiseSchnakenberg/";
+        std::string dataFileRoot = "/home/chaste/projects/ChemChaste/src/Data/CellwiseSchnakenberg/";
         std::string domainFilename = "CellwiseDomain.csv";
         std::string domainKeyFilename = "CellwiseDomainLabelKey.csv";
         std::string odeLabelFilename = "CellwiseDomain.csv";
@@ -684,7 +684,7 @@ public:
         MeshBasedCellPopulation<2> cell_population(*p_mesh, cells);
 
 
-        std::string dataFileRoot = "/home/chaste/projects/ChemicalChaste/src/Data/CellwiseSchnakenberg/";
+        std::string dataFileRoot = "/home/chaste/projects/ChemChaste/src/Data/CellwiseSchnakenberg/";
         std::string domainFilename = "CellwiseDomain.csv";
         std::string domainKeyFilename = "CellwiseDomainLabelKey.csv";
         std::string odeLabelFilename = "CellwiseDomain.csv";
@@ -790,7 +790,7 @@ public:
         //------------------------------------------------------------------------------//
 
         // Variables for the user modify
-        std::string dataFileRoot = "/home/chaste/projects/ChemicalChaste/src/Data/CellwiseSchnakenberg/";
+        std::string dataFileRoot = "/home/chaste/projects/ChemChaste/src/Data/CellwiseSchnakenberg/";
         std::string domainFilename = "CellwiseDomain.csv";
         std::string domainKeyFilename = "CellwiseDomainLabelKey.csv";
         std::string odeLabelFilename = "CellwiseOdeSelector.csv";

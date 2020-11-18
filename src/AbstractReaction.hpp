@@ -142,6 +142,14 @@ public:
 
     std::string GetIrreversibleRateName();
 
+    // function for upstream class
+
+    unsigned FindIndexOfLastDelimiterPosition(std::vector<std::string>, std::string);
+
+    unsigned FindIndexOfFirstDelimiterPosition(std::vector<std::string>, std::string);
+
+    
+
 };
 
 // constructor
@@ -452,6 +460,108 @@ void AbstractReaction::SetIrreversibleRateName(std::string rateName)
 std::string AbstractReaction::GetIrreversibleRateName()
 {
     return mIrreversibleRateName;
+}
+
+
+unsigned AbstractReaction::FindIndexOfLastDelimiterPosition(std::vector<std::string> delimiterVector, std::string textString)
+{
+    // function to find the location of the delimiter strings in "delimiterVector" within the string textString
+    // function return the index which occurs last. There may be multiple occurances of each delimiter 
+    // within the textString. If all delimiters occur at npos then no delimiter occurs within the string
+    // and index delimiterVector.size() is returned. 
+
+    unsigned index=0; 
+    unsigned numberOfDelimiters = delimiterVector.size();
+    std::vector<size_t> delimiterPositions(numberOfDelimiters,0);
+    bool areAllNPOS = true; 
+    size_t delimiterPosition=0;
+
+    for(unsigned i=0; i<numberOfDelimiters; i++)
+    {
+        // find the positions of the last occurance of each delimiter
+        delimiterPosition = textString.rfind(delimiterVector[i]);
+    
+        if(delimiterPosition != std::string::npos)
+        {
+            areAllNPOS = false;
+        }
+        delimiterPositions[i] = delimiterPosition;
+    }
+
+    // if at least one of the delimiters 
+    bool IsNotFound=true;
+    if(!areAllNPOS)
+    {
+        for(unsigned i=0; i<numberOfDelimiters; i++)
+        {
+            if(delimiterPositions[i] != std::string::npos)
+            {
+                if(IsNotFound)
+                {
+                    index = i;
+                    IsNotFound = false;
+                }
+                else if(delimiterPositions[i]>delimiterPositions[index])
+                {
+                    index = i;
+                }
+            }
+        }
+    }
+    else
+    {
+        // no delimiter occurs within the textString so return the number of delimiters
+        index = numberOfDelimiters;
+    }
+
+    return index;
+
+}
+
+
+unsigned AbstractReaction::FindIndexOfFirstDelimiterPosition(std::vector<std::string> delimiterVector, std::string textString)
+{
+    // function to find the location of the delimiter strings in "delimiterVector" within the string textString
+    // function return the index which occurs first. There may be multiple occurances of each delimiter 
+    // within the textString. If all delimiters occur at npos then no delimiter occurs within the string
+    // and index delimiterVector.size() is returned. 
+
+    unsigned index=0; 
+    unsigned numberOfDelimiters = delimiterVector.size();
+    std::vector<size_t> delimiterPositions(numberOfDelimiters,0);
+    bool areAllNPOS = true; 
+    size_t delimiterPosition=0;
+    
+    for(unsigned i=0; i<numberOfDelimiters; i++)
+    {
+        // find the positions of the first occurance of each delimiter
+        delimiterPosition = textString.find(delimiterVector[i]);
+
+        if(delimiterPosition != std::string::npos)
+        {
+            areAllNPOS = false;
+        }
+        delimiterPositions[i] = delimiterPosition;
+    }
+
+    // if at least one of the delimiters 
+    if(!areAllNPOS)
+    {
+        for(unsigned i=1; i<numberOfDelimiters; i++)
+        {
+            if(delimiterPositions[index] == std::string::npos || delimiterPositions[i]<delimiterPositions[index])
+            {
+                index = i;
+            }
+        }
+    }
+    else
+    {
+        // no delimiter occurs within the textString so return the number of delimiters
+        index = numberOfDelimiters;
+    }
+
+    return index;
 }
 
 

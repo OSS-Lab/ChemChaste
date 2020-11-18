@@ -1,0 +1,3 @@
+# Transport across membrane, Bulk <-> Cell
+MassActionTransportReaction : U <-> U ;  kf = 1.0 kr = 0.0
+MassActionTransportReaction : V <-> V ;  kf = 1.0 kr = 0.0

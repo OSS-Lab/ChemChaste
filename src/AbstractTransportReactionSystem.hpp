@@ -78,15 +78,15 @@ public:
 
 };
 
-AbstractTransportReactionSystem::AbstractTransportReactionSystem(AbstractChemistry* bulkChemistry,
+AbstractTransportReactionSystem::AbstractTransportReactionSystem(   AbstractChemistry* bulkChemistry,
                                                                     AbstractChemistry* cellChemistry, 
                                                                     std::vector<AbstractTransportReaction*> reactionVector)
     :   mpBulkChemistry(bulkChemistry),
         mpCellChemistry(cellChemistry),
-        mNumberOfBulkStates(bulkChemistry -> GetNumberChemicals()),
-        mNumberOfCellStates(cellChemistry -> GetNumberChemicals()),
         mpReactionVector(reactionVector),
-        mNumberOfReactions(reactionVector.size())
+        mNumberOfReactions(reactionVector.size()),
+        mNumberOfBulkStates(bulkChemistry -> GetNumberChemicals()),
+        mNumberOfCellStates(cellChemistry -> GetNumberChemicals())
 {
 }
 

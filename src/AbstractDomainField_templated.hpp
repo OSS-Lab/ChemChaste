@@ -385,13 +385,13 @@ AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::AbstractDomainF
         
         
 {   //std::cout<<"AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::AbstractDomainFieldTemplated"<<std::endl;
-    std::cout<<"Filename: "<<mOdeLabelFilename<<std::endl;
+
     if(mLabelOrigin.empty())
     {
         std::vector<double> origin(SPACE_DIM,0);
         mLabelOrigin = origin;
     }
-    //std::cout<<"here"<<std::endl;
+
     if(mCartesianCellScaleXY.empty())
     {
         // default to scale 1.0 in all directions
@@ -405,7 +405,6 @@ AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::AbstractDomainF
         std::vector<double> odeScaleXY(SPACE_DIM,1.0);
         mCartesianOdeScaleXY = odeScaleXY;
     }
-
 
     SetUpDomainFromFiles();
 }
@@ -560,14 +559,12 @@ void AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::FormMesh()
     //HoneycombMeshGenerator generator(meshDimensions[0], meshDimensions[1], 0);
     if(mIsHoneyCombMesh)
     {
-        std::cout<<"Form honeycomb mesh: "<<mMeshDimensions[0]<<" x "<<mMeshDimensions[1]<<std::endl;
         HoneycombMeshGenerator* p_generator = new HoneycombMeshGenerator(mMeshDimensions[0], mMeshDimensions[1], 0);
 
         mpFeMesh = dynamic_cast<TetrahedralMesh<ELEMENT_DIM,SPACE_DIM>*>(p_generator -> GetMesh());
 
         SetMeshGenerator(p_generator);
         SetDomainFeMesh(mpFeMesh);
-
     }
     else
     {
@@ -588,7 +585,6 @@ void AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::FormMesh()
                 NEVER_REACHED;
         }
         SetDomainFeMesh(mpFeMesh);
-        std::cout<<"Form tetrahedral mesh of dimensions: "<<mMeshDimensions[0]<<" x "<<mMeshDimensions[1]<<std::endl;
     }
 }
 
@@ -657,7 +653,7 @@ void AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ParseIniti
 
     // read the input intial conditions file as a matrix of strings, first column state name, 
     // 2nd column subdomain, 3rd column value.
-        std::cout<<"Initial conditions filename: "<<initialConditionsFilename<<std::endl;
+
     // if the state is not within the state register then the state doesn't evolve over time, remaining constant
     std::vector<std::vector<std::string>> fullInitialConditionsAsStrings = ReadMatrix(initialConditionsFilename);
 
@@ -1064,7 +1060,7 @@ double AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::GetDiffu
     else
     {
         // state hasn't been found therefore return a diffusion value of 0.0
-        std::cout<<"AbstractDomainFieldTemplated::GetDiffusionValueBasedOnPoint: State not in state variable"<<std::endl;
+        std::cout<<"Error: AbstractDomainFieldTemplated::GetDiffusionValueBasedOnPoint: State not in state variable"<<std::endl;
         return 0.0;
     }
 }
@@ -1231,7 +1227,7 @@ std::vector<std::vector<std::string>> AbstractDomainFieldTemplated<ELEMENT_DIM,S
 
         return outputMatrix;
     }else{
-        std::cout<<"Unable to open file: "<<filename<<std::endl;
+        std::cout<<"Error: Unable to open file: "<<filename<<std::endl;
         return outputMatrix;
     }
 }
@@ -1702,7 +1698,7 @@ std::string AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::Get
     }
     else
     {
-        std::cout<<"AbstractDomainFieldTemplated::GetDomainLabelByIndex: index out of bounds"<<std::endl;
+        std::cout<<"Error: AbstractDomainFieldTemplated::GetDomainLabelByIndex: index out of bounds"<<std::endl;
         return "Error";
     }
     

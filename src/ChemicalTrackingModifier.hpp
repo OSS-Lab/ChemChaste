@@ -69,7 +69,9 @@ ChemicalTrackingModifier<ELEMENT_DIM,SPACE_DIM>::~ChemicalTrackingModifier()
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 void ChemicalTrackingModifier<ELEMENT_DIM, SPACE_DIM>::UpdateAtEndOfTimeStep(AbstractCellPopulation<ELEMENT_DIM,SPACE_DIM>& rCellPopulation)
 {
+    //std::cout<<"ChemicalTrackingModifier<ELEMENT_DIM,SPACE_DIM>::UpdateAtEndOfTimeStep - start"<<std::endl;
     UpdateCellData(rCellPopulation);
+    //std::cout<<"ChemicalTrackingModifier<ELEMENT_DIM,SPACE_DIM>::UpdateAtEndOfTimeStep - end"<<std::endl;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
@@ -85,6 +87,7 @@ void ChemicalTrackingModifier<ELEMENT_DIM,SPACE_DIM>::SetupSolve(AbstractCellPop
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 void ChemicalTrackingModifier<ELEMENT_DIM,SPACE_DIM>::SetupSRNFromCellData(AbstractCellPopulation<ELEMENT_DIM,SPACE_DIM>& rCellPopulation)
 {
+    //std::cout<<"ChemicalTrackingModifier<ELEMENT_DIM,SPACE_DIM>::SetupSRNFromCellData - start"<<std::endl;
     rCellPopulation.Update();
 
     for (typename AbstractCellPopulation<SPACE_DIM>::Iterator cell_iter = rCellPopulation.Begin();
@@ -93,37 +96,41 @@ void ChemicalTrackingModifier<ELEMENT_DIM,SPACE_DIM>::SetupSRNFromCellData(Abstr
     {   
         // update cells ODE states from cellData
         ChemicalSrnModel* p_model = static_cast<ChemicalSrnModel*>(cell_iter->GetSrnModel());
-
+    
         AbstractChemistry* this_cell_chemistry = p_model->GetCellChemistry();
+  
         unsigned numberOfChemicals = this_cell_chemistry->GetNumberChemicals();
+    
         std::vector<double> this_SRN_concentration_vector(numberOfChemicals,0.0);
         std::string this_chemical_name="";
+ 
         for(unsigned i=0; i<numberOfChemicals;i++)
         {
             this_chemical_name = this_cell_chemistry -> GetChemicalNamesByIndex(i);
             this_SRN_concentration_vector[i] = cell_iter->GetCellData()->GetItem(this_chemical_name);
         }
-        // determine the vector then
-
+       
         p_model->GetOdeSystem()->SetStateVariables(this_SRN_concentration_vector);
-    }
 
+    }
+    //std::cout<<"ChemicalTrackingModifier<ELEMENT_DIM,SPACE_DIM>::SetupSRNFromCellData - end"<<std::endl;
 }
 
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 void ChemicalTrackingModifier<ELEMENT_DIM,SPACE_DIM>::UpdateCellData(AbstractCellPopulation<ELEMENT_DIM,SPACE_DIM>& rCellPopulation)
 {
-
+    //std::cout<<"ChemicalTrackingModifier<ELEMENT_DIM,SPACE_DIM>::UpdateCellData( - start"<<std::endl;
     // Make sure the cell population is updated, i.e cell cycle, cell state
     rCellPopulation.Update();
 
-
+    unsigned count=0;
     /// run through each cell in the population and update the internal chemical concentrations in cellData
     for (typename AbstractCellPopulation<SPACE_DIM>::Iterator cell_iter = rCellPopulation.Begin();
          cell_iter != rCellPopulation.End();
          ++cell_iter)
     {   
+
         ChemicalSrnModel* p_model = static_cast<ChemicalSrnModel*>(cell_iter->GetSrnModel());
         AbstractChemistry* this_cell_srn_chemistry = p_model->GetCellChemistry();
         unsigned numberOfSrnChemicals = this_cell_srn_chemistry->GetNumberChemicals();
@@ -157,11 +164,10 @@ void ChemicalTrackingModifier<ELEMENT_DIM,SPACE_DIM>::UpdateCellData(AbstractCel
                 this_name = this_cell_transport_chemistry -> GetChemicalNamesByIndex(i);
            
                 this_concentration = cell_iter->GetCellData()->GetItem(this_name);
-
-                this_concentration += transport_cell_property-> GetChangeInternalCellBoundaryConcentrationByName(this_name);
+        
+                this_concentration += transport_cell_property->GetReactionCalls() *transport_cell_property-> GetChangeInternalCellBoundaryConcentrationByName(this_name);
                 CheckConcentration(this_concentration);
                 cell_iter->GetCellData()->SetItem(this_name, this_concentration);
-                
             }
 
         }
@@ -181,8 +187,8 @@ void ChemicalTrackingModifier<ELEMENT_DIM,SPACE_DIM>::UpdateCellData(AbstractCel
                 this_name = this_cell_membrane_chemistry -> GetChemicalNamesByIndex(i);
            
                 this_concentration = cell_iter->GetCellData()->GetItem(this_name);
-
-                this_concentration += membrane_cell_property-> GetChangeInternalCellBoundaryConcentrationByName(this_name);
+                
+                this_concentration += membrane_cell_property->GetReactionCalls() *membrane_cell_property-> GetChangeInternalCellBoundaryConcentrationByName(this_name);
                 CheckConcentration(this_concentration);
                 cell_iter->GetCellData()->SetItem(this_name, this_concentration);
                 
@@ -234,7 +240,10 @@ void ChemicalTrackingModifier<ELEMENT_DIM,SPACE_DIM>::UpdateCellData(AbstractCel
         // finally update the SRN state variables to the new post transport values
         p_model -> UpdateOdeStatesFromCellData();
 
+        count++;
     }
+
+    //std::cout<<"ChemicalTrackingModifier<ELEMENT_DIM,SPACE_DIM>::UpdateCellData( - end"<<std::endl;
 
 }
 

@@ -4,7 +4,20 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/home/chaste/src/projects/ChemicalChaste/src/Hello.cpp" "/home/chaste/projects/ChemicalChaste/CMakeFiles/chaste_project_ChemicalChaste.dir/src/Hello.cpp.o"
+  "/home/chaste/src/projects/ChemChaste/src/AbstractChemical.cpp" "/home/chaste/projects/ChemChaste/CMakeFiles/chaste_project_ChemicalChaste.dir/src/AbstractChemical.cpp.o"
+  "/home/chaste/src/projects/ChemChaste/src/AbstractChemistry.cpp" "/home/chaste/projects/ChemChaste/CMakeFiles/chaste_project_ChemicalChaste.dir/src/AbstractChemistry.cpp.o"
+  "/home/chaste/src/projects/ChemChaste/src/AbstractDomainField.cpp" "/home/chaste/projects/ChemChaste/CMakeFiles/chaste_project_ChemicalChaste.dir/src/AbstractDomainField.cpp.o"
+  "/home/chaste/src/projects/ChemChaste/src/AveragedSourceParabolicPde_test.cpp" "/home/chaste/projects/ChemChaste/CMakeFiles/chaste_project_ChemicalChaste.dir/src/AveragedSourceParabolicPde_test.cpp.o"
+  "/home/chaste/src/projects/ChemChaste/src/ChemicalCellProperty.cpp" "/home/chaste/projects/ChemChaste/CMakeFiles/chaste_project_ChemicalChaste.dir/src/ChemicalCellProperty.cpp.o"
+  "/home/chaste/src/projects/ChemChaste/src/ChemicalSrnModel.cpp" "/home/chaste/projects/ChemChaste/CMakeFiles/chaste_project_ChemicalChaste.dir/src/ChemicalSrnModel.cpp.o"
+  "/home/chaste/src/projects/ChemChaste/src/EulerIvpOdeSolver_test.cpp" "/home/chaste/projects/ChemChaste/CMakeFiles/chaste_project_ChemicalChaste.dir/src/EulerIvpOdeSolver_test.cpp.o"
+  "/home/chaste/src/projects/ChemChaste/src/Hello.cpp" "/home/chaste/projects/ChemChaste/CMakeFiles/chaste_project_ChemicalChaste.dir/src/Hello.cpp.o"
+  "/home/chaste/src/projects/ChemChaste/src/MembraneCellProperty.cpp" "/home/chaste/projects/ChemChaste/CMakeFiles/chaste_project_ChemicalChaste.dir/src/MembraneCellProperty.cpp.o"
+  "/home/chaste/src/projects/ChemChaste/src/SchnackenbergOdeSystem.cpp" "/home/chaste/projects/ChemChaste/CMakeFiles/chaste_project_ChemicalChaste.dir/src/SchnackenbergOdeSystem.cpp.o"
+  "/home/chaste/src/projects/ChemChaste/src/SchnackenbergSrnModel.cpp" "/home/chaste/projects/ChemChaste/CMakeFiles/chaste_project_ChemicalChaste.dir/src/SchnackenbergSrnModel.cpp.o"
+  "/home/chaste/src/projects/ChemChaste/src/SimpleChemicalThresholdCellCycleModel.cpp" "/home/chaste/projects/ChemChaste/CMakeFiles/chaste_project_ChemicalChaste.dir/src/SimpleChemicalThresholdCellCycleModel.cpp.o"
+  "/home/chaste/src/projects/ChemChaste/src/StateVariableRegister.cpp" "/home/chaste/projects/ChemChaste/CMakeFiles/chaste_project_ChemicalChaste.dir/src/StateVariableRegister.cpp.o"
+  "/home/chaste/src/projects/ChemChaste/src/TransportCellProperty.cpp" "/home/chaste/projects/ChemChaste/CMakeFiles/chaste_project_ChemicalChaste.dir/src/TransportCellProperty.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 
@@ -17,7 +30,7 @@ set(CMAKE_TARGET_DEFINITIONS_CXX
   "CHASTE_SUNDIALS_VERSION=30101"
   "CHASTE_VTK"
   "CHASTE_XERCES"
-  "COMPONENT_SOURCE_DIR=\"/home/chaste/src/projects/ChemicalChaste\""
+  "COMPONENT_SOURCE_DIR=\"/home/chaste/src/projects/ChemChaste\""
   "TETLIBRARY"
   "TRILIBRARY"
   "XERCES_STATIC_LIBRARY"
@@ -25,7 +38,7 @@ set(CMAKE_TARGET_DEFINITIONS_CXX
 
 # The include file search paths:
 set(CMAKE_CXX_TARGET_INCLUDE_PATH
-  "src/projects/ChemicalChaste/src"
+  "src/projects/ChemChaste/src"
   "src/cell_based/src/cell"
   "src/cell_based/src/cell/cycle"
   "src/cell_based/src/cell/properties"

@@ -1,6 +1,8 @@
 #ifndef ABSTRACTPDESYSTEMMODIFIER_HPP_
 #define ABSTRACTPDESYSTEMMODIFIER_HPP_
 
+//#include <cxxtest/GlobalFixture.h>
+//#include "PetscSetupAndFinalize.hpp"
 #include "ChasteSerialization.hpp"
 #include "ClassIsAbstract.hpp"
 #include <boost/shared_ptr.hpp>
@@ -293,6 +295,7 @@ TetrahedralMesh<ELEMENT_DIM,SPACE_DIM>* AbstractPdeSystemModifier<ELEMENT_DIM,SP
 template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
 void AbstractPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::SetupSolve(AbstractCellPopulation<ELEMENT_DIM,SPACE_DIM>& rCellPopulation, std::string outputDirectory)
 {
+    //std::cout<<"AbstractPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::SetupSolve - start"<<std::endl;
     // Cache the output directory
     this->mOutputDirectory = outputDirectory; 
 
@@ -308,6 +311,7 @@ void AbstractPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::SetupSolve(Ab
    
         }
     }
+    //std::cout<<"AbstractPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::SetupSolve - end"<<std::endl;
 }
 
 template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
@@ -316,10 +320,8 @@ void AbstractPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::UpdateAtEndOf
     //std::cout<<"AbstractPdeSystemModifier - UpdateAtEndOfOutputTimeStep - start"<<std::endl;
     if (mOutputSolutionAtPdeNodes)
     {
-
         if (PetscTools::AmMaster())
         {
-
             (*mpVizPdeSolutionResultsFile) << SimulationTime::Instance()->GetTime() << "\t";
 
             assert(mpFeMesh != nullptr);
@@ -328,12 +330,14 @@ void AbstractPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::UpdateAtEndOf
             {
                 (*mpVizPdeSolutionResultsFile) << i << " ";
                 const c_vector<double,SPACE_DIM>& r_location = mpFeMesh->GetNode(i)->rGetLocation();
+
                 for (unsigned k=0; k<SPACE_DIM; k++)
                 {
                     (*mpVizPdeSolutionResultsFile) << r_location[k] << " ";
                 }
 
                 assert(mSolution != nullptr); // remove, test against null vector
+
                 ReplicatableVector solution_repl(mSolution);
                 for(unsigned pd=0; pd<PROBLEM_DIM; pd++){
                     (*mpVizPdeSolutionResultsFile) << solution_repl[i+pd] << " ";
@@ -341,7 +345,6 @@ void AbstractPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::UpdateAtEndOf
             }
 
             (*mpVizPdeSolutionResultsFile) << "\n";
-        
         }
     
     }
@@ -350,7 +353,6 @@ void AbstractPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::UpdateAtEndOf
 
     if (SPACE_DIM > 1)
     {
-        
         std::ostringstream time_string;
         time_string << SimulationTime::Instance()->GetTimeStepsElapsed();
 
@@ -359,7 +361,6 @@ void AbstractPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::UpdateAtEndOf
         for(unsigned pdeDim=0; pdeDim<PROBLEM_DIM; pdeDim++)
         {
             std::string results_file = "pde_results_" + mpCoupledDomainField->GetDomainStateVariableRegister()->RetrieveStateVariableName(pdeDim) + "_" + time_string.str();
-  
             VtkMeshWriter<ELEMENT_DIM,SPACE_DIM>* p_vtk_mesh_writer = new VtkMeshWriter<ELEMENT_DIM,SPACE_DIM>(mOutputDirectory, results_file, false);
             std::vector<double> pde_solution;
 
@@ -370,6 +371,7 @@ void AbstractPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::UpdateAtEndOf
             p_vtk_mesh_writer->AddPointData(mpCoupledDomainField->GetDomainStateVariableRegister()->RetrieveStateVariableName(pdeDim), pde_solution);
 
             p_vtk_mesh_writer->WriteFilesUsingMesh(*mpFeMesh);
+
             delete p_vtk_mesh_writer;
         }
         

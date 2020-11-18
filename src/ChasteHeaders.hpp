@@ -42,7 +42,9 @@
 #include "HoneycombMeshGenerator.hpp"
 #include "EulerIvpOdeSolver.hpp"
 #include "LinearParabolicPdeSystemWithCoupledOdeSystemSolver.hpp"
-#include "BoundaryConditionsContainer.hpp"
+
+#include "BoundaryConditionsContainer_extended.hpp"
+
 #include "ConstBoundaryCondition.hpp"
 #include "OutputFileHandler.hpp"
 #include "RandomNumberGenerator.hpp"

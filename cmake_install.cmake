@@ -1,4 +1,4 @@
-# Install script for directory: /home/chaste/src/projects/ChemicalChaste
+# Install script for directory: /home/chaste/src/projects/ChemChaste
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -39,8 +39,8 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/home/chaste/projects/ChemicalChaste/test/cmake_install.cmake")
-  include("/home/chaste/projects/ChemicalChaste/apps/cmake_install.cmake")
+  include("/home/chaste/projects/ChemChaste/test/cmake_install.cmake")
+  include("/home/chaste/projects/ChemChaste/apps/cmake_install.cmake")
 
 endif()
 

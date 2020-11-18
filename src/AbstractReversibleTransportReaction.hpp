@@ -198,7 +198,7 @@ void AbstractReversibleTransportReaction::UpdateReactionRate(AbstractChemistry* 
 
 void AbstractReversibleTransportReaction::ParseReactionInformation(std::string reaction_information, bool IsReversible=true)
 {
-     
+    //std::cout<<"AbstractReversibleTransportReaction::ParseReactionInformation - start"<<std::endl;
 
     if(!IsReversible)
     {
@@ -207,21 +207,22 @@ void AbstractReversibleTransportReaction::ParseReactionInformation(std::string r
     }
     else
     {
-        
+        // check which rate, kf or kr, comes first. first one will have bool value 0
         bool IsForward = reaction_information.find(mIrreversibleRateName);
         bool IsReverse = reaction_information.find(mReversibleName);
-        size_t posForward;
-        size_t posReverse;
+     
+        size_t posForward =0;
+        size_t posReverse =0;
         unsigned length_string_forward =0;
         unsigned length_string_reverse =0;
-
+      
         if(IsForward)
         {
             posForward = reaction_information.find(mIrreversibleRateName);
-
+            
             length_string_forward = reaction_information.substr(posForward,std::string::npos).length();
         }
-        
+     
         if(IsReverse)
         {
             posReverse = reaction_information.find(mReversibleName);
@@ -231,6 +232,8 @@ void AbstractReversibleTransportReaction::ParseReactionInformation(std::string r
 
         if( length_string_forward<length_string_reverse )
         {
+            // kf defined first
+
             SetForwardReactionRate(atof(reaction_information.substr(posForward+mIrreversibleRateName.size()+1,std::string::npos).c_str()));
             reaction_information.erase(posForward,std::string::npos);
             SetReverseReactionRate(atof(reaction_information.substr(posReverse+mReversibleName.size()+1,std::string::npos).c_str()));
@@ -238,11 +241,13 @@ void AbstractReversibleTransportReaction::ParseReactionInformation(std::string r
         }
         else
         {
+          
             SetReverseReactionRate(atof(reaction_information.substr(posReverse+mReversibleName.size()+1,std::string::npos).c_str()));
             reaction_information.erase(posReverse,std::string::npos);
-            SetForwardReactionRate(atof(reaction_information.substr(posForward+mReversibleName.size()+1,std::string::npos).c_str()));
+            SetForwardReactionRate(atof(reaction_information.substr(posForward+mIrreversibleRateName.size()+1,std::string::npos).c_str()));
         }
     }
+    //std::cout<<"AbstractReversibleTransportReaction::ParseReactionInformation - end"<<std::endl;
 }
 
 // file read functions

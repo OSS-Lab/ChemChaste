@@ -1,0 +1,8 @@
+Domain : membrane
+MichaelisMentenReaction : S -> Si ; kcat = 7.0 Km = 1.0 Enzyme = CTr
+MichaelisMentenReaction : Si -> P ; kcat = 5.0 Km = 1.0 Enzyme = CMet
+MichaelisMentenReaction : P -> Lipid ; kcat = 5.0 Km = 1.0 Enzyme = CLpb
+MichaelisMentenReaction : P -> CTr ; kcat = 7.0 Km = 3.0 Enzyme = CRib
+MichaelisMentenReaction : P -> CMet ; kcat = 7.0 Km = 3.0 Enzyme = CRib
+MichaelisMentenReaction : P -> CLpb ; kcat = 7.0 Km = 3.0 Enzyme = CRib
+MichaelisMentenReaction : P -> CRib ; kcat = 7.0 Km = 3.0 Enzyme = CRib

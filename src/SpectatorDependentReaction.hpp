@@ -70,6 +70,10 @@ public:
     void SetNumberOfSpectators(unsigned);
 
     unsigned GetNumberOfSpectators();
+
+    void SetSpectatorDelimiter(std::string);
+    
+    std::string GetSpectatorDelimiter();
 };
 
 SpectatorDependentReaction::SpectatorDependentReaction( 
@@ -276,5 +280,17 @@ unsigned SpectatorDependentReaction::GetNumberOfSpectators()
 {
     return mNumberOfSpectators;
 }
+
+void SpectatorDependentReaction::SetSpectatorDelimiter(std::string delim)
+{
+    mSpectatorDelimiter = delim;
+}
+    
+std::string SpectatorDependentReaction::GetSpectatorDelimiter()
+{
+    return mSpectatorDelimiter;
+}
+
+
 
 #endif

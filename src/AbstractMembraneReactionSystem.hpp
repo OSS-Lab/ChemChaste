@@ -83,10 +83,10 @@ AbstractMembraneReactionSystem::AbstractMembraneReactionSystem( AbstractChemistr
                                                                 std::vector<AbstractMembraneReaction*> reactionVector)
     :   mpBulkChemistry(bulkChemistry),
         mpCellChemistry(cellChemistry),
-        mNumberOfBulkStates(bulkChemistry -> GetNumberChemicals()),
-        mNumberOfCellStates(cellChemistry -> GetNumberChemicals()),
         mpReactionVector(reactionVector),
-        mNumberOfReactions(reactionVector.size())
+        mNumberOfReactions(reactionVector.size()),
+        mNumberOfBulkStates(bulkChemistry -> GetNumberChemicals()),
+        mNumberOfCellStates(cellChemistry -> GetNumberChemicals())
 {
 }
 

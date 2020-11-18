@@ -519,14 +519,8 @@ void AbstractDomainField::MapToChasteCartesianDomain()
 
     SetCartesianChasteScale(cartesianChasteScaleXY);
 
-
-    //std::cout<<"X: "<<mCartesianCellDimensions[0]*cartesianChasteScaleXY[0]<<" Y: "<<mCartesianCellDimensions[1]*cartesianChasteScaleXY[1]<<std::endl;
-
-    
     unsigned numberOfXSteps = std::round((mCartesianCellDimensions[0]*mCartesianCellScaleXY[0])/cartesianChasteScaleXY[0]); 
     unsigned numberOfYSteps = std::round((mCartesianCellDimensions[1]*mCartesianCellScaleXY[1])/cartesianChasteScaleXY[1]); 
-
-    //std::cout<<"Steps X: "<<numberOfXSteps<<" Steps Y: "<<numberOfYSteps<<std::endl;
  
     std::vector<std::vector<std::string>> cartesianChasteDomain;
     std::vector<unsigned> cartesianChasteDimensions;
@@ -543,13 +537,9 @@ void AbstractDomainField::MapToChasteCartesianDomain()
             rowVector.push_back(ReturnMappedDomainLabel(xindex,yindex,mCartesianChasteScaleXY));
 
         }
-        //printVector(rowVector);
-        //std::cout<<"-------------------------------------"<<std::endl;
         cartesianChasteDomain.push_back(rowVector);
     }
 
-    //printMatrix(mDomainLabels);
-    //printMatrix(cartesianChasteDomain);
 
     SetCartesianChasteDomain(cartesianChasteDomain);
     SetCartesianChasteDimensions(cartesianChasteDimensions);
@@ -582,7 +572,7 @@ double AbstractDomainField::GetDiffusionValueBasedOnPoint(const ChastePoint<2>& 
     else
     {
         // state hasn't been found therefore return a diffusion value of 0.0
-        std::cout<<"AbstractDomainField::GetDiffusionValueBasedOnPoint: State not in state variable"<<std::endl;
+        std::cout<<"Error: AbstractDomainField::GetDiffusionValueBasedOnPoint: State not in state variable"<<std::endl;
         return 0.0;
     }
 }
@@ -745,7 +735,7 @@ std::vector<std::vector<std::string>> AbstractDomainField::ReadMatrix(std::strin
 
         return outputMatrix;
     }else{
-        std::cout<<"Unable to open file: "<<filename<<std::endl;
+        std::cout<<"Error: Unable to open file: "<<filename<<std::endl;
         return outputMatrix;
     }
 }
@@ -992,7 +982,7 @@ std::string AbstractDomainField::GetDomainLabelByIndex(unsigned index)
     }
     else
     {
-        std::cout<<"AbstractDomainField::GetDomainLabelByIndex: index out of bounds"<<std::endl;
+        std::cout<<"Error: AbstractDomainField::GetDomainLabelByIndex: index out of bounds"<<std::endl;
         return "Error";
     }
     
@@ -1261,7 +1251,6 @@ std::string AbstractDomainField::ReturnKeyValueFromNodeLabel(std::string nodeLab
 
     for(unsigned key_index=0; key_index<mOdeKeys.size(); key_index++)
     {
-        //std::cout<<"key_index: "<<key_index<<std::endl;
         if(mOdeKeys[key_index][0] == nodeLabel)
         {
             return mOdeKeys[key_index][1];

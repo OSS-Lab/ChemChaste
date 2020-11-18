@@ -1310,7 +1310,7 @@ void ExtendedCellProperty<SPACE_DIM>::SetVectorOfBoundaryStateVariablesByIndex(u
     }
     else
     {
-        std::cout<<"ExtendedCellProperty<SPACE_DIM>::SetVectorOfBoundaryStateVariablesByIndex index out of bounds"<<std::endl;
+        std::cout<<"Error: ExtendedCellProperty<SPACE_DIM>::SetVectorOfBoundaryStateVariablesByIndex index out of bounds"<<std::endl;
     }
     
 }
@@ -1330,7 +1330,7 @@ void ExtendedCellProperty<SPACE_DIM>::SetVectorOfInternalBoundaryStateVariablesB
     }
     else
     {
-        std::cout<<"ExtendedCellProperty<SPACE_DIM>::SetVectorOfInternalBoundaryStateVariablesByIndex index out of bounds"<<std::endl;
+        std::cout<<"Error: ExtendedCellProperty<SPACE_DIM>::SetVectorOfInternalBoundaryStateVariablesByIndex index out of bounds"<<std::endl;
     }
     
 }
@@ -1350,7 +1350,7 @@ void ExtendedCellProperty<SPACE_DIM>::SetVectorOfBoundaryLocationsByIndex(unsign
     }
     else
     {
-        std::cout<<"ExtendedCellProperty<SPACE_DIM>::SetVectorOfBoundaryLocationsByIndex index out of bounds"<<std::endl;
+        std::cout<<"Error: ExtendedCellProperty<SPACE_DIM>::SetVectorOfBoundaryLocationsByIndex index out of bounds"<<std::endl;
     }
 }
 

@@ -59,7 +59,7 @@ public:
 
     std::vector<AbstractChemical*> FromChemicalNameVectorToAbstractChemicalVector(std::vector<std::string>);
 
-    void ParseSystemChemistry(std::vector<std::string>);
+    void ParseSystemChemistry(std::vector<std::string>,std::vector<std::string>);
 
     std::vector<std::tuple<std::string, bool, std::vector<std::string>, std::vector<std::string>, std::vector<unsigned>, std::vector<unsigned>, std::string>> ReactionSystemFromFile();
 
@@ -72,39 +72,38 @@ public:
     std::string GetFileName();
 
 
-    AbstractTransportReactionSystem* GetReactionSystem();
 
 };
 
 AbstractTransportReactionSystemFromFile::AbstractTransportReactionSystemFromFile(std::string InputFileName)
     : mInputFileName(InputFileName)
 {
-    
+    //"AbstractTransportReactionSystemFromFile::AbstractTransportReactionSystemFromFile - start"<<std::endl;
     std::vector<AbstractTransportReaction*> mpReactionVector = std::vector<AbstractTransportReaction*>();
 
     SetFileDeliminator();
     std::vector<std::tuple<std::string, bool, std::vector<std::string>, std::vector<std::string>, std::vector<unsigned>, std::vector<unsigned>, std::string>> system = ReactionSystemFromFile();
     
-    std::vector<std::string> chemicalsNames;
+    std::vector<std::string> bulkChemicalsNames;
+    std::vector<std::string> cellChemicalsNames;
     
-
     for(unsigned reaction=0; reaction<system.size(); reaction++)
     {
 
         for(unsigned species=0; species<std::get<2>(system[reaction]).size(); species++)
         {
-            chemicalsNames.push_back(std::get<2>(system[reaction])[species]);
+            bulkChemicalsNames.push_back(std::get<2>(system[reaction])[species]);
         }
         for(unsigned species=0; species<std::get<3>(system[reaction]).size(); species++)
         {
-            chemicalsNames.push_back(std::get<3>(system[reaction])[species]);
+            cellChemicalsNames.push_back(std::get<3>(system[reaction])[species]);
         }
     }
 
-    ParseSystemChemistry(chemicalsNames);
-    
+    ParseSystemChemistry(bulkChemicalsNames,cellChemicalsNames);
     FormReactionSystemObjectFromTuple(system);
 
+    //std::cout<<"AbstractTransportReactionSystemFromFile::AbstractTransportReactionSystemFromFile - end"<<std::endl;
 }
 
 void AbstractTransportReactionSystemFromFile::SetFileDeliminator()
@@ -122,22 +121,21 @@ void AbstractTransportReactionSystemFromFile::FormReactionSystemObjectFromTuple(
 {
     // for each reaction whose data is in the tuple, form the corresponding reaction class
     // denote in the reaction class the function necessary to parse reaction information
-
+    //std::cout<<"AbstractTransportReactionSystemFromFile::FormReactionSystemObjectFromTuple( - start"<<std::endl;
 
     SetNumberOfReactions(system_tuple.size());
 
     for( unsigned reaction =0; reaction<mNumberOfReactions; reaction++)
     {
         AbstractTransportReaction* p_reaction = new AbstractTransportReaction();
-
         std::vector<AbstractChemical*> substrates_chemical_vector = FromChemicalNameVectorToAbstractChemicalVector(std::get<2>(system_tuple[reaction]));
         std::vector<AbstractChemical*> products_chemical_vector = FromChemicalNameVectorToAbstractChemicalVector(std::get<3>(system_tuple[reaction]));
 
-        TransportTablet(p_reaction,std::get<0>(system_tuple[reaction]),substrates_chemical_vector,products_chemical_vector,std::get<4>(system_tuple[reaction]),std::get<5>(system_tuple[reaction]),std::get<6>(system_tuple[reaction]),std::get<1>(system_tuple[reaction]),mpSystemChemistry);
-        
+        TransportTablet(p_reaction,std::get<0>(system_tuple[reaction]),substrates_chemical_vector,products_chemical_vector,std::get<4>(system_tuple[reaction]),std::get<5>(system_tuple[reaction]),std::get<6>(system_tuple[reaction]),std::get<1>(system_tuple[reaction]),mpCellChemistry);
+
         mpReactionVector.push_back(p_reaction);
     }
-
+    //std::cout<<"AbstractTransportReactionSystemFromFile::FormReactionSystemObjectFromTuple( - end"<<std::endl;
 }
 
 std::vector<AbstractChemical*> AbstractTransportReactionSystemFromFile::FromChemicalNameVectorToAbstractChemicalVector(std::vector<std::string> nameVector)
@@ -151,21 +149,31 @@ std::vector<AbstractChemical*> AbstractTransportReactionSystemFromFile::FromChem
     return chemicalVector;
 }
 
-void AbstractTransportReactionSystemFromFile::ParseSystemChemistry(std::vector<std::string> species_names)
+void AbstractTransportReactionSystemFromFile::ParseSystemChemistry(std::vector<std::string> bulk_species_names,std::vector<std::string> cell_species_names)
 {
-    AbstractChemistry* mpSystemChemistry = new AbstractChemistry();
-    for(unsigned i =0; i<species_names.size(); i++)
+    AbstractChemistry* mpBulkChemistry = new AbstractChemistry();
+    AbstractChemistry* mpCellChemistry = new AbstractChemistry();
+    
+    for(unsigned i =0; i<bulk_species_names.size(); i++)
     {
-        //std::cout<<species_names[i]<<std::endl;
-        AbstractChemical* candidate_chemical = new AbstractChemical(species_names[i]);
-        mpSystemChemistry -> AddChemical(candidate_chemical);
+        AbstractChemical* candidate_chemical = new AbstractChemical(bulk_species_names[i]);
+        mpBulkChemistry -> AddChemical(candidate_chemical);
     }
 
-    SetSystemChemistry(mpSystemChemistry);
+    SetBulkChemistry(mpBulkChemistry);
+
+    for(unsigned i =0; i<cell_species_names.size(); i++)
+    {
+        AbstractChemical* candidate_chemical = new AbstractChemical(cell_species_names[i]);
+        mpCellChemistry -> AddChemical(candidate_chemical);
+    }
+
+    SetCellChemistry(mpCellChemistry);
 }
 
 std::vector<std::tuple<std::string, bool, std::vector<std::string>, std::vector<std::string>, std::vector<unsigned>, std::vector<unsigned>, std::string>> AbstractTransportReactionSystemFromFile::ReactionSystemFromFile()
 {
+    //std::cout<<"AbstractTransportReactionSystemFromFile::ReactionSystemFromFile() - start"<<std::endl;
     // read a reaction from the file
     std::vector<std::tuple<std::string, bool, std::vector<std::string>, std::vector<std::string>, std::vector<unsigned>, std::vector<unsigned>, std::string>>  system;  
 
@@ -193,29 +201,29 @@ std::vector<std::tuple<std::string, bool, std::vector<std::string>, std::vector<
                 }
                 else
                 {
-                
                     // assume the enxt line is a reacton line
 
                     // point at which the reaction type text and the reaction string deliniate
                     size_t separate_point_type_reaction = line.find(mTypeDelimiter);
+
                     // point at which the reaction string and the reaction information deliniate
                     size_t separate_point_reaction_info = line.find(mDataDelimiter);
-                    
+
                     // the reaction string to be parsed
                     std::string reactionInfo = line.substr(separate_point_reaction_info+2,std::string::npos);
-
+  
                     // determine the reaction type to add to reaction system
                     std::string reactionType = line.substr(0,separate_point_type_reaction);
 
                     line.erase(separate_point_reaction_info, std::string::npos);
                     std::string react = line.substr(separate_point_type_reaction+3,std::string::npos);
-                    
+      
                     // don't want to parse info in this function
                     
                     
                     // test for reversibility in reaction string
                     bool IsReversible = TestReversibility(react);
-      
+
                     // species, stoich
                     std::tuple<std::vector<std::vector<std::string>>, std::vector<std::vector<unsigned>>> ReactionStringTuple = ParseReactionString(react);
 
@@ -230,10 +238,10 @@ std::vector<std::tuple<std::string, bool, std::vector<std::string>, std::vector<
     }
     else
     {
-        std::cout<<"Error filename not found: "<<mInputFileName<<std::endl;
+        std::cout<<"Error: Filename not found: "<<mInputFileName<<std::endl;
     }
     
-
+    //std::cout<<"AbstractTransportReactionSystemFromFile::ReactionSystemFromFile() - end"<<std::endl;
     return system;
 }
 

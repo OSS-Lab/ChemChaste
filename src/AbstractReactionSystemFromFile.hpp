@@ -13,10 +13,10 @@
 #include "AbstractChemistry.hpp"
 #include "ReactionTypeDatabase.hpp"
 
-// class containg the emthods to read a system of reactions from a text file. A set of file 
+// class containg the methods to read a system of reactions from a text file. A set of file 
 // deliminators for p[asring the differnet information string are provided defaults. For each reaction
 // the chemical species participating and their stoichiometry as substrates and/or products is 
-// determined for the fiel row string. The reaction type is read form the file and the 
+// determined for the file row string. The reaction type is read form the file and the 
 // ReactionTypeDatabase with the ReactionTablet function is used to typecast the desired reaction 
 // type which inherit from AbstractReaction. The full system chemistry is determined.
 
@@ -117,6 +117,7 @@ void AbstractReactionSystemFromFile::SetFileDeliminator()
 
 void AbstractReactionSystemFromFile::FormReactionSystemObjectFromTuple(std::vector<std::tuple<std::string, bool, std::vector<std::string>, std::vector<std::string>, std::vector<unsigned>, std::vector<unsigned>, std::string>> system_tuple)
 {
+    //std::cout<<"AbstractReactionSystemFromFile::FormReactionSystemObjectFromTuple - start"<<std::endl;
     // for each reaction whose data is in the tuple, form the corresponding reaction class
     // denote in the reaction class the function necessary to parse reaction information
 
@@ -128,12 +129,12 @@ void AbstractReactionSystemFromFile::FormReactionSystemObjectFromTuple(std::vect
 
         std::vector<AbstractChemical*> substrates_chemical_vector = FromChemicalNameVectorToAbstractChemicalVector(std::get<2>(system_tuple[reaction]));
         std::vector<AbstractChemical*> products_chemical_vector = FromChemicalNameVectorToAbstractChemicalVector(std::get<3>(system_tuple[reaction]));
-
+     
         ReactionTablet(p_reaction,std::get<0>(system_tuple[reaction]),substrates_chemical_vector,products_chemical_vector,std::get<4>(system_tuple[reaction]),std::get<5>(system_tuple[reaction]),std::get<6>(system_tuple[reaction]),std::get<1>(system_tuple[reaction]),mpSystemChemistry);
         
         mpReactionVector.push_back(p_reaction);
     }
-
+    //std::cout<<"AbstractReactionSystemFromFile::FormReactionSystemObjectFromTuple - end"<<std::endl;
 }
 
 std::vector<AbstractChemical*> AbstractReactionSystemFromFile::FromChemicalNameVectorToAbstractChemicalVector(std::vector<std::string> nameVector)
@@ -161,6 +162,7 @@ void AbstractReactionSystemFromFile::ParseSystemChemistry(std::vector<std::strin
 
 std::vector<std::tuple<std::string, bool, std::vector<std::string>, std::vector<std::string>, std::vector<unsigned>, std::vector<unsigned>, std::string>> AbstractReactionSystemFromFile::ReactionSystemFromFile()
 {
+    //std::cout<<"AbstractReactionSystemFromFile::ReactionSystemFromFile - start"<<std::endl;
     // read a reaction from the file
     std::vector<std::tuple<std::string, bool, std::vector<std::string>, std::vector<std::string>, std::vector<unsigned>, std::vector<unsigned>, std::string>>  system;  
 
@@ -201,7 +203,7 @@ std::vector<std::tuple<std::string, bool, std::vector<std::string>, std::vector<
                     size_t separate_point_reaction_info = line.find(mDataDelimiter);
                     // the reaction string to be parsed
                     std::string reactionInfo = line.substr(separate_point_reaction_info+1,std::string::npos);
-        
+                 
                     // determine the reaction type to add to reaction system
                     std::string reactionType = line.substr(0,separate_point_type_reaction);
                     line.erase(separate_point_reaction_info, std::string::npos);
@@ -223,9 +225,9 @@ std::vector<std::tuple<std::string, bool, std::vector<std::string>, std::vector<
     }
     else
     {
-        std::cout<<"Error filename not found: "<<mInputFileName<<std::endl;
+        std::cout<<"Error: Filename not found: "<<mInputFileName<<std::endl;
     }
-    
+    //std::cout<<"AbstractReactionSystemFromFile::ReactionSystemFromFile - end"<<std::endl;
 
     return system;
 }

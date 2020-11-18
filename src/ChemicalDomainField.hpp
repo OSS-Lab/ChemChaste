@@ -307,7 +307,7 @@ double ChemicalDomainField::GetDiffusionValueBasedOnPoint(const ChastePoint<2>& 
     }
     else
     {
-        std::cout<<"ChemicalDomainField::GetDiffusionValueBasedOnPoint: State not in state variable"<<std::endl;
+        std::cout<<"Error: ChemicalDomainField::GetDiffusionValueBasedOnPoint: State not in state variable"<<std::endl;
         return 0.0;
     }
 

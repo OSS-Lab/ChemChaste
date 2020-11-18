@@ -5,3 +5,5 @@ TestChemicalSpatialSimulation.hpp
 TestCellwisePdeSystem.hpp
 TestChemicalCellSystem.hpp
 TestChemChaste.hpp
+TestChemicalCellObject.hpp
+TestChemChastePaper.hpp

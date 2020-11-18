@@ -533,7 +533,7 @@ class ChemicalStructuresForTests
         {
                    
             // Variables for the user modify
-            std::string dataFileRoot = "/home/chaste/projects/ChemicalChaste/src/Data/TemplateChemicalSimulation/";
+            std::string dataFileRoot = "/home/chaste/projects/ChemChaste/src/Data/TemplateChemicalSimulation/";
             std::string domainFilename = "Domain.csv";
             std::string domainKeyFilename = "DomainKey.csv";
             std::string odeLabelFilename = "NodeSelector.csv";
@@ -560,7 +560,7 @@ class ChemicalStructuresForTests
         {
             std::cout<<"SetUpChemicalDomainFieldForCellCoupling()"<<std::endl; 
             // Variables for the user modify
-            std::string dataFileRoot = "/home/chaste/projects/ChemicalChaste/src/Data/TemplateChemicalSimulation/";
+            std::string dataFileRoot = "/home/chaste/projects/ChemChaste/src/Data/TemplateChemicalSimulation/";
             std::string cellLabelFilename = "";
             std::string cellKeyFilename = "";
             std::string domainFilename = "Domain.csv";
@@ -657,8 +657,8 @@ class ChemicalStructuresForTests
             AbstractChemical* pNewChemical = new AbstractChemical("V");
             pCellChemistry -> AddChemical(pNewChemical);
 
-            SimpleChemicalThresholdCellCycleModel* pCellCycle = new SimpleChemicalThresholdCellCycleModel(pCellChemistry);
-
+            SimpleChemicalThresholdCellCycleModel* pCellCycle = new SimpleChemicalThresholdCellCycleModel();
+            pCellCycle->SetUp(pCellChemistry);
             // same species order as in the cell reaction system chemistry; mp_cell_chemical_reaction_system -> GetSystemChemistry()
             // {U,Biomass}
             std::vector<double> MaximumSpeciesThreshold = {0,2.0,0};

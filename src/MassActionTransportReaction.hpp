@@ -194,18 +194,16 @@ void MassActionTransportReaction::UpdateReactionRate(AbstractChemistry* bulkChem
 
 void MassActionTransportReaction::ParseReactionInformation(std::string reaction_information, bool IsReversible=false)
 {
+    //std::cout<<"MassActionTransportReaction::ParseReactionInformation - start"<<std::endl;
     mIsReversible = IsReversible;
 
     if(!mIsReversible)
     {
-       
         if(reaction_information.find(mIrreversibleRateName) != std::string::npos)
         {
-
             size_t pos= reaction_information.find(mIrreversibleRateName);
             mForwardReactionRateConstant = atof(reaction_information.substr(pos+mIrreversibleRateName.size()+1,std::string::npos).c_str());
             mReverseReactionRateConstant = 0.0;
-
         }
     }
     else
@@ -226,7 +224,7 @@ void MassActionTransportReaction::ParseReactionInformation(std::string reaction_
         }
         
     }
-
+    //std::cout<<"MassActionTransportReaction::ParseReactionInformation - end"<<std::endl;
 }
 
 

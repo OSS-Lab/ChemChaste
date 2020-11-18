@@ -275,14 +275,14 @@ std::string AbstractTransportReaction::GetReactionType()
 
 void AbstractTransportReaction::ParseReactionInformation(std::string reaction_information, bool IsReversible=false)
 {
-   
+    //std::cout<<"AbstractTransportReaction::ParseReactionInformation - start"<<std::endl;
     if(reaction_information.find(mIrreversibleRateName) != std::string::npos)
     {
         size_t pos= reaction_information.find(mIrreversibleRateName);
 
         SetReactionRate(atof(reaction_information.substr(pos+mIrreversibleRateName.size()+1,std::string::npos).c_str()));
     }
-
+    //std::cout<<"AbstractTransportReaction::ParseReactionInformation - end"<<std::endl;
 }
 
 

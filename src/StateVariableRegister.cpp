@@ -151,7 +151,6 @@ std::vector<std::string> StateVariableRegister::FindCommonNamesInRegisters(State
 
     for(unsigned i=0; i<this->mNumberSystemStateVariables; i++)
     {
-        //std::cout<<this->mStateVariableRegister[i]<<std::endl;
         if(p_new_register -> IsStateVariablePresent(this->mStateVariableRegister[i]))
         {
             matchedNames.push_back( mStateVariableRegister[i]);

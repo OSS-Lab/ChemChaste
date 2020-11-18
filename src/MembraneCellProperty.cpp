@@ -3,7 +3,6 @@
 MembraneCellProperty::MembraneCellProperty()
     : AbstractCellProperty()
 {
-
 }
 
 MembraneCellProperty::~MembraneCellProperty()
@@ -45,13 +44,16 @@ void MembraneCellProperty::SetUp(AbstractMembraneReactionSystem* membraneReactio
     StateVariableRegister* p_bulk_stateRegister = new StateVariableRegister(membraneReactionSystem -> GetBulkChemistry() -> GetChemicalNames());
 
     StateVariableRegister* p_cell_stateRegister = new StateVariableRegister(membraneReactionSystem -> GetCellChemistry() -> GetChemicalNames());
-    
+
+
     SetBulkStateVariableRegister(p_bulk_stateRegister);
     SetCellStateVariableRegister(p_cell_stateRegister);
 
     SetUpCellConcentrationVector(p_cell_stateRegister -> GetNumberOfStateVariables());
+    SetUpBulkConcentrationVector(p_bulk_stateRegister -> GetNumberOfStateVariables());
     SetUpChangeCellConcentrationVector(p_cell_stateRegister -> GetNumberOfStateVariables());
     SetUpChangeBulkConcentrationVector(p_bulk_stateRegister -> GetNumberOfStateVariables());
+
 }
 
 void MembraneCellProperty::UpdateMembraneConcentrationVector(std::vector<double> cellBoundaryConcentrationVector)
@@ -64,10 +66,21 @@ void MembraneCellProperty::UpdateCellConcentrationVector(std::vector<double> cel
     mCellBoundaryConcentrationVector = cellBoundaryConcentrationVector;
 }
 
+void MembraneCellProperty::UpdateBulkConcentrationVector(std::vector<double> bulkBoundaryConcentrationVector)
+{
+    mBulkBoundaryConcentrationVector = bulkBoundaryConcentrationVector;
+}
+
 void MembraneCellProperty::SetUpCellConcentrationVector(unsigned numberOfStateVariables)
 {
     std::vector<double> reset(numberOfStateVariables,0.0);
     mCellBoundaryConcentrationVector = reset;
+}
+
+void MembraneCellProperty::SetUpBulkConcentrationVector(unsigned numberOfStateVariables)
+{
+    std::vector<double> reset(numberOfStateVariables,0.0);
+    mBulkBoundaryConcentrationVector = reset;
 }
 
 void MembraneCellProperty::SetUpChangeCellConcentrationVector(unsigned numberOfStateVariables)
@@ -146,9 +159,18 @@ double MembraneCellProperty::RetrieveBoundarySourceByStateName(std::string state
 double MembraneCellProperty::RetrieveChangeBoundarySourceByStateName(std::string stateName)
 {
     // if cell is on boundary add the result of the transport Ode system
-    unsigned index = mpBulkStateVariableRegister -> RetrieveStateVariableIndex(stateName);
-    //15/10/2020
-    return GetChangeExternalCellBoundaryConcentrationByIndex(index);// - mInitBulkBoundaryConcentrationVector[index];
+
+    
+    // check is named state is present on the bulk boundary side
+    if(mpBulkStateVariableRegister -> IsStateVariablePresent(stateName))
+    {
+        unsigned index = mpBulkStateVariableRegister -> RetrieveStateVariableIndex(stateName);
+        //15/10/2020
+        mNumberOCalls_this_reaction_step ++;
+        return GetChangeExternalCellBoundaryConcentrationByIndex(index);// - mInitBulkBoundaryConcentrationVector[index];
+    }
+    // else return 0 change
+    return 0.0;
 }
 
 void MembraneCellProperty::AppendInternalCellBoundaryConcentrations(std::vector<double>& rY)
@@ -164,7 +186,7 @@ void MembraneCellProperty::ReplaceBoundaryStateVariables(std::vector<double>& rY
     //  partition the ODE state variable vector into the constitient internal and bulk state vectors
     unsigned number_of_bulk_states = mBulkBoundaryConcentrationVector.size();
     unsigned number_of_cell_states = mCellBoundaryConcentrationVector.size();
-    std::cout<<"ReplaceBoundaryStateVariables - numberBulk:"<<number_of_bulk_states<<std::endl;
+
     AbstractChemistry* p_bulk_chemistry = mpMembraneReactionSystem->GetBulkChemistry();
     std::string this_state="";
     unsigned number_bulk_reaction_states = p_bulk_chemistry -> GetNumberChemicals();;
@@ -179,7 +201,7 @@ void MembraneCellProperty::ReplaceBoundaryStateVariables(std::vector<double>& rY
             bulk_chemical_index = mpMembraneOdeSystem->GetPdeStateVariableRegister()->RetrieveStateVariableIndex(this_state);
             mBulkBoundaryConcentrationVector[bulk_chemical_index] = rY.at(bulk_chemical_index);
         }
-        std::cout<<"Here1"<<std::endl;
+
     }
 
     for(unsigned i=0; i<number_of_cell_states; i++)
@@ -207,7 +229,6 @@ void MembraneCellProperty::ReplaceBoundaryStateVariables(std::vector<double>& rY
 void MembraneCellProperty::ReplaceChangeBoundaryStateVariables(std::vector<double>& rDY)
 {
     //  partition the ODE state variable vector into the constitient internal and bulk state vectors
-    unsigned number_of_bulk_states = mBulkBoundaryConcentrationVector.size();
     unsigned number_of_cell_states = mCellBoundaryConcentrationVector.size();
 
  
@@ -226,6 +247,16 @@ void MembraneCellProperty::ReplaceChangeBoundaryStateVariables(std::vector<doubl
         mChangeCellBoundaryConcentrationVector[i] = rDY[i + number_bulk_reaction_states];
     }
 
+}
+
+void MembraneCellProperty::ResetReactionCalls()
+{
+    mNumberOCalls_this_reaction_step=0;
+}
+
+unsigned MembraneCellProperty::GetReactionCalls()
+{
+    return mNumberOCalls_this_reaction_step;
 }
 
 // set methods

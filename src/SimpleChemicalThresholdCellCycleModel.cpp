@@ -2,10 +2,28 @@
 #include "RandomNumberGenerator.hpp"
 #include "ApoptoticCellProperty.hpp"
 
-SimpleChemicalThresholdCellCycleModel::SimpleChemicalThresholdCellCycleModel(AbstractChemistry* thresholdChemistry)
-    : mpThresholdChemistry(thresholdChemistry),
-      mNumberThresholdSpecies(thresholdChemistry->GetNumberChemicals())
+SimpleChemicalThresholdCellCycleModel::SimpleChemicalThresholdCellCycleModel()
+{ 
+}
+
+SimpleChemicalThresholdCellCycleModel::SimpleChemicalThresholdCellCycleModel(const SimpleChemicalThresholdCellCycleModel& rModel)
+:   AbstractSimplePhaseBasedCellCycleModel(rModel),
+    mCurrentStarvationDuration(rModel.mCurrentStarvationDuration),
+    mCurrentStarvationOnsetTime(rModel.mCurrentStarvationOnsetTime),
+    mCriticalStarvationDuration(rModel.mCriticalStarvationDuration),
+    mpThresholdChemistry(rModel.mpThresholdChemistry),
+    mNumberThresholdSpecies(rModel.mNumberThresholdSpecies),
+    mMaxThresholdConcentrationValues(rModel.mMaxThresholdConcentrationValues),
+    mIsMaximumThresholdSet(rModel.mIsMaximumThresholdSet),
+    mMinThresholdConcentrationValues(rModel.mMinThresholdConcentrationValues),
+    mIsMinimumThresholdSet(rModel.mIsMinimumThresholdSet)
 {
+}
+
+void SimpleChemicalThresholdCellCycleModel::SetUp(AbstractChemistry* thresholdChemistry)
+{
+    SetThresholdChemistry(thresholdChemistry);
+    SetNumberThresholdSpecies(thresholdChemistry->GetNumberChemicals());
 
     std::vector<double> maxThresholdConcentrationValues(mNumberThresholdSpecies,0.0);
     std::vector<bool> isMaximumThresholdSet(mNumberThresholdSpecies,false);
@@ -22,22 +40,6 @@ SimpleChemicalThresholdCellCycleModel::SimpleChemicalThresholdCellCycleModel(Abs
     SetSpeciesConcentrations(mSpeciesConcentrations);
 
     mCurrentStarvationOnsetTime = SimulationTime::Instance()->GetTime();
-    
-}
-
-SimpleChemicalThresholdCellCycleModel::SimpleChemicalThresholdCellCycleModel(const SimpleChemicalThresholdCellCycleModel& rModel)
-:   AbstractSimplePhaseBasedCellCycleModel(rModel),
-    mCurrentStarvationDuration(rModel.mCurrentStarvationDuration),
-    mCurrentStarvationOnsetTime(rModel.mCurrentStarvationOnsetTime),
-    mCriticalStarvationDuration(rModel.mCriticalStarvationDuration),
-    mpThresholdChemistry(rModel.mpThresholdChemistry),
-    mMaxThresholdConcentrationValues(rModel.mMaxThresholdConcentrationValues),
-    mIsMaximumThresholdSet(rModel.mIsMaximumThresholdSet),
-    mMinThresholdConcentrationValues(rModel.mMinThresholdConcentrationValues),
-    mIsMinimumThresholdSet(rModel.mIsMinimumThresholdSet),
-    mNumberThresholdSpecies(rModel.mNumberThresholdSpecies)
-{
-
 }
 
 void SimpleChemicalThresholdCellCycleModel::Initialise()
@@ -62,11 +64,13 @@ double SimpleChemicalThresholdCellCycleModel::GetCurrentStarvationOnsetTime() co
 
 void SimpleChemicalThresholdCellCycleModel::UpdateCellCyclePhase()
 {
+    //std::cout<<"SimpleChemicalThresholdCellCycleModel::UpdateCellCyclePhase() - start"<<std::endl;
     // mG1Duration is set when the cell-cycle model is given a cell
     bool cell_is_apoptotic = mpCell->HasCellProperty<ApoptoticCellProperty>();
 
     if (!cell_is_apoptotic)
     {
+
         UpdateStarvationDuration();
 
         AbstractSimplePhaseBasedCellCycleModel::UpdateCellCyclePhase();
@@ -78,10 +82,12 @@ void SimpleChemicalThresholdCellCycleModel::UpdateCellCyclePhase()
             mG1Duration += dt; // modified from simpleOxygen... as no mQuiescentConcentration   
         }
     }
+    //std::cout<<"SimpleChemicalThresholdCellCycleModel::UpdateCellCyclePhase() - end"<<std::endl;
 }
 
 bool SimpleChemicalThresholdCellCycleModel::ReadyToDivide()
 {
+    //std::cout<<"SimpleChemicalThresholdCellCycleModel::ReadyToDivide() - start"<<std::endl;
     assert(mpCell != nullptr);
     
     if (!mReadyToDivide)
@@ -96,6 +102,7 @@ bool SimpleChemicalThresholdCellCycleModel::ReadyToDivide()
             
         }
     }
+    //std::cout<<"SimpleChemicalThresholdCellCycleModel::ReadyToDivide() - end "<<mReadyToDivide<<std::endl;
     return mReadyToDivide;
 }
 
@@ -106,6 +113,7 @@ AbstractCellCycleModel* SimpleChemicalThresholdCellCycleModel::CreateCellCycleMo
 
 void SimpleChemicalThresholdCellCycleModel::UpdateStarvationDuration()
 {  
+    //std::cout<<"SimpleChemicalThresholdCellCycleModel::UpdateStarvationDuration() - start"<<std::endl;
     assert(!(mpCell->HasCellProperty<ApoptoticCellProperty>()));
 
     assert(!mpCell->HasApoptosisBegun());
@@ -122,6 +130,7 @@ void SimpleChemicalThresholdCellCycleModel::UpdateStarvationDuration()
     bool isStarving=false;
     for(unsigned species=0; species<mNumberThresholdSpecies; species++)
     {
+
         if(GetMinimumThresholdCheckByIndex(species) && GetSpeciesConcentrationsByIndex(species)<GetMinimumThresholdByIndex(species))
         {
             mCurrentStarvationDuration = (SimulationTime::Instance()->GetTime() - mCurrentStarvationOnsetTime);
@@ -144,13 +153,14 @@ void SimpleChemicalThresholdCellCycleModel::UpdateStarvationDuration()
         mCurrentStarvationDuration = 0.0;
         mCurrentStarvationOnsetTime = SimulationTime::Instance()->GetTime();
     }
+    //std::cout<<"SimpleChemicalThresholdCellCycleModel::UpdateStarvationDuration() - end"<<std::endl;
 }
 
 double SimpleChemicalThresholdCellCycleModel::CellDeathProbability(std::vector<double> parameters)
 {
 
-    double species_concentration = parameters[0];
-    double starvation_concentration = parameters[1];
+    //double species_concentration = parameters[0];
+    //double starvation_concentration = parameters[1];
     double prob_of_death = 0.9;// - 0.5*(species_concentration/starvation_concentration);
 
     return prob_of_death;

@@ -10,7 +10,7 @@
 
 #include "SmartPointers.hpp"
 //This test is always run sequentially (never in parallel)
-#include "FakePetscSetup.hpp"
+//#include "FakePetscSetup.hpp"
 
 
 #include "AbstractDomainField.hpp"
@@ -179,9 +179,11 @@ bool AbstractBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::AreB
 template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
 void AbstractBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::SetupSolve(AbstractCellPopulation<ELEMENT_DIM,SPACE_DIM>& rCellPopulation, std::string outputDirectory)
 {
+    //std::cout<<"AbstractBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::SetupSolve - start"<<std::endl;
     AbstractPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::SetupSolve(rCellPopulation, outputDirectory);
 
     InitialiseCellPdeElementMap(rCellPopulation);
+    //std::cout<<"AbstractBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::SetupSolve - end"<<std::endl;
 }
 
 template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
@@ -223,6 +225,7 @@ void AbstractBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::Gene
 template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
 void AbstractBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::UpdateCellData(AbstractCellPopulation<ELEMENT_DIM,SPACE_DIM>& rCellPopulation)
 {
+    //std::cout<<"AbstractBoxDomainPdeSystemModifier - UpdateCellData - start"<<std::endl;
     // Store the PDE solution in an accessible form
     ReplicatableVector solution_repl(this->mSolution); // nodal solution from pdeSolver
 
@@ -289,29 +292,63 @@ void AbstractBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::Upda
             c_vector<double,SPACE_DIM+1> weights = p_element->CalculateInterpolationWeights(node_location);
 
             for(unsigned pd=0; pd<PROBLEM_DIM; pd++){
+         
                 // start with whatever was left over from the transport ode call
                 //solution_vector_at_cell[pd] = remnants_of_previous_solution_vector_at_cell[pd];
                 for (unsigned i=0; i<SPACE_DIM+1; i++)
                 {
+                    
                     double nodal_value = solution_repl[p_element->GetNodeGlobalIndex(i) + pd]; // serialised [node number * pde_index]
                     solution_vector_at_cell[pd] += nodal_value * weights(i);
                 }
             }
+       
+            StateVariableRegister* p_bulk_register_pde = this->mpCoupledDomainField -> GetDomainStateVariableRegister();
 
             if (prop_collection.HasProperty<TransportCellProperty>())
             {
+      
                 boost::shared_ptr<TransportCellProperty> transport_cell_property = boost::static_pointer_cast<TransportCellProperty>(prop_collection.GetPropertiesType<TransportCellProperty>().GetProperty());
-            
+     
                 //remnants_of_previous_solution_vector_at_cell = transport_cell_property -> GetInternalCellBoundaryConcentrationVector();
-                transport_cell_property -> UpdateCellConcentrationVector(solution_vector_at_cell);
+                
+                // only a subset of the solution vector at the cell are used by the transport property
+                StateVariableRegister* p_bulk_register_cell = transport_cell_property -> GetBulkStateVariableRegister();
+                std::vector<double> subset_vector_at_cell(p_bulk_register_cell->GetNumberOfStateVariables(),0.0);
+                unsigned domain_index=0;
+                for(unsigned i=0; i<p_bulk_register_cell->GetNumberOfStateVariables();i++)
+                {
+                    if(p_bulk_register_pde->IsStateVariablePresent(p_bulk_register_cell->RetrieveStateVariableName(i)))
+                    {
+                        domain_index =  p_bulk_register_pde->RetrieveStateVariableIndex(p_bulk_register_cell->RetrieveStateVariableName(i));
+                        subset_vector_at_cell[i] = solution_vector_at_cell[domain_index];
+                    }
+                    // if state not found in domain register then automatically has 0.0 value
+                }
+
+                transport_cell_property -> UpdateBulkConcentrationVector(subset_vector_at_cell);
             }
 
             if (prop_collection.HasProperty<MembraneCellProperty>())
             {
                 boost::shared_ptr<MembraneCellProperty> membrane_cell_property = boost::static_pointer_cast<MembraneCellProperty>(prop_collection.GetPropertiesType<MembraneCellProperty>().GetProperty());
-            
+
                 //remnants_of_previous_solution_vector_at_cell = transport_cell_property -> GetInternalCellBoundaryConcentrationVector();
-                membrane_cell_property -> UpdateCellConcentrationVector(solution_vector_at_cell);
+                // only a subset of the solution vector at the cell are used by the transport property
+                StateVariableRegister* p_bulk_register_cell = membrane_cell_property -> GetBulkStateVariableRegister();
+                std::vector<double> subset_vector_at_cell(p_bulk_register_cell->GetNumberOfStateVariables(),0.0);
+                unsigned domain_index=0;
+                for(unsigned i=0; i<p_bulk_register_cell->GetNumberOfStateVariables();i++)
+                {
+                    if(p_bulk_register_pde->IsStateVariablePresent(p_bulk_register_cell->RetrieveStateVariableName(i)))
+                    {
+                        domain_index =  p_bulk_register_pde->RetrieveStateVariableIndex(p_bulk_register_cell->RetrieveStateVariableName(i));
+                        subset_vector_at_cell[i] = solution_vector_at_cell[domain_index];
+                    }
+                    // if state not found in domain register then automatically has 0.0 value
+                }
+
+                membrane_cell_property -> UpdateBulkConcentrationVector(subset_vector_at_cell);
             }
             // Find the element in the FE mesh that contains this cell. CellElementMap has been updated so use this.
             
@@ -386,12 +423,10 @@ void AbstractBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::Init
          cell_iter != rCellPopulation.End();
          ++cell_iter)
     {
-  
         const ChastePoint<SPACE_DIM>& r_position_of_cell = rCellPopulation.GetLocationOfCellCentre(*cell_iter);
         
         unsigned elem_index = this->mpFeMesh->GetContainingElementIndex(r_position_of_cell);
         mCellPdeElementMap[*cell_iter] = elem_index;
-
     }
 }
 
@@ -403,11 +438,10 @@ void AbstractBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::Upda
          cell_iter != rCellPopulation.End();
          ++cell_iter)
     {
-        //std::cout<<"get location of cell centre"<<std::endl;
         const ChastePoint<SPACE_DIM>& r_position_of_cell = rCellPopulation.GetLocationOfCellCentre(*cell_iter);
-        //std::cout<<"GetContainingElementIndexWithInitialGuess"<<std::endl;
+
         unsigned elem_index = this->mpFeMesh->GetContainingElementIndexWithInitialGuess(r_position_of_cell, mCellPdeElementMap[*cell_iter]);
-        //std::cout<<"set mCellPdeElementMap"<<std::endl;
+
         mCellPdeElementMap[*cell_iter] = elem_index;
     }
     //std::cout<<"AbstractBoxDomainPdeSystemModifier - UpdateCellPdeElementMap -end"<<std::endl;

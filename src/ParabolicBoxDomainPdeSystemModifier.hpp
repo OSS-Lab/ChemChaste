@@ -11,7 +11,6 @@
 #include "AbstractOdeSystemForCoupledPdeSystem.hpp"
 #include "InhomogenousCoupledPdeOdeSolver_templated.hpp"
 #include "ChemicalDomainFieldForCellCoupling.hpp"
-//#include "AuxilarySystemFunctions.hpp"
 
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM, unsigned PROBLEM_DIM>
@@ -116,6 +115,7 @@ ParabolicBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::~Parabol
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM, unsigned PROBLEM_DIM>
 void ParabolicBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::UpdateAtEndOfTimeStep(AbstractCellPopulation<ELEMENT_DIM,SPACE_DIM>& rCellPopulation)
 {
+    //std::cout<<"ParabolicBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::UpdateAtEndOfTimeStep - start"<<std::endl;
     // Set up boundary conditions, comes from the rCellPopulation rather than the constructor
     boost::shared_ptr<BoundaryConditionsContainer<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM> > p_bcc = ConstructBoundaryConditionsContainer(rCellPopulation);
 
@@ -139,29 +139,36 @@ void ParabolicBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::Upd
                                                 );
 
     ///\todo Investigate more than one PDE time step per spatial step
+
     SimulationTime* p_simulation_time = SimulationTime::Instance();
     double current_time = p_simulation_time->GetTime();
     double dt = p_simulation_time->GetTimeStep();
     // solver is calling the LinearParabolicSystemWithCOupledOdeSystemSolver
+   
     solver.SetTimes(current_time,current_time + dt);
     solver.SetTimeStep(dt);
-
+ 
     // Use previous solution as the initial condition
     Vec previous_solution = this->mSolution;
     solver.SetInitialCondition(previous_solution);
 
     // Note that the linear solver creates a vector, so we have to keep a handle on the old one
     // in order to destroy it
+
     this->mSolution = solver.Solve();
+
     PetscTools::Destroy(previous_solution);
+
     this->UpdateCellData(rCellPopulation);
     mConditionsInterpolated = true;
 
+    //std::cout<<"ParabolicBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::UpdateAtEndOfTimeStep - end"<<std::endl;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM, unsigned PROBLEM_DIM>
 void ParabolicBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::SetupSolve(AbstractCellPopulation<ELEMENT_DIM,SPACE_DIM>& rCellPopulation, std::string outputDirectory)
 {
+    //std::cout<<"ParabolicBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM>::SetupSolve - start"<<std::endl;
     AbstractBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::SetupSolve(rCellPopulation,outputDirectory);
 
     // Copy the cell data to mSolution (this is the initial condition)
@@ -169,7 +176,7 @@ void ParabolicBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::Set
 
     // Output the initial conditions on FeMesh
     this->UpdateAtEndOfOutputTimeStep(rCellPopulation);
-
+    //std::cout<<"ParabolicBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM>::SetupSolve - end"<<std::endl;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM, unsigned PROBLEM_DIM> // why does this take in a cell population? if() is true, shrinks the box onto the tissue (cellpopulation) here makes no difference

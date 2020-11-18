@@ -56,6 +56,18 @@ CMAKE_BINARY_DIR = /home/chaste
 #=============================================================================
 # Targets provided globally by CMake.
 
+# Special rule for the target install/local
+install/local: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing only the local directory..."
+	/usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
+.PHONY : install/local
+
+# Special rule for the target install/local
+install/local/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing only the local directory..."
+	/usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
+.PHONY : install/local/fast
+
 # Special rule for the target install/strip
 install/strip: preinstall
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing the project stripped..."
@@ -80,16 +92,6 @@ install/fast: preinstall/fast
 	/usr/bin/cmake -P cmake_install.cmake
 .PHONY : install/fast
 
-# Special rule for the target list_install_components
-list_install_components:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Available install components are: \"Config\" \"CxxTest\" \"Python\" \"cell_based_headers\" \"cell_based_libraries\" \"continuum_mechanics_headers\" \"continuum_mechanics_libraries\" \"crypt_headers\" \"crypt_libraries\" \"global_headers\" \"global_libraries\" \"heart_headers\" \"heart_libraries\" \"io_headers\" \"io_libraries\" \"linalg_headers\" \"linalg_libraries\" \"lung_headers\" \"lung_libraries\" \"mesh_headers\" \"mesh_libraries\" \"ode_headers\" \"ode_libraries\" \"pde_headers\" \"pde_libraries\""
-.PHONY : list_install_components
-
-# Special rule for the target list_install_components
-list_install_components/fast: list_install_components
-
-.PHONY : list_install_components/fast
-
 # Special rule for the target rebuild_cache
 rebuild_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
@@ -100,17 +102,6 @@ rebuild_cache:
 rebuild_cache/fast: rebuild_cache
 
 .PHONY : rebuild_cache/fast
-
-# Special rule for the target package
-package: preinstall
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Run CPack packaging tool..."
-	cd /home/chaste && /usr/bin/cpack --config ./CPackConfig.cmake
-.PHONY : package
-
-# Special rule for the target package
-package/fast: package
-
-.PHONY : package/fast
 
 # Special rule for the target package_source
 package_source:
@@ -123,28 +114,16 @@ package_source/fast: package_source
 
 .PHONY : package_source/fast
 
-# Special rule for the target install/local
-install/local: preinstall
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing only the local directory..."
-	/usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
-.PHONY : install/local
+# Special rule for the target package
+package: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Run CPack packaging tool..."
+	cd /home/chaste && /usr/bin/cpack --config ./CPackConfig.cmake
+.PHONY : package
 
-# Special rule for the target install/local
-install/local/fast: preinstall/fast
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing only the local directory..."
-	/usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
-.PHONY : install/local/fast
+# Special rule for the target package
+package/fast: package
 
-# Special rule for the target test
-test:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running tests..."
-	/usr/bin/ctest --force-new-ctest-process $(ARGS)
-.PHONY : test
-
-# Special rule for the target test
-test/fast: test
-
-.PHONY : test/fast
+.PHONY : package/fast
 
 # Special rule for the target edit_cache
 edit_cache:
@@ -157,16 +136,37 @@ edit_cache/fast: edit_cache
 
 .PHONY : edit_cache/fast
 
+# Special rule for the target test
+test:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running tests..."
+	/usr/bin/ctest --force-new-ctest-process $(ARGS)
+.PHONY : test
+
+# Special rule for the target test
+test/fast: test
+
+.PHONY : test/fast
+
+# Special rule for the target list_install_components
+list_install_components:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Available install components are: \"Config\" \"CxxTest\" \"Python\" \"cell_based_headers\" \"cell_based_libraries\" \"continuum_mechanics_headers\" \"continuum_mechanics_libraries\" \"crypt_headers\" \"crypt_libraries\" \"global_headers\" \"global_libraries\" \"heart_headers\" \"heart_libraries\" \"io_headers\" \"io_libraries\" \"linalg_headers\" \"linalg_libraries\" \"lung_headers\" \"lung_libraries\" \"mesh_headers\" \"mesh_libraries\" \"ode_headers\" \"ode_libraries\" \"pde_headers\" \"pde_libraries\""
+.PHONY : list_install_components
+
+# Special rule for the target list_install_components
+list_install_components/fast: list_install_components
+
+.PHONY : list_install_components/fast
+
 # The main all target
 all: cmake_check_build_system
-	cd /home/chaste && $(CMAKE_COMMAND) -E cmake_progress_start /home/chaste/CMakeFiles /home/chaste/projects/ChemicalChaste/test/CMakeFiles/progress.marks
-	cd /home/chaste && $(MAKE) -f CMakeFiles/Makefile2 projects/ChemicalChaste/test/all
+	cd /home/chaste && $(CMAKE_COMMAND) -E cmake_progress_start /home/chaste/CMakeFiles /home/chaste/projects/ChemChaste/test/CMakeFiles/progress.marks
+	cd /home/chaste && $(MAKE) -f CMakeFiles/Makefile2 projects/ChemChaste/test/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/chaste/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /home/chaste && $(MAKE) -f CMakeFiles/Makefile2 projects/ChemicalChaste/test/clean
+	cd /home/chaste && $(MAKE) -f CMakeFiles/Makefile2 projects/ChemChaste/test/clean
 .PHONY : clean
 
 # The main clean target
@@ -176,12 +176,12 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /home/chaste && $(MAKE) -f CMakeFiles/Makefile2 projects/ChemicalChaste/test/preinstall
+	cd /home/chaste && $(MAKE) -f CMakeFiles/Makefile2 projects/ChemChaste/test/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /home/chaste && $(MAKE) -f CMakeFiles/Makefile2 projects/ChemicalChaste/test/preinstall
+	cd /home/chaste && $(MAKE) -f CMakeFiles/Makefile2 projects/ChemChaste/test/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
@@ -190,34 +190,274 @@ depend:
 .PHONY : depend
 
 # Convenience name for target.
-projects/ChemicalChaste/test/CMakeFiles/TestChemicalChaste.dir/rule:
-	cd /home/chaste && $(MAKE) -f CMakeFiles/Makefile2 projects/ChemicalChaste/test/CMakeFiles/TestChemicalChaste.dir/rule
-.PHONY : projects/ChemicalChaste/test/CMakeFiles/TestChemicalChaste.dir/rule
+projects/ChemChaste/test/CMakeFiles/TestChemicalCellSystem.dir/rule:
+	cd /home/chaste && $(MAKE) -f CMakeFiles/Makefile2 projects/ChemChaste/test/CMakeFiles/TestChemicalCellSystem.dir/rule
+.PHONY : projects/ChemChaste/test/CMakeFiles/TestChemicalCellSystem.dir/rule
 
 # Convenience name for target.
-TestChemicalChaste: projects/ChemicalChaste/test/CMakeFiles/TestChemicalChaste.dir/rule
+TestChemicalCellSystem: projects/ChemChaste/test/CMakeFiles/TestChemicalCellSystem.dir/rule
 
-.PHONY : TestChemicalChaste
+.PHONY : TestChemicalCellSystem
 
 # fast build rule for target.
-TestChemicalChaste/fast:
-	cd /home/chaste && $(MAKE) -f projects/ChemicalChaste/test/CMakeFiles/TestChemicalChaste.dir/build.make projects/ChemicalChaste/test/CMakeFiles/TestChemicalChaste.dir/build
-.PHONY : TestChemicalChaste/fast
+TestChemicalCellSystem/fast:
+	cd /home/chaste && $(MAKE) -f projects/ChemChaste/test/CMakeFiles/TestChemicalCellSystem.dir/build.make projects/ChemChaste/test/CMakeFiles/TestChemicalCellSystem.dir/build
+.PHONY : TestChemicalCellSystem/fast
 
 # Convenience name for target.
-projects/ChemicalChaste/test/CMakeFiles/TestHello.dir/rule:
-	cd /home/chaste && $(MAKE) -f CMakeFiles/Makefile2 projects/ChemicalChaste/test/CMakeFiles/TestHello.dir/rule
-.PHONY : projects/ChemicalChaste/test/CMakeFiles/TestHello.dir/rule
+projects/ChemChaste/test/CMakeFiles/TestChemicalSpatialSimulation.dir/rule:
+	cd /home/chaste && $(MAKE) -f CMakeFiles/Makefile2 projects/ChemChaste/test/CMakeFiles/TestChemicalSpatialSimulation.dir/rule
+.PHONY : projects/ChemChaste/test/CMakeFiles/TestChemicalSpatialSimulation.dir/rule
 
 # Convenience name for target.
-TestHello: projects/ChemicalChaste/test/CMakeFiles/TestHello.dir/rule
+TestChemicalSpatialSimulation: projects/ChemChaste/test/CMakeFiles/TestChemicalSpatialSimulation.dir/rule
+
+.PHONY : TestChemicalSpatialSimulation
+
+# fast build rule for target.
+TestChemicalSpatialSimulation/fast:
+	cd /home/chaste && $(MAKE) -f projects/ChemChaste/test/CMakeFiles/TestChemicalSpatialSimulation.dir/build.make projects/ChemChaste/test/CMakeFiles/TestChemicalSpatialSimulation.dir/build
+.PHONY : TestChemicalSpatialSimulation/fast
+
+# Convenience name for target.
+projects/ChemChaste/test/CMakeFiles/TestInhomogenousPdeSolver.dir/rule:
+	cd /home/chaste && $(MAKE) -f CMakeFiles/Makefile2 projects/ChemChaste/test/CMakeFiles/TestInhomogenousPdeSolver.dir/rule
+.PHONY : projects/ChemChaste/test/CMakeFiles/TestInhomogenousPdeSolver.dir/rule
+
+# Convenience name for target.
+TestInhomogenousPdeSolver: projects/ChemChaste/test/CMakeFiles/TestInhomogenousPdeSolver.dir/rule
+
+.PHONY : TestInhomogenousPdeSolver
+
+# fast build rule for target.
+TestInhomogenousPdeSolver/fast:
+	cd /home/chaste && $(MAKE) -f projects/ChemChaste/test/CMakeFiles/TestInhomogenousPdeSolver.dir/build.make projects/ChemChaste/test/CMakeFiles/TestInhomogenousPdeSolver.dir/build
+.PHONY : TestInhomogenousPdeSolver/fast
+
+# Convenience name for target.
+projects/ChemChaste/test/CMakeFiles/TestHello.dir/rule:
+	cd /home/chaste && $(MAKE) -f CMakeFiles/Makefile2 projects/ChemChaste/test/CMakeFiles/TestHello.dir/rule
+.PHONY : projects/ChemChaste/test/CMakeFiles/TestHello.dir/rule
+
+# Convenience name for target.
+TestHello: projects/ChemChaste/test/CMakeFiles/TestHello.dir/rule
 
 .PHONY : TestHello
 
 # fast build rule for target.
 TestHello/fast:
-	cd /home/chaste && $(MAKE) -f projects/ChemicalChaste/test/CMakeFiles/TestHello.dir/build.make projects/ChemicalChaste/test/CMakeFiles/TestHello.dir/build
+	cd /home/chaste && $(MAKE) -f projects/ChemChaste/test/CMakeFiles/TestHello.dir/build.make projects/ChemChaste/test/CMakeFiles/TestHello.dir/build
 .PHONY : TestHello/fast
+
+# Convenience name for target.
+projects/ChemChaste/test/CMakeFiles/TestCellwisePdeSystem.dir/rule:
+	cd /home/chaste && $(MAKE) -f CMakeFiles/Makefile2 projects/ChemChaste/test/CMakeFiles/TestCellwisePdeSystem.dir/rule
+.PHONY : projects/ChemChaste/test/CMakeFiles/TestCellwisePdeSystem.dir/rule
+
+# Convenience name for target.
+TestCellwisePdeSystem: projects/ChemChaste/test/CMakeFiles/TestCellwisePdeSystem.dir/rule
+
+.PHONY : TestCellwisePdeSystem
+
+# fast build rule for target.
+TestCellwisePdeSystem/fast:
+	cd /home/chaste && $(MAKE) -f projects/ChemChaste/test/CMakeFiles/TestCellwisePdeSystem.dir/build.make projects/ChemChaste/test/CMakeFiles/TestCellwisePdeSystem.dir/build
+.PHONY : TestCellwisePdeSystem/fast
+
+# Convenience name for target.
+projects/ChemChaste/test/CMakeFiles/TestChemicalChaste.dir/rule:
+	cd /home/chaste && $(MAKE) -f CMakeFiles/Makefile2 projects/ChemChaste/test/CMakeFiles/TestChemicalChaste.dir/rule
+.PHONY : projects/ChemChaste/test/CMakeFiles/TestChemicalChaste.dir/rule
+
+# Convenience name for target.
+TestChemicalChaste: projects/ChemChaste/test/CMakeFiles/TestChemicalChaste.dir/rule
+
+.PHONY : TestChemicalChaste
+
+# fast build rule for target.
+TestChemicalChaste/fast:
+	cd /home/chaste && $(MAKE) -f projects/ChemChaste/test/CMakeFiles/TestChemicalChaste.dir/build.make projects/ChemChaste/test/CMakeFiles/TestChemicalChaste.dir/build
+.PHONY : TestChemicalChaste/fast
+
+# Convenience name for target.
+projects/ChemChaste/test/CMakeFiles/TestChemChaste.dir/rule:
+	cd /home/chaste && $(MAKE) -f CMakeFiles/Makefile2 projects/ChemChaste/test/CMakeFiles/TestChemChaste.dir/rule
+.PHONY : projects/ChemChaste/test/CMakeFiles/TestChemChaste.dir/rule
+
+# Convenience name for target.
+TestChemChaste: projects/ChemChaste/test/CMakeFiles/TestChemChaste.dir/rule
+
+.PHONY : TestChemChaste
+
+# fast build rule for target.
+TestChemChaste/fast:
+	cd /home/chaste && $(MAKE) -f projects/ChemChaste/test/CMakeFiles/TestChemChaste.dir/build.make projects/ChemChaste/test/CMakeFiles/TestChemChaste.dir/build
+.PHONY : TestChemChaste/fast
+
+# Convenience name for target.
+projects/ChemChaste/test/CMakeFiles/TestChemChastePaper.dir/rule:
+	cd /home/chaste && $(MAKE) -f CMakeFiles/Makefile2 projects/ChemChaste/test/CMakeFiles/TestChemChastePaper.dir/rule
+.PHONY : projects/ChemChaste/test/CMakeFiles/TestChemChastePaper.dir/rule
+
+# Convenience name for target.
+TestChemChastePaper: projects/ChemChaste/test/CMakeFiles/TestChemChastePaper.dir/rule
+
+.PHONY : TestChemChastePaper
+
+# fast build rule for target.
+TestChemChastePaper/fast:
+	cd /home/chaste && $(MAKE) -f projects/ChemChaste/test/CMakeFiles/TestChemChastePaper.dir/build.make projects/ChemChaste/test/CMakeFiles/TestChemChastePaper.dir/build
+.PHONY : TestChemChastePaper/fast
+
+# Convenience name for target.
+projects/ChemChaste/test/CMakeFiles/TestChemicalCellObject.dir/rule:
+	cd /home/chaste && $(MAKE) -f CMakeFiles/Makefile2 projects/ChemChaste/test/CMakeFiles/TestChemicalCellObject.dir/rule
+.PHONY : projects/ChemChaste/test/CMakeFiles/TestChemicalCellObject.dir/rule
+
+# Convenience name for target.
+TestChemicalCellObject: projects/ChemChaste/test/CMakeFiles/TestChemicalCellObject.dir/rule
+
+.PHONY : TestChemicalCellObject
+
+# fast build rule for target.
+TestChemicalCellObject/fast:
+	cd /home/chaste && $(MAKE) -f projects/ChemChaste/test/CMakeFiles/TestChemicalCellObject.dir/build.make projects/ChemChaste/test/CMakeFiles/TestChemicalCellObject.dir/build
+.PHONY : TestChemicalCellObject/fast
+
+TestCellwisePdeSystem.o: TestCellwisePdeSystem.cpp.o
+
+.PHONY : TestCellwisePdeSystem.o
+
+# target to build an object file
+TestCellwisePdeSystem.cpp.o:
+	cd /home/chaste && $(MAKE) -f projects/ChemChaste/test/CMakeFiles/TestCellwisePdeSystem.dir/build.make projects/ChemChaste/test/CMakeFiles/TestCellwisePdeSystem.dir/TestCellwisePdeSystem.cpp.o
+.PHONY : TestCellwisePdeSystem.cpp.o
+
+TestCellwisePdeSystem.i: TestCellwisePdeSystem.cpp.i
+
+.PHONY : TestCellwisePdeSystem.i
+
+# target to preprocess a source file
+TestCellwisePdeSystem.cpp.i:
+	cd /home/chaste && $(MAKE) -f projects/ChemChaste/test/CMakeFiles/TestCellwisePdeSystem.dir/build.make projects/ChemChaste/test/CMakeFiles/TestCellwisePdeSystem.dir/TestCellwisePdeSystem.cpp.i
+.PHONY : TestCellwisePdeSystem.cpp.i
+
+TestCellwisePdeSystem.s: TestCellwisePdeSystem.cpp.s
+
+.PHONY : TestCellwisePdeSystem.s
+
+# target to generate assembly for a file
+TestCellwisePdeSystem.cpp.s:
+	cd /home/chaste && $(MAKE) -f projects/ChemChaste/test/CMakeFiles/TestCellwisePdeSystem.dir/build.make projects/ChemChaste/test/CMakeFiles/TestCellwisePdeSystem.dir/TestCellwisePdeSystem.cpp.s
+.PHONY : TestCellwisePdeSystem.cpp.s
+
+TestChemChaste.o: TestChemChaste.cpp.o
+
+.PHONY : TestChemChaste.o
+
+# target to build an object file
+TestChemChaste.cpp.o:
+	cd /home/chaste && $(MAKE) -f projects/ChemChaste/test/CMakeFiles/TestChemChaste.dir/build.make projects/ChemChaste/test/CMakeFiles/TestChemChaste.dir/TestChemChaste.cpp.o
+.PHONY : TestChemChaste.cpp.o
+
+TestChemChaste.i: TestChemChaste.cpp.i
+
+.PHONY : TestChemChaste.i
+
+# target to preprocess a source file
+TestChemChaste.cpp.i:
+	cd /home/chaste && $(MAKE) -f projects/ChemChaste/test/CMakeFiles/TestChemChaste.dir/build.make projects/ChemChaste/test/CMakeFiles/TestChemChaste.dir/TestChemChaste.cpp.i
+.PHONY : TestChemChaste.cpp.i
+
+TestChemChaste.s: TestChemChaste.cpp.s
+
+.PHONY : TestChemChaste.s
+
+# target to generate assembly for a file
+TestChemChaste.cpp.s:
+	cd /home/chaste && $(MAKE) -f projects/ChemChaste/test/CMakeFiles/TestChemChaste.dir/build.make projects/ChemChaste/test/CMakeFiles/TestChemChaste.dir/TestChemChaste.cpp.s
+.PHONY : TestChemChaste.cpp.s
+
+TestChemChastePaper.o: TestChemChastePaper.cpp.o
+
+.PHONY : TestChemChastePaper.o
+
+# target to build an object file
+TestChemChastePaper.cpp.o:
+	cd /home/chaste && $(MAKE) -f projects/ChemChaste/test/CMakeFiles/TestChemChastePaper.dir/build.make projects/ChemChaste/test/CMakeFiles/TestChemChastePaper.dir/TestChemChastePaper.cpp.o
+.PHONY : TestChemChastePaper.cpp.o
+
+TestChemChastePaper.i: TestChemChastePaper.cpp.i
+
+.PHONY : TestChemChastePaper.i
+
+# target to preprocess a source file
+TestChemChastePaper.cpp.i:
+	cd /home/chaste && $(MAKE) -f projects/ChemChaste/test/CMakeFiles/TestChemChastePaper.dir/build.make projects/ChemChaste/test/CMakeFiles/TestChemChastePaper.dir/TestChemChastePaper.cpp.i
+.PHONY : TestChemChastePaper.cpp.i
+
+TestChemChastePaper.s: TestChemChastePaper.cpp.s
+
+.PHONY : TestChemChastePaper.s
+
+# target to generate assembly for a file
+TestChemChastePaper.cpp.s:
+	cd /home/chaste && $(MAKE) -f projects/ChemChaste/test/CMakeFiles/TestChemChastePaper.dir/build.make projects/ChemChaste/test/CMakeFiles/TestChemChastePaper.dir/TestChemChastePaper.cpp.s
+.PHONY : TestChemChastePaper.cpp.s
+
+TestChemicalCellObject.o: TestChemicalCellObject.cpp.o
+
+.PHONY : TestChemicalCellObject.o
+
+# target to build an object file
+TestChemicalCellObject.cpp.o:
+	cd /home/chaste && $(MAKE) -f projects/ChemChaste/test/CMakeFiles/TestChemicalCellObject.dir/build.make projects/ChemChaste/test/CMakeFiles/TestChemicalCellObject.dir/TestChemicalCellObject.cpp.o
+.PHONY : TestChemicalCellObject.cpp.o
+
+TestChemicalCellObject.i: TestChemicalCellObject.cpp.i
+
+.PHONY : TestChemicalCellObject.i
+
+# target to preprocess a source file
+TestChemicalCellObject.cpp.i:
+	cd /home/chaste && $(MAKE) -f projects/ChemChaste/test/CMakeFiles/TestChemicalCellObject.dir/build.make projects/ChemChaste/test/CMakeFiles/TestChemicalCellObject.dir/TestChemicalCellObject.cpp.i
+.PHONY : TestChemicalCellObject.cpp.i
+
+TestChemicalCellObject.s: TestChemicalCellObject.cpp.s
+
+.PHONY : TestChemicalCellObject.s
+
+# target to generate assembly for a file
+TestChemicalCellObject.cpp.s:
+	cd /home/chaste && $(MAKE) -f projects/ChemChaste/test/CMakeFiles/TestChemicalCellObject.dir/build.make projects/ChemChaste/test/CMakeFiles/TestChemicalCellObject.dir/TestChemicalCellObject.cpp.s
+.PHONY : TestChemicalCellObject.cpp.s
+
+TestChemicalCellSystem.o: TestChemicalCellSystem.cpp.o
+
+.PHONY : TestChemicalCellSystem.o
+
+# target to build an object file
+TestChemicalCellSystem.cpp.o:
+	cd /home/chaste && $(MAKE) -f projects/ChemChaste/test/CMakeFiles/TestChemicalCellSystem.dir/build.make projects/ChemChaste/test/CMakeFiles/TestChemicalCellSystem.dir/TestChemicalCellSystem.cpp.o
+.PHONY : TestChemicalCellSystem.cpp.o
+
+TestChemicalCellSystem.i: TestChemicalCellSystem.cpp.i
+
+.PHONY : TestChemicalCellSystem.i
+
+# target to preprocess a source file
+TestChemicalCellSystem.cpp.i:
+	cd /home/chaste && $(MAKE) -f projects/ChemChaste/test/CMakeFiles/TestChemicalCellSystem.dir/build.make projects/ChemChaste/test/CMakeFiles/TestChemicalCellSystem.dir/TestChemicalCellSystem.cpp.i
+.PHONY : TestChemicalCellSystem.cpp.i
+
+TestChemicalCellSystem.s: TestChemicalCellSystem.cpp.s
+
+.PHONY : TestChemicalCellSystem.s
+
+# target to generate assembly for a file
+TestChemicalCellSystem.cpp.s:
+	cd /home/chaste && $(MAKE) -f projects/ChemChaste/test/CMakeFiles/TestChemicalCellSystem.dir/build.make projects/ChemChaste/test/CMakeFiles/TestChemicalCellSystem.dir/TestChemicalCellSystem.cpp.s
+.PHONY : TestChemicalCellSystem.cpp.s
 
 TestChemicalChaste.o: TestChemicalChaste.cpp.o
 
@@ -225,7 +465,7 @@ TestChemicalChaste.o: TestChemicalChaste.cpp.o
 
 # target to build an object file
 TestChemicalChaste.cpp.o:
-	cd /home/chaste && $(MAKE) -f projects/ChemicalChaste/test/CMakeFiles/TestChemicalChaste.dir/build.make projects/ChemicalChaste/test/CMakeFiles/TestChemicalChaste.dir/TestChemicalChaste.cpp.o
+	cd /home/chaste && $(MAKE) -f projects/ChemChaste/test/CMakeFiles/TestChemicalChaste.dir/build.make projects/ChemChaste/test/CMakeFiles/TestChemicalChaste.dir/TestChemicalChaste.cpp.o
 .PHONY : TestChemicalChaste.cpp.o
 
 TestChemicalChaste.i: TestChemicalChaste.cpp.i
@@ -234,7 +474,7 @@ TestChemicalChaste.i: TestChemicalChaste.cpp.i
 
 # target to preprocess a source file
 TestChemicalChaste.cpp.i:
-	cd /home/chaste && $(MAKE) -f projects/ChemicalChaste/test/CMakeFiles/TestChemicalChaste.dir/build.make projects/ChemicalChaste/test/CMakeFiles/TestChemicalChaste.dir/TestChemicalChaste.cpp.i
+	cd /home/chaste && $(MAKE) -f projects/ChemChaste/test/CMakeFiles/TestChemicalChaste.dir/build.make projects/ChemChaste/test/CMakeFiles/TestChemicalChaste.dir/TestChemicalChaste.cpp.i
 .PHONY : TestChemicalChaste.cpp.i
 
 TestChemicalChaste.s: TestChemicalChaste.cpp.s
@@ -243,8 +483,35 @@ TestChemicalChaste.s: TestChemicalChaste.cpp.s
 
 # target to generate assembly for a file
 TestChemicalChaste.cpp.s:
-	cd /home/chaste && $(MAKE) -f projects/ChemicalChaste/test/CMakeFiles/TestChemicalChaste.dir/build.make projects/ChemicalChaste/test/CMakeFiles/TestChemicalChaste.dir/TestChemicalChaste.cpp.s
+	cd /home/chaste && $(MAKE) -f projects/ChemChaste/test/CMakeFiles/TestChemicalChaste.dir/build.make projects/ChemChaste/test/CMakeFiles/TestChemicalChaste.dir/TestChemicalChaste.cpp.s
 .PHONY : TestChemicalChaste.cpp.s
+
+TestChemicalSpatialSimulation.o: TestChemicalSpatialSimulation.cpp.o
+
+.PHONY : TestChemicalSpatialSimulation.o
+
+# target to build an object file
+TestChemicalSpatialSimulation.cpp.o:
+	cd /home/chaste && $(MAKE) -f projects/ChemChaste/test/CMakeFiles/TestChemicalSpatialSimulation.dir/build.make projects/ChemChaste/test/CMakeFiles/TestChemicalSpatialSimulation.dir/TestChemicalSpatialSimulation.cpp.o
+.PHONY : TestChemicalSpatialSimulation.cpp.o
+
+TestChemicalSpatialSimulation.i: TestChemicalSpatialSimulation.cpp.i
+
+.PHONY : TestChemicalSpatialSimulation.i
+
+# target to preprocess a source file
+TestChemicalSpatialSimulation.cpp.i:
+	cd /home/chaste && $(MAKE) -f projects/ChemChaste/test/CMakeFiles/TestChemicalSpatialSimulation.dir/build.make projects/ChemChaste/test/CMakeFiles/TestChemicalSpatialSimulation.dir/TestChemicalSpatialSimulation.cpp.i
+.PHONY : TestChemicalSpatialSimulation.cpp.i
+
+TestChemicalSpatialSimulation.s: TestChemicalSpatialSimulation.cpp.s
+
+.PHONY : TestChemicalSpatialSimulation.s
+
+# target to generate assembly for a file
+TestChemicalSpatialSimulation.cpp.s:
+	cd /home/chaste && $(MAKE) -f projects/ChemChaste/test/CMakeFiles/TestChemicalSpatialSimulation.dir/build.make projects/ChemChaste/test/CMakeFiles/TestChemicalSpatialSimulation.dir/TestChemicalSpatialSimulation.cpp.s
+.PHONY : TestChemicalSpatialSimulation.cpp.s
 
 TestHello.o: TestHello.cpp.o
 
@@ -252,7 +519,7 @@ TestHello.o: TestHello.cpp.o
 
 # target to build an object file
 TestHello.cpp.o:
-	cd /home/chaste && $(MAKE) -f projects/ChemicalChaste/test/CMakeFiles/TestHello.dir/build.make projects/ChemicalChaste/test/CMakeFiles/TestHello.dir/TestHello.cpp.o
+	cd /home/chaste && $(MAKE) -f projects/ChemChaste/test/CMakeFiles/TestHello.dir/build.make projects/ChemChaste/test/CMakeFiles/TestHello.dir/TestHello.cpp.o
 .PHONY : TestHello.cpp.o
 
 TestHello.i: TestHello.cpp.i
@@ -261,7 +528,7 @@ TestHello.i: TestHello.cpp.i
 
 # target to preprocess a source file
 TestHello.cpp.i:
-	cd /home/chaste && $(MAKE) -f projects/ChemicalChaste/test/CMakeFiles/TestHello.dir/build.make projects/ChemicalChaste/test/CMakeFiles/TestHello.dir/TestHello.cpp.i
+	cd /home/chaste && $(MAKE) -f projects/ChemChaste/test/CMakeFiles/TestHello.dir/build.make projects/ChemChaste/test/CMakeFiles/TestHello.dir/TestHello.cpp.i
 .PHONY : TestHello.cpp.i
 
 TestHello.s: TestHello.cpp.s
@@ -270,8 +537,35 @@ TestHello.s: TestHello.cpp.s
 
 # target to generate assembly for a file
 TestHello.cpp.s:
-	cd /home/chaste && $(MAKE) -f projects/ChemicalChaste/test/CMakeFiles/TestHello.dir/build.make projects/ChemicalChaste/test/CMakeFiles/TestHello.dir/TestHello.cpp.s
+	cd /home/chaste && $(MAKE) -f projects/ChemChaste/test/CMakeFiles/TestHello.dir/build.make projects/ChemChaste/test/CMakeFiles/TestHello.dir/TestHello.cpp.s
 .PHONY : TestHello.cpp.s
+
+TestInhomogenousPdeSolver.o: TestInhomogenousPdeSolver.cpp.o
+
+.PHONY : TestInhomogenousPdeSolver.o
+
+# target to build an object file
+TestInhomogenousPdeSolver.cpp.o:
+	cd /home/chaste && $(MAKE) -f projects/ChemChaste/test/CMakeFiles/TestInhomogenousPdeSolver.dir/build.make projects/ChemChaste/test/CMakeFiles/TestInhomogenousPdeSolver.dir/TestInhomogenousPdeSolver.cpp.o
+.PHONY : TestInhomogenousPdeSolver.cpp.o
+
+TestInhomogenousPdeSolver.i: TestInhomogenousPdeSolver.cpp.i
+
+.PHONY : TestInhomogenousPdeSolver.i
+
+# target to preprocess a source file
+TestInhomogenousPdeSolver.cpp.i:
+	cd /home/chaste && $(MAKE) -f projects/ChemChaste/test/CMakeFiles/TestInhomogenousPdeSolver.dir/build.make projects/ChemChaste/test/CMakeFiles/TestInhomogenousPdeSolver.dir/TestInhomogenousPdeSolver.cpp.i
+.PHONY : TestInhomogenousPdeSolver.cpp.i
+
+TestInhomogenousPdeSolver.s: TestInhomogenousPdeSolver.cpp.s
+
+.PHONY : TestInhomogenousPdeSolver.s
+
+# target to generate assembly for a file
+TestInhomogenousPdeSolver.cpp.s:
+	cd /home/chaste && $(MAKE) -f projects/ChemChaste/test/CMakeFiles/TestInhomogenousPdeSolver.dir/build.make projects/ChemChaste/test/CMakeFiles/TestInhomogenousPdeSolver.dir/TestInhomogenousPdeSolver.cpp.s
+.PHONY : TestInhomogenousPdeSolver.cpp.s
 
 # Help Target
 help:
@@ -279,23 +573,51 @@ help:
 	@echo "... all (the default if no target is provided)"
 	@echo "... clean"
 	@echo "... depend"
+	@echo "... install/local"
+	@echo "... TestChemicalCellSystem"
 	@echo "... install/strip"
+	@echo "... TestChemicalSpatialSimulation"
 	@echo "... install"
-	@echo "... list_install_components"
+	@echo "... TestInhomogenousPdeSolver"
+	@echo "... TestHello"
+	@echo "... TestCellwisePdeSystem"
 	@echo "... rebuild_cache"
 	@echo "... TestChemicalChaste"
-	@echo "... TestHello"
-	@echo "... package"
+	@echo "... TestChemChaste"
 	@echo "... package_source"
-	@echo "... install/local"
-	@echo "... test"
+	@echo "... package"
+	@echo "... TestChemChastePaper"
+	@echo "... TestChemicalCellObject"
 	@echo "... edit_cache"
+	@echo "... test"
+	@echo "... list_install_components"
+	@echo "... TestCellwisePdeSystem.o"
+	@echo "... TestCellwisePdeSystem.i"
+	@echo "... TestCellwisePdeSystem.s"
+	@echo "... TestChemChaste.o"
+	@echo "... TestChemChaste.i"
+	@echo "... TestChemChaste.s"
+	@echo "... TestChemChastePaper.o"
+	@echo "... TestChemChastePaper.i"
+	@echo "... TestChemChastePaper.s"
+	@echo "... TestChemicalCellObject.o"
+	@echo "... TestChemicalCellObject.i"
+	@echo "... TestChemicalCellObject.s"
+	@echo "... TestChemicalCellSystem.o"
+	@echo "... TestChemicalCellSystem.i"
+	@echo "... TestChemicalCellSystem.s"
 	@echo "... TestChemicalChaste.o"
 	@echo "... TestChemicalChaste.i"
 	@echo "... TestChemicalChaste.s"
+	@echo "... TestChemicalSpatialSimulation.o"
+	@echo "... TestChemicalSpatialSimulation.i"
+	@echo "... TestChemicalSpatialSimulation.s"
 	@echo "... TestHello.o"
 	@echo "... TestHello.i"
 	@echo "... TestHello.s"
+	@echo "... TestInhomogenousPdeSolver.o"
+	@echo "... TestInhomogenousPdeSolver.i"
+	@echo "... TestInhomogenousPdeSolver.s"
 .PHONY : help
 
 

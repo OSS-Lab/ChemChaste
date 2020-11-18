@@ -1,5 +1,5 @@
-#ifndef SIMPLECHEMICALTHRESHOLDCELLCYCLEMODEL_HPP_
-#define SIMPLECHEMICALTHRESHOLDCELLCYCLEMODEL_HPP_
+#ifndef SIMPLECHEMICALTHRESHOLDCELLCYCLEMODEL_HPP
+#define SIMPLECHEMICALTHRESHOLDCELLCYCLEMODEL_HPP
 
 #include "AbstractSimplePhaseBasedCellCycleModel.hpp"
 #include "AbstractChemistry.hpp"
@@ -34,7 +34,7 @@ protected:
 
 public:
 
-    SimpleChemicalThresholdCellCycleModel(AbstractChemistry*);
+    SimpleChemicalThresholdCellCycleModel();
 
     SimpleChemicalThresholdCellCycleModel(const SimpleChemicalThresholdCellCycleModel& rModel);
     
@@ -45,6 +45,8 @@ public:
     {
         return "Chemical";
     }
+
+    void SetUp(AbstractChemistry*);
 
     void Initialise();
 

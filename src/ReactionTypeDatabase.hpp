@@ -13,6 +13,7 @@
 #include "AbstractReversibleReaction.hpp"
 #include "MassActionReaction.hpp"
 #include "SpectatorDependentReaction.hpp"
+#include "MichaelisMentenReaction.hpp"
 
 //======================================================//
 //             TRANSPORT REACTION HEADERS               //   
@@ -73,10 +74,16 @@ void ReactionTablet(AbstractReaction*& p_reaction,  std::string reactionType = "
 
         
     }
-    else //if(reactionType == "SpectatorDependentReaction")
+    else if(reactionType == "SpectatorDependentReaction")
     {
         delete p_reaction;
         p_reaction = new SpectatorDependentReaction(substrates, products, stoichSubstrates, stoichProducts, p_systemChemistry);
+        p_reaction -> ParseReactionInformation(reactionInformation, IsReversible);
+    }
+    else if(reactionType == "MichaelisMentenReaction")
+    {
+        delete p_reaction;
+        p_reaction = new MichaelisMentenReaction(substrates, products, stoichSubstrates, stoichProducts, p_systemChemistry);
         p_reaction -> ParseReactionInformation(reactionInformation, IsReversible);
     }
 
@@ -86,10 +93,10 @@ void ReactionTablet(AbstractReaction*& p_reaction,  std::string reactionType = "
 
 
 
-    //else
-    //{
-    //    std::cout<<"ReactionTablet Error: "<<reactionType<<" is unknown to the ReactionTypeDataBase."<<std::endl;
-    //}
+    else
+    {
+        std::cout<<"ReactionTablet Error: "<<reactionType<<" is unknown to the ReactionTypeDataBase."<<std::endl;
+    }
 };
 
 //======================================================//
@@ -121,6 +128,7 @@ void TransportTablet(AbstractTransportReaction*& p_reaction,  std::string reacti
     {
         delete p_reaction;
         p_reaction = new MassActionTransportReaction(bulkReactionSpecies, cellReactionSpecies, stoichBulk, stoichCell);
+
         p_reaction -> ParseReactionInformation(reactionInformation, IsReversible);
     }
 
@@ -156,7 +164,7 @@ void MembraneTablet(AbstractMembraneReaction*& p_reaction,  std::string reaction
         p_reaction -> ParseReactionInformation(reactionInformation, IsReversible);
 
     }
-    else if (reactionType == "MassActionCoupledMembrane")
+    else if (reactionType == "MassActionCoupledMembraneReaction")
     {
         delete p_reaction;
         p_reaction = new MassActionCoupledMembraneReaction(bulkSubstrates, bulkProducts, cellSubstrates, cellProducts, stoichBulkSubstrates, stoichBulkProducts,stoichCellSubstrates,stoichCellProducts);

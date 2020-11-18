@@ -10,6 +10,7 @@
 //ChemChaste includes
 #include "ChemChasteHeaders.hpp"
 
+#include "SimpleChemicalThresholdCellCycleModel.hpp"
 
 class ChemicalStructuresForTests
 {
@@ -28,13 +29,13 @@ class ChemicalStructuresForTests
         std::vector<double> membrane_reaction_rate_vector = {0.0,0.0};
 
         // r1: Cell_U <-> Cell_Biomass                  forwardRate = 0.0 reverseRate = 0.0
-        std::vector<double> srn_reaction_rate_vector = {1.0,0.0};
+        std::vector<double> srn_reaction_rate_vector = {0.1,0.0};
 
         // SimpleChemicalCellCycleModel {U,Biomass,V}
         std::vector<double> MaximumSpeciesThreshold = {2.0,2.0,0};
         std::vector<double> MinimumSpeciesThreshold = {0,0.1,0};
         std::vector<bool> MaximumThresholdCheck = {false,true,false};
-        std::vector<bool> MinimumThresholdCheck = {false,false,false};
+        std::vector<bool> MinimumThresholdCheck = {false,true,false};
 
         // cells
         // cellObjectA : {U,V} initial cell/srn conditions, SchnackenbergSrnModel
@@ -164,7 +165,7 @@ class ChemicalStructuresForTests
             p_mass_action_reaction_vector.push_back(p_mass_action_reaction_3);
 
             AbstractReactionSystem* p_mass_action_reaction_system = new AbstractReactionSystem(p_system_chemistry, p_mass_action_reaction_vector);
-            std::cout<<"NumberOfReactions = "<< p_mass_action_reaction_system -> GetNumberOfReactions()<<std::endl;
+            
             SetPtrPdeChemicalReactionSystem(p_mass_action_reaction_system);
         }
 
@@ -472,7 +473,7 @@ class ChemicalStructuresForTests
         {
                    
             // Variables for the user modify
-            std::string dataFileRoot = "/home/chaste/projects/ChemicalChaste/src/Data/TemplateChemicalSimulation/";
+            std::string dataFileRoot = "/home/chaste/projects/ChemChaste/src/Data/TemplateChemicalSimulation/";
             std::string domainFilename = "Domain.csv";
             std::string domainKeyFilename = "DomainKey.csv";
             std::string odeLabelFilename = "NodeSelector.csv";
@@ -497,9 +498,9 @@ class ChemicalStructuresForTests
 
         void SetUpChemicalDomainFieldForCellCoupling()
         {
-            std::cout<<"SetUpChemicalDomainFieldForCellCoupling()"<<std::endl; 
+            //std::cout<<"SetUpChemicalDomainFieldForCellCoupling()"<<std::endl; 
             // Variables for the user modify
-            std::string dataFileRoot = "/home/chaste/projects/ChemicalChaste/src/Data/TemplateChemicalSimulation/";
+            std::string dataFileRoot = "/home/chaste/projects/ChemChaste/src/Data/TemplateChemicalSimulation/";
             std::string cellLabelFilename = "";
             std::string cellKeyFilename = "";
             std::string domainFilename = "Domain.csv";
@@ -519,10 +520,9 @@ class ChemicalStructuresForTests
             // generate domain
             // run the domain field set up and parse files
             ChemicalDomainFieldForCellCoupling<elementDim,spaceDim,probDim>* p_Pde_field = new ChemicalDomainFieldForCellCoupling<elementDim,spaceDim,probDim>(dataFileRoot,dataFileRoot+cellLabelFilename,dataFileRoot+cellKeyFilename,dataFileRoot+domainFilename, dataFileRoot+domainKeyFilename, dataFileRoot+odeLabelFilename, dataFileRoot+odeKeyFilename, dataFileRoot+diffusionFilename, dataFileRoot+initialConditionsFilename, dataFileRoot+boundaryConditionsFilename);
-            std::cout<<"chemical structure number of mesh nodes: "<<p_Pde_field ->rGetDomainFeMesh()->GetNumNodes()<<std::endl;
-            
+
             SetPtrChemicalDomainFieldForCellCoupling(p_Pde_field);
-            std::cout<<"SetUpChemicalDomainFieldForCellCoupling() - end"<<std::endl; 
+            //std::cout<<"SetUpChemicalDomainFieldForCellCoupling() - end"<<std::endl; 
         }
 
         void SetUpSrnChemicalReactionSystem()
@@ -597,11 +597,10 @@ class ChemicalStructuresForTests
             AbstractChemical* pNewChemical = new AbstractChemical("V");
             pCellChemistry -> AddChemical(pNewChemical);
 
-            SimpleChemicalThresholdCellCycleModel* pCellCycle = new SimpleChemicalThresholdCellCycleModel(pCellChemistry);
-
+            SimpleChemicalThresholdCellCycleModel* pCellCycle = new SimpleChemicalThresholdCellCycleModel();
+            pCellCycle->SetUp(pCellChemistry);
             // same species order as in the cell reaction system chemistry; mp_srn_chemical_reaction_system -> GetSystemChemistry()
         
-
             pCellCycle -> SetMaximumSpeciesThreshold(MaximumSpeciesThreshold);
 
             pCellCycle -> SetMinimumSpeciesThreshold(MinimumSpeciesThreshold);
@@ -627,7 +626,6 @@ class ChemicalStructuresForTests
         {
             for(unsigned i=0; i<speciesNames.size();i++)
             {
-                std::cout<<speciesNames[i]<<std::endl;
                 p_cell->GetCellData()->SetItem(speciesNames[i],initValue[i]);
             }
         }

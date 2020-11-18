@@ -394,7 +394,7 @@ std::vector<std::tuple<std::string, bool, std::vector<std::string>, std::vector<
     }
     else
     {
-        std::cout<<"Error filename not found: "<<mInputFileName<<std::endl;
+        std::cout<<"Error: Filename not found: "<<mInputFileName<<std::endl;
     }
     
 

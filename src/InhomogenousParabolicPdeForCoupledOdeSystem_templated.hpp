@@ -51,7 +51,6 @@ public:
 
         if(nameVector.empty())
         {
-            std::cout<<"empty name vector"<<std::endl;
             for(unsigned i=0; i<PROBLEM_DIM; i++)
             {
                 nameVector.push_back(std::to_string(i));
@@ -127,14 +126,7 @@ public:
         AbstractInhomogenousChemicalOdeSystemForCoupledPdeSystem* p_system_cast = dynamic_cast<AbstractInhomogenousChemicalOdeSystemForCoupledPdeSystem*>(p_system);
         std::vector<AbstractReaction*>  p_reactionVector = p_system_cast ->GetReactionSystem() -> GetReactionVector();
         
-        if(std::pow((rX[0]-50),2)+std::pow((rX[1]-50),2) > 400)
-        {
-
-            
-        }
-        else
-        {
-           
+        
         
         for(unsigned i=0; i<node_labels.size();i++)
         {
@@ -146,7 +138,7 @@ public:
                 return rUvec[pdeIndex];
             }
         }
-        }
+        
         return rUvec[pdeIndex];
     }
 

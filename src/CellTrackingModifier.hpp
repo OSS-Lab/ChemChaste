@@ -54,28 +54,28 @@ void CellTrackingModifier<ELEMENT_DIM,SPACE_DIM>::SetupSolve(AbstractCellPopulat
      * We must update CellData in SetupSolve(), otherwise it will not have been
      * fully initialised by the time we enter the main time loop.
      */
-    std::cout<<"CellTrackingModifier - SetupSolve"<<std::endl;
+    //std::cout<<"CellTrackingModifier - SetupSolve"<<std::endl;
     UpdateCellData(rCellPopulation);
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 void CellTrackingModifier<ELEMENT_DIM,SPACE_DIM>::UpdateCellData(AbstractCellPopulation<ELEMENT_DIM,SPACE_DIM>& rCellPopulation)
 {
-    std::cout<<"CellTrackingModifier - UpdateCellData"<<std::endl;
+   // std::cout<<"CellTrackingModifier - UpdateCellData"<<std::endl;
     // Make sure the cell population is updated
     rCellPopulation.Update();
-    std::cout<<"CellTrackingModifier - UpdateCellData - access transport property"<<std::endl;
+    //std::cout<<"CellTrackingModifier - UpdateCellData - access transport property"<<std::endl;
     for (typename AbstractCellPopulation<SPACE_DIM>::Iterator cell_iter = rCellPopulation.Begin();
          cell_iter != rCellPopulation.End();
          ++cell_iter)
     {
-        std::cout<<"Here"<<std::endl;
+
         CellPropertyCollection collection = cell_iter->rGetCellPropertyCollection();
 
         bool transport_active = collection.HasProperty<TransportCellProperty>();
         if (transport_active)
         {
-            std::cout<<"transport active"<<std::endl;
+
             CellPropertyCollection transport_collection = collection.GetPropertiesType<TransportCellProperty>();
             boost::shared_ptr<TransportCellProperty> transportProp = boost::static_pointer_cast<TransportCellProperty>(transport_collection.GetProperty());
     

@@ -3,7 +3,7 @@
 
 #include <string>
 #include <vector>
-#include "PetscSetupAndFinalize.hpp"
+//#include "PetscSetupAndFinalize.hpp"
 #include "InhomogenousParabolicPdeForCoupledOdeSystem_templated.hpp"
 
 #include "ChemicalDomainField_templated.hpp"

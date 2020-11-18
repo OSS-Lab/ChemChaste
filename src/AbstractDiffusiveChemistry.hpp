@@ -233,7 +233,6 @@ std::vector<double> AbstractDiffusiveChemistry::GetDiffusivityVectorByIndex(unsi
     }
     else
     {
-        std::cout<<index<<std::endl;
         std::cout<<"Error: AbstractDiffusiveChemistry::GetDiffusivityByIndex(unsigned index), index out of bounds"<<std::endl;
         std::vector<double> returnVec(1,0.0);
         return returnVec;

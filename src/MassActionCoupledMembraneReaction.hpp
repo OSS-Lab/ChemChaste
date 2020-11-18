@@ -218,7 +218,7 @@ void MassActionCoupledMembraneReaction::UpdateReactionRate(AbstractChemistry* bu
 
 std::string MassActionCoupledMembraneReaction::GetReactionType()
 {
-    return "MassActionCoupledMembrane";
+    return "MassActionCoupledMembraneReaction";
 }
 
 

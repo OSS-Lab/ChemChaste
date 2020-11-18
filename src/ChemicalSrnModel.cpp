@@ -6,6 +6,7 @@ ChemicalSrnModel::ChemicalSrnModel(AbstractReactionSystem* pReactionSystem,boost
     //mpChemicalOdeSystem(new AbstractChemicalOdeSystem(pReactionSystem)),
     mpCellChemistry(pReactionSystem -> GetSystemChemistry())
 {
+    //std::cout<<"ChemicalSrnModel::ChemicalSrnModel - start"<<std::endl;
     if (mpOdeSolver == boost::shared_ptr<AbstractCellCycleModelOdeSolver>())
     {
 #ifdef CHASTE_CVODE
@@ -19,11 +20,12 @@ ChemicalSrnModel::ChemicalSrnModel(AbstractReactionSystem* pReactionSystem,boost
 #endif //CHASTE_CVODE
     }
     assert(mpOdeSolver->IsSetUp());
+    //std::cout<<"ChemicalSrnModel::ChemicalSrnModel - end"<<std::endl;
 }
 
 ChemicalSrnModel::ChemicalSrnModel(const ChemicalSrnModel& rModel)
     : AbstractOdeSrnModel(rModel)
-{
+{//std::cout<<"ChemicalSrnModel::ChemicalSrnModel- copy - start"<<std::endl;
     assert(rModel.GetOdeSystem());
 
     mpReactionSystem = rModel.mpReactionSystem;
@@ -35,6 +37,7 @@ ChemicalSrnModel::ChemicalSrnModel(const ChemicalSrnModel& rModel)
     std::vector<double> stateVector = rModel.GetOdeSystem()->rGetStateVariables();
 
     mpOdeSystem->SetStateVariables(stateVector);
+    //std::cout<<"ChemicalSrnModel::ChemicalSrnModel- copy - end"<<std::endl;
 }
 
 AbstractSrnModel* ChemicalSrnModel::CreateSrnModel()
@@ -49,11 +52,13 @@ void ChemicalSrnModel::Initialise()
 
 void ChemicalSrnModel::SimulateToCurrentTime()
 {
+    //std::cout<<"ChemicalSrnModel::SimulateToCurrentTime() - start"<<std::endl;
     // Custom behaviour
     UpdateOdeParameters();
 
     // Run the ODE simulation as needed
     AbstractOdeSrnModel::SimulateToCurrentTime();
+    //std::cout<<"ChemicalSrnModel::SimulateToCurrentTime() - end"<<std::endl;
 }
 
 void ChemicalSrnModel::SetReactionSystem(AbstractReactionSystem* reactionSystem)
@@ -78,6 +83,7 @@ AbstractChemistry* ChemicalSrnModel::GetCellChemistry()
 
 void ChemicalSrnModel::UpdateOdeStatesFromCellData()
 {
+    //std::cout<<"ChemicalSrnModel::UpdateOdeStatesFromCellData() - start"<<std::endl;
     unsigned numberOfSpecies = mpCellChemistry -> GetNumberChemicals();
 
     double species_value=0.0;
@@ -94,7 +100,7 @@ void ChemicalSrnModel::UpdateOdeStatesFromCellData()
     }
 
     mpOdeSystem->SetStateVariables(current_state_values);
-
+    //std::cout<<"ChemicalSrnModel::UpdateOdeStatesFromCellData() - end"<<std::endl;
 }
 
 void ChemicalSrnModel::UpdateOdeParameters()

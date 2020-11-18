@@ -64,7 +64,6 @@ public:
 
         if(std::pow((rX[0]-50),2)+std::pow((rX[1]-45),2) <= 49 || std::pow((rX[0]-50),2)+std::pow((rX[1]-55),2) <= 49 )
         {
-            std::cout<<"rX: "<<rX[0]<<" rY: "<<rX[1]<<std::endl;
             diffusion_term = (0.1*mDiffusionRates[pdeIndex])*identity_matrix<double>(SPACE_DIM);
         }
         else

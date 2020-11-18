@@ -90,6 +90,17 @@ list_install_components/fast: list_install_components
 
 .PHONY : list_install_components/fast
 
+# Special rule for the target rebuild_cache
+rebuild_cache:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
+	/usr/bin/cmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+.PHONY : rebuild_cache
+
+# Special rule for the target rebuild_cache
+rebuild_cache/fast: rebuild_cache
+
+.PHONY : rebuild_cache/fast
+
 # Special rule for the target package
 package: preinstall
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Run CPack packaging tool..."
@@ -111,6 +122,17 @@ package_source:
 package_source/fast: package_source
 
 .PHONY : package_source/fast
+
+# Special rule for the target edit_cache
+edit_cache:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake cache editor..."
+	/usr/bin/ccmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+.PHONY : edit_cache
+
+# Special rule for the target edit_cache
+edit_cache/fast: edit_cache
+
+.PHONY : edit_cache/fast
 
 # Special rule for the target install/local
 install/local: preinstall
@@ -135,38 +157,16 @@ test/fast: test
 
 .PHONY : test/fast
 
-# Special rule for the target edit_cache
-edit_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake cache editor..."
-	/usr/bin/ccmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
-.PHONY : edit_cache
-
-# Special rule for the target edit_cache
-edit_cache/fast: edit_cache
-
-.PHONY : edit_cache/fast
-
-# Special rule for the target rebuild_cache
-rebuild_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
-	/usr/bin/cmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
-.PHONY : rebuild_cache
-
-# Special rule for the target rebuild_cache
-rebuild_cache/fast: rebuild_cache
-
-.PHONY : rebuild_cache/fast
-
 # The main all target
 all: cmake_check_build_system
-	cd /home/chaste && $(CMAKE_COMMAND) -E cmake_progress_start /home/chaste/CMakeFiles /home/chaste/projects/ChemicalChaste/apps/CMakeFiles/progress.marks
-	cd /home/chaste && $(MAKE) -f CMakeFiles/Makefile2 projects/ChemicalChaste/apps/all
+	cd /home/chaste && $(CMAKE_COMMAND) -E cmake_progress_start /home/chaste/CMakeFiles /home/chaste/projects/ChemChaste/apps/CMakeFiles/progress.marks
+	cd /home/chaste && $(MAKE) -f CMakeFiles/Makefile2 projects/ChemChaste/apps/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/chaste/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /home/chaste && $(MAKE) -f CMakeFiles/Makefile2 projects/ChemicalChaste/apps/clean
+	cd /home/chaste && $(MAKE) -f CMakeFiles/Makefile2 projects/ChemChaste/apps/clean
 .PHONY : clean
 
 # The main clean target
@@ -176,12 +176,12 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /home/chaste && $(MAKE) -f CMakeFiles/Makefile2 projects/ChemicalChaste/apps/preinstall
+	cd /home/chaste && $(MAKE) -f CMakeFiles/Makefile2 projects/ChemChaste/apps/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /home/chaste && $(MAKE) -f CMakeFiles/Makefile2 projects/ChemicalChaste/apps/preinstall
+	cd /home/chaste && $(MAKE) -f CMakeFiles/Makefile2 projects/ChemChaste/apps/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
@@ -190,19 +190,61 @@ depend:
 .PHONY : depend
 
 # Convenience name for target.
-projects/ChemicalChaste/apps/CMakeFiles/ExampleApp.dir/rule:
-	cd /home/chaste && $(MAKE) -f CMakeFiles/Makefile2 projects/ChemicalChaste/apps/CMakeFiles/ExampleApp.dir/rule
-.PHONY : projects/ChemicalChaste/apps/CMakeFiles/ExampleApp.dir/rule
+projects/ChemChaste/apps/CMakeFiles/ExampleApp.dir/rule:
+	cd /home/chaste && $(MAKE) -f CMakeFiles/Makefile2 projects/ChemChaste/apps/CMakeFiles/ExampleApp.dir/rule
+.PHONY : projects/ChemChaste/apps/CMakeFiles/ExampleApp.dir/rule
 
 # Convenience name for target.
-ExampleApp: projects/ChemicalChaste/apps/CMakeFiles/ExampleApp.dir/rule
+ExampleApp: projects/ChemChaste/apps/CMakeFiles/ExampleApp.dir/rule
 
 .PHONY : ExampleApp
 
 # fast build rule for target.
 ExampleApp/fast:
-	cd /home/chaste && $(MAKE) -f projects/ChemicalChaste/apps/CMakeFiles/ExampleApp.dir/build.make projects/ChemicalChaste/apps/CMakeFiles/ExampleApp.dir/build
+	cd /home/chaste && $(MAKE) -f projects/ChemChaste/apps/CMakeFiles/ExampleApp.dir/build.make projects/ChemChaste/apps/CMakeFiles/ExampleApp.dir/build
 .PHONY : ExampleApp/fast
+
+# Convenience name for target.
+projects/ChemChaste/apps/CMakeFiles/ChemChaste.dir/rule:
+	cd /home/chaste && $(MAKE) -f CMakeFiles/Makefile2 projects/ChemChaste/apps/CMakeFiles/ChemChaste.dir/rule
+.PHONY : projects/ChemChaste/apps/CMakeFiles/ChemChaste.dir/rule
+
+# Convenience name for target.
+ChemChaste: projects/ChemChaste/apps/CMakeFiles/ChemChaste.dir/rule
+
+.PHONY : ChemChaste
+
+# fast build rule for target.
+ChemChaste/fast:
+	cd /home/chaste && $(MAKE) -f projects/ChemChaste/apps/CMakeFiles/ChemChaste.dir/build.make projects/ChemChaste/apps/CMakeFiles/ChemChaste.dir/build
+.PHONY : ChemChaste/fast
+
+src/ChemChaste.o: src/ChemChaste.cpp.o
+
+.PHONY : src/ChemChaste.o
+
+# target to build an object file
+src/ChemChaste.cpp.o:
+	cd /home/chaste && $(MAKE) -f projects/ChemChaste/apps/CMakeFiles/ChemChaste.dir/build.make projects/ChemChaste/apps/CMakeFiles/ChemChaste.dir/src/ChemChaste.cpp.o
+.PHONY : src/ChemChaste.cpp.o
+
+src/ChemChaste.i: src/ChemChaste.cpp.i
+
+.PHONY : src/ChemChaste.i
+
+# target to preprocess a source file
+src/ChemChaste.cpp.i:
+	cd /home/chaste && $(MAKE) -f projects/ChemChaste/apps/CMakeFiles/ChemChaste.dir/build.make projects/ChemChaste/apps/CMakeFiles/ChemChaste.dir/src/ChemChaste.cpp.i
+.PHONY : src/ChemChaste.cpp.i
+
+src/ChemChaste.s: src/ChemChaste.cpp.s
+
+.PHONY : src/ChemChaste.s
+
+# target to generate assembly for a file
+src/ChemChaste.cpp.s:
+	cd /home/chaste && $(MAKE) -f projects/ChemChaste/apps/CMakeFiles/ChemChaste.dir/build.make projects/ChemChaste/apps/CMakeFiles/ChemChaste.dir/src/ChemChaste.cpp.s
+.PHONY : src/ChemChaste.cpp.s
 
 src/ExampleApp.o: src/ExampleApp.cpp.o
 
@@ -210,7 +252,7 @@ src/ExampleApp.o: src/ExampleApp.cpp.o
 
 # target to build an object file
 src/ExampleApp.cpp.o:
-	cd /home/chaste && $(MAKE) -f projects/ChemicalChaste/apps/CMakeFiles/ExampleApp.dir/build.make projects/ChemicalChaste/apps/CMakeFiles/ExampleApp.dir/src/ExampleApp.cpp.o
+	cd /home/chaste && $(MAKE) -f projects/ChemChaste/apps/CMakeFiles/ExampleApp.dir/build.make projects/ChemChaste/apps/CMakeFiles/ExampleApp.dir/src/ExampleApp.cpp.o
 .PHONY : src/ExampleApp.cpp.o
 
 src/ExampleApp.i: src/ExampleApp.cpp.i
@@ -219,7 +261,7 @@ src/ExampleApp.i: src/ExampleApp.cpp.i
 
 # target to preprocess a source file
 src/ExampleApp.cpp.i:
-	cd /home/chaste && $(MAKE) -f projects/ChemicalChaste/apps/CMakeFiles/ExampleApp.dir/build.make projects/ChemicalChaste/apps/CMakeFiles/ExampleApp.dir/src/ExampleApp.cpp.i
+	cd /home/chaste && $(MAKE) -f projects/ChemChaste/apps/CMakeFiles/ExampleApp.dir/build.make projects/ChemChaste/apps/CMakeFiles/ExampleApp.dir/src/ExampleApp.cpp.i
 .PHONY : src/ExampleApp.cpp.i
 
 src/ExampleApp.s: src/ExampleApp.cpp.s
@@ -228,7 +270,7 @@ src/ExampleApp.s: src/ExampleApp.cpp.s
 
 # target to generate assembly for a file
 src/ExampleApp.cpp.s:
-	cd /home/chaste && $(MAKE) -f projects/ChemicalChaste/apps/CMakeFiles/ExampleApp.dir/build.make projects/ChemicalChaste/apps/CMakeFiles/ExampleApp.dir/src/ExampleApp.cpp.s
+	cd /home/chaste && $(MAKE) -f projects/ChemChaste/apps/CMakeFiles/ExampleApp.dir/build.make projects/ChemChaste/apps/CMakeFiles/ExampleApp.dir/src/ExampleApp.cpp.s
 .PHONY : src/ExampleApp.cpp.s
 
 # Help Target
@@ -240,13 +282,17 @@ help:
 	@echo "... install/strip"
 	@echo "... install"
 	@echo "... list_install_components"
+	@echo "... rebuild_cache"
 	@echo "... package"
 	@echo "... ExampleApp"
 	@echo "... package_source"
+	@echo "... ChemChaste"
+	@echo "... edit_cache"
 	@echo "... install/local"
 	@echo "... test"
-	@echo "... edit_cache"
-	@echo "... rebuild_cache"
+	@echo "... src/ChemChaste.o"
+	@echo "... src/ChemChaste.i"
+	@echo "... src/ChemChaste.s"
 	@echo "... src/ExampleApp.o"
 	@echo "... src/ExampleApp.i"
 	@echo "... src/ExampleApp.s"

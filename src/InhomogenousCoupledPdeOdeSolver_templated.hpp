@@ -507,37 +507,28 @@ void InhomogenousCoupledPdeOdeSolverTemplated<ELEMENT_DIM, SPACE_DIM, PROBLEM_DI
     *mpVtkMetaFile << "<VTKFile type=\"Collection\" version=\"0.1\" byte_order=\"LittleEndian\" compressor=\"vtkZLibDataCompressor\">\n";
     *mpVtkMetaFile << "    <Collection>\n";
 
-    
-//std::cout<<"init conditions"<<std::endl;
+
     // Write initial condition to VTK
     Vec initial_condition = this->mInitialCondition;
 
     ReplicatableVector result_repl(this->mInitialCondition);
-    //for(unsigned i=0; i<result_repl.GetSize();i++)
-    //{
-    //       std::cout<<result_repl[i]<<std::endl;
-    //}
-    //std::cout<<"write file"<<std::endl;
+
     WriteVtkResultsToFile(initial_condition, 0);
-//std::cout<<"time step"<<std::endl;
+
     // The helper class TimeStepper deals with issues such as small final timesteps so we don't have to
     TimeStepper stepper(this->mTstart, this->mTend, mSamplingTimeStep);
 
-//std::cout<<"Num nodes: "<<mpMesh->GetNumNodes()<<std::endl;
 
     // Main time loop
     while (!stepper.IsTimeAtEnd())
-    {   //std::cout<<"main loop"<<std::endl;
+    {   
         // Reset start and end times
         this->SetTimes(stepper.GetTime(), stepper.GetNextTime());
 
         // Solve the system up to the new end time
         Vec soln = this->Solve();
         ReplicatableVector result_repl(soln);
-        //for(unsigned i=0; i<result_repl.GetSize();i++)
-        //{
-        //        std::cout<<result_repl[i]<<std::endl;
-        //}
+
         // Reset the initial condition for the next timestep
         if (this->mInitialCondition != initial_condition)
         {
@@ -583,7 +574,7 @@ void InhomogenousCoupledPdeOdeSolverTemplated<ELEMENT_DIM, SPACE_DIM, PROBLEM_DI
     time << numTimeStepsElapsed;
     VtkMeshWriter<ELEMENT_DIM, SPACE_DIM> mesh_writer(this->mOutputDirectory, "results_"+time.str(), false);
     // need to ensure StateVariableRegister is defined
-    //std::cout<<"write: access pde"<<std::endl;
+  
     std::vector<std::string> p_pde_stateVariableNames = mpPdeSystem -> GetStateVariableRegister() ->GetStateVariableRegisterVector();
     
     /*
@@ -592,7 +583,7 @@ void InhomogenousCoupledPdeOdeSolverTemplated<ELEMENT_DIM, SPACE_DIM, PROBLEM_DI
      * writer.
      */
     ReplicatableVector solution_repl(solution);
-    //std::cout<<"write: mesh"<<std::endl;
+
     unsigned num_nodes = mpMesh->GetNumNodes();
     for (unsigned pde_index=0; pde_index<PROBLEM_DIM; pde_index++)
     {
@@ -609,7 +600,7 @@ void InhomogenousCoupledPdeOdeSolverTemplated<ELEMENT_DIM, SPACE_DIM, PROBLEM_DI
         data_name << "PDE variable " << p_pde_stateVariableNames[pde_index];
         mesh_writer.AddPointData(data_name.str(), pde_index_data);
     }
-    //std::cout<<"write: pde written"<<std::endl;
+
     if (mOdeSystemsPresent)
     {
         /*
@@ -642,15 +633,8 @@ void InhomogenousCoupledPdeOdeSolverTemplated<ELEMENT_DIM, SPACE_DIM, PROBLEM_DI
                 
             }
 
-
-            //---------------------------------------------------------------------------------
-            // do we need to use the rPDEsolution for the other nodes or is 0 the correct (current) choice?
-            //---------------------------------------------------------------------------------
-
-
-
         }
-//std::cout<<"write ode"<<std::endl;
+
         for (unsigned ode_index=0; ode_index<num_state_vars; ode_index++)
         {
             // ode_index is the state variable

@@ -24,7 +24,7 @@ struct ControlStruct {
     bool ReactionSystemInhibitedDiffusionWithoutCellsUsingInhomogenousSolver = false;
     bool ReactionSystemWithCells = true;
     bool ReactionSystemWithNodeBasedCells = true;
- } control;
+} control;
 
 class TestChemChaste : public AbstractCellBasedTestSuite
 {
@@ -757,10 +757,10 @@ public:
             simulator.AddSimulationModifier(p_chemical_tracking_modifier);
         
             simulator.SetOutputDirectory("TestReactionSystemWithCells_OscillatingCase_meshWriters");
-            simulator.SetEndTime(10.0);
+            simulator.SetEndTime(4.0);
 
             MAKE_PTR(GeneralisedLinearSpringForce<2>, p_linear_force);
-            p_linear_force->SetCutOffLength(0.1);
+            p_linear_force->SetCutOffLength(1.5);
             simulator.AddForce(p_linear_force);
 
             std::cout<<"=============================================="<<std::endl;
@@ -849,7 +849,7 @@ public:
             simulator.AddSimulationModifier(p_chemical_tracking_modifier);
         
             simulator.SetOutputDirectory("TestReactionSystemWithCells_OscillatingCase_meshWriters_nodeBased");
-            simulator.SetEndTime(10.0);
+            simulator.SetEndTime(4.0);
 
             MAKE_PTR(GeneralisedLinearSpringForce<2>, p_linear_force);
             p_linear_force->SetCutOffLength(1.5);

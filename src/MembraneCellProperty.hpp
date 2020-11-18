@@ -62,6 +62,8 @@ protected:
     //15/10/2020
     std::vector<double> mInitBulkBoundaryConcentrationVector;
 
+    unsigned mNumberOCalls_this_reaction_step =0;
+
 public:
 
     MembraneCellProperty();
@@ -77,6 +79,8 @@ public:
     virtual void UpdateMembraneConcentrationVector(std::vector<double>);
 
     virtual void UpdateCellConcentrationVector(std::vector<double>);
+
+    virtual void UpdateBulkConcentrationVector(std::vector<double>);
 
     virtual void PerformMembraneSystem(const std::vector<double>&, const std::vector<double>&, std::vector<double>&, std::vector<double>&);
 
@@ -96,6 +100,8 @@ public:
 
     void SetUpCellConcentrationVector(unsigned);
 
+    void SetUpBulkConcentrationVector(unsigned);
+
     void SetUpChangeCellConcentrationVector(unsigned);
 
     void SetUpChangeBulkConcentrationVector(unsigned);
@@ -110,6 +116,10 @@ public:
     void ReplaceBoundaryStateVariables(std::vector<double>&);
 
     void ReplaceChangeBoundaryStateVariables(std::vector<double>&);
+
+    void ResetReactionCalls();
+
+    unsigned GetReactionCalls();
 
     // set methods
 

@@ -1,4 +1,4 @@
-# Install script for directory: /home/chaste/src/projects/ChemicalChaste/test
+# Install script for directory: /home/chaste/src/projects/ChemChaste/test
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

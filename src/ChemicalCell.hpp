@@ -32,6 +32,7 @@ class ChemicalCell : public Cell
 {
 protected:
     using Cell::Divide;
+    //using Cell::ReadyToDivide;
 
     double mSplitRatio =0.5; // proportion of parent cell volume retained, rest goes to daughter 
 
@@ -53,6 +54,8 @@ public:
 
     virtual double SplitParentCellData(double);
 
+    //virtual bool ReadyToDivide();
+
     double GetSplitRation();
 
     void SetSplitRation(double);
@@ -73,7 +76,6 @@ ChemicalCell::ChemicalCell(
 
 CellPtr ChemicalCell::Divide()
 {
-
     // Check we're allowed to divide
     assert(!IsDead());
     assert(mCanDivide);
@@ -110,6 +112,7 @@ CellPtr ChemicalCell::Divide()
         daughter_property_collection.AddProperty(p_daughter_cell_vec_data);
     }
 
+
     // record the cell chemistry for splitting cell data
     AbstractChemistry* cellChemistry = new AbstractChemistry();
 
@@ -118,14 +121,13 @@ CellPtr ChemicalCell::Divide()
         ChemicalSrnModel* p_srn_model = static_cast<ChemicalSrnModel*>(mpSrnModel);
         cellChemistry -> AddChemistry(p_srn_model->GetCellChemistry()); // from SRN
     }
-    //std::cout<<cellChemistry -> GetNumberChemicals()<<std::endl;
+
     if(static_cast<SimpleChemicalThresholdCellCycleModel*>(mpCellCycleModel)->CellCycleType()=="Chemical")
     {
         SimpleChemicalThresholdCellCycleModel* p_cc_model = static_cast<SimpleChemicalThresholdCellCycleModel*>(mpCellCycleModel);
         cellChemistry -> AddChemistry(p_cc_model->GetThresholdChemistry()); // from cell cycle model
     }
-    
-    //std::cout<<cellChemistry -> GetNumberChemicals()<<std::endl;
+
     // transport property
     if(mCellPropertyCollection.HasProperty<TransportCellProperty>())
     {
@@ -134,7 +136,7 @@ CellPtr ChemicalCell::Divide()
         // add the cell chemistry due to transport
         cellChemistry -> AddChemistry(transportChemistry);
     }
-    //std::cout<<cellChemistry -> GetNumberChemicals()<<std::endl;
+
     // membrane property
     if(mCellPropertyCollection.HasProperty<MembraneCellProperty>())
     {
@@ -145,27 +147,16 @@ CellPtr ChemicalCell::Divide()
     }
 
 
-    //std::cout<<"Cell divide"<<std::endl;
-    //std::cout<<"Parent cell data"<<std::endl;
-
-    unsigned numberOfChemicals = cellChemistry -> GetNumberChemicals();
-    std::string chemicalName;
-
-    for(unsigned i=0; i<numberOfChemicals; i++)
-    {
-        chemicalName = cellChemistry -> GetChemicalNamesByIndex(i);
-        //std::cout<<chemicalName<<": "<<this->GetCellData()->GetItem(chemicalName)<<std::endl;
-    }
-
-
-    // based on the parent cell data detemrine the split ratio
+    // based on the parent cell data determine the split ratio
     DetermineSplitRation();
 
     // share the two cellDatas between the two cells, use cellChemistry
-    // halve chemical cell data
+    // split chemical cell data
     double parent_species_concentration=0.0;
     double new_parent_species_concentration=0.0;
     double daughter_species_concentration=0.0;
+    unsigned numberOfChemicals = cellChemistry -> GetNumberChemicals();
+
     for(unsigned i=0; i<numberOfChemicals; i++)
     {
         parent_species_concentration = this->GetCellData()->GetItem(cellChemistry -> GetChemicalNamesByIndex(i));
@@ -187,14 +178,19 @@ CellPtr ChemicalCell::Divide()
 
     // run through cell properties and create new objects for them 
     // transport property
-    daughter_property_collection = mCellPropertyCollection;
+    //daughter_property_collection = mCellPropertyCollection;
+
+
+
     if(mCellPropertyCollection.HasProperty<TransportCellProperty>())
     {
+        // parent property
         boost::shared_ptr<TransportCellProperty> transport_cell_property = boost::static_pointer_cast<TransportCellProperty>(mCellPropertyCollection.GetPropertiesType<TransportCellProperty>().GetProperty());
         AbstractChemistry* transportChemistry = transport_cell_property ->GetTransportReactionSystem()->GetCellChemistry();
 
         // create new transport cell property
         daughter_property_collection.RemoveProperty(transport_cell_property);
+        // use copy construtor
         boost::shared_ptr<TransportCellProperty> p_daughter_transport_property(new TransportCellProperty(*transport_cell_property));
         daughter_property_collection.AddProperty(p_daughter_transport_property);
 
@@ -221,9 +217,9 @@ CellPtr ChemicalCell::Divide()
     }
 
 
-    // create new cell
+    // create new chemical cell
     // Create daughter cell with modified cell property collection
-    CellPtr p_new_cell(new Cell(GetMutationState(), mpCellCycleModel->CreateCellCycleModel(), mpSrnModel->CreateSrnModel(), false, daughter_property_collection));
+    CellPtr p_new_cell(new ChemicalCell(GetMutationState(), mpCellCycleModel->CreateCellCycleModel(), mpSrnModel->CreateSrnModel(), false, daughter_property_collection));
     // Initialise properties of daughter cell
 
     p_new_cell->GetCellCycleModel()->InitialiseDaughterCell();
@@ -240,15 +236,17 @@ CellPtr ChemicalCell::Divide()
     std::vector<double> daughter_cell_threshold_species_concentrations(static_cast<SimpleChemicalThresholdCellCycleModel*>(p_new_cell->GetCellCycleModel())->GetNumberThresholdSpecies(),0.0);
 
     AbstractChemistry* thresholdChemistry = static_cast<SimpleChemicalThresholdCellCycleModel*>(this->GetCellCycleModel())->GetThresholdChemistry();
+    std::string chemicalName;
+
 
     for(unsigned i=0; i<numberOfChemicals; i++)
     {
         chemicalName = cellChemistry -> GetChemicalNamesByIndex(i);
-        //std::cout<<chemicalName<<": "<<p_cell_data->GetItem(chemicalName)<<std::endl;
 
-        if(thresholdChemistry->CheckChemical(new AbstractChemical(chemicalName)))
+        if(!thresholdChemistry->CheckChemical(new AbstractChemical(chemicalName)))
         {
             prime_cell_threshold_species_concentrations[thresholdChemistry->GetChemicalIndexByName(chemicalName)] = p_cell_data->GetItem(chemicalName);
+            //std::cout<<"parent concentration: "<<chemicalName<<" : "<<p_cell_data->GetItem(chemicalName)<<std::endl;
         }
     }
 
@@ -257,9 +255,10 @@ CellPtr ChemicalCell::Divide()
     {
         chemicalName = cellChemistry -> GetChemicalNamesByIndex(i);
         //std::cout<<chemicalName<<": "<<p_daughter_cell_data->GetItem(chemicalName)<<std::endl;
-        if(thresholdChemistry->CheckChemical(new AbstractChemical(chemicalName)))
+        if(!thresholdChemistry->CheckChemical(new AbstractChemical(chemicalName)))
         {
             daughter_cell_threshold_species_concentrations[thresholdChemistry->GetChemicalIndexByName(chemicalName)] = p_daughter_cell_data->GetItem(chemicalName);
+            //std::cout<<"daughter concentration: "<<chemicalName<<" : "<<p_daughter_cell_data->GetItem(chemicalName)<<std::endl;
         }
     }
 
@@ -271,14 +270,25 @@ CellPtr ChemicalCell::Divide()
     static_cast<ChemicalSrnModel*>(this->GetSrnModel())->UpdateOdeStatesFromCellData();
     static_cast<ChemicalSrnModel*>(p_new_cell->GetSrnModel())->UpdateOdeStatesFromCellData();
 
-
-
+    
     return p_new_cell;
 }
 
+/*
+bool ChemicalCell::ReadyToDivide()
+{
+    std::cout<<"ChemicalCell::ReadyToDivide()"<<std::endl;
+    bool readyToDivide = Cell::ReadyToDivide();
+    std::cout<<"ReadtToDivide? "<<readyToDivide<<std::endl;
+    return readyToDivide;
+}
+*/
+
+
+
 void ChemicalCell::DetermineSplitRation()
 {
-    mSplitRatio =0.5;
+    mSplitRatio =0.7;
 }
 
 

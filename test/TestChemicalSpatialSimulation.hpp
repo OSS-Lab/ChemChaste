@@ -62,7 +62,7 @@ public:
         //------------------------------------------------------------------------------//
 
         // Variables for the user modify
-        std::string dataFileRoot = "/home/chaste/projects/ChemicalChaste/src/Data/TemplateChemicalSimulation/";
+        std::string dataFileRoot = "/home/chaste/projects/ChemChaste/src/Data/TemplateChemicalSimulation/";
         std::string domainFilename = "Domain.csv";
         std::string domainKeyFilename = "DomainKey.csv";
         std::string odeLabelFilename = "NodeSelector.csv";
@@ -191,7 +191,7 @@ public:
         //------------------------------------------------------------------------------//
 
         // Variables for the user modify
-        std::string dataFileRoot = "/home/chaste/projects/ChemicalChaste/src/Data/MembraneModel/";
+        std::string dataFileRoot = "/home/chaste/projects/ChemChaste/src/Data/MembraneModel/";
         std::string domainFilename = "MembraneDomain.csv";
         std::string domainKeyFilename = "MembraneDomainLabelKey.csv";
         std::string odeLabelFilename = "MembraneOdeSelector.csv";

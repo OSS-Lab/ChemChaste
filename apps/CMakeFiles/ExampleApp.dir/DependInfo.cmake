@@ -4,7 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/home/chaste/src/projects/ChemicalChaste/apps/src/ExampleApp.cpp" "/home/chaste/projects/ChemicalChaste/apps/CMakeFiles/ExampleApp.dir/src/ExampleApp.cpp.o"
+  "/home/chaste/src/projects/ChemChaste/apps/src/ExampleApp.cpp" "/home/chaste/projects/ChemChaste/apps/CMakeFiles/ExampleApp.dir/src/ExampleApp.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 
@@ -17,7 +17,7 @@ set(CMAKE_TARGET_DEFINITIONS_CXX
   "CHASTE_SUNDIALS_VERSION=30101"
   "CHASTE_VTK"
   "CHASTE_XERCES"
-  "COMPONENT_SOURCE_DIR=\"/home/chaste/src/projects/ChemicalChaste\""
+  "COMPONENT_SOURCE_DIR=\"/home/chaste/src/projects/ChemChaste\""
   "TETLIBRARY"
   "TRILIBRARY"
   "XERCES_STATIC_LIBRARY"
@@ -25,7 +25,7 @@ set(CMAKE_TARGET_DEFINITIONS_CXX
 
 # The include file search paths:
 set(CMAKE_CXX_TARGET_INCLUDE_PATH
-  "src/projects/ChemicalChaste/src"
+  "src/projects/ChemChaste/src"
   "src"
   "/usr/include/hdf5/openmpi"
   "/usr/lib/petscdir/petsc3.9/x86_64-linux-gnu-real/include"
@@ -94,7 +94,7 @@ set(CMAKE_CXX_TARGET_INCLUDE_PATH
 
 # Targets to which this target links.
 set(CMAKE_TARGET_LINKED_INFO_FILES
-  "/home/chaste/projects/ChemicalChaste/CMakeFiles/chaste_project_ChemicalChaste.dir/DependInfo.cmake"
+  "/home/chaste/projects/ChemChaste/CMakeFiles/chaste_project_ChemicalChaste.dir/DependInfo.cmake"
   "/home/chaste/cell_based/CMakeFiles/chaste_cell_based.dir/DependInfo.cmake"
   "/home/chaste/pde/CMakeFiles/chaste_pde.dir/DependInfo.cmake"
   "/home/chaste/ode/CMakeFiles/chaste_ode.dir/DependInfo.cmake"
