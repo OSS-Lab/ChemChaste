@@ -1,6 +1,8 @@
 #ifndef TESTCHEMCHASTE_HPP_
 #define TESTCHEMCHASTE_HPP_
 
+#include "Cell_virtual.hpp"
+#include "BoundaryConditionsContainer_extended.hpp"
 // chaste includes
 #include "ChasteHeaders.hpp"
 
@@ -9,6 +11,7 @@
 
 //ChemChaste includes
 #include "ChemChasteHeaders.hpp"
+#include "ChemicalCellFromFile.hpp"
 
 // test specific include
 #include "ChemicalStructuresForTests.hpp"
@@ -22,8 +25,8 @@ struct ControlStruct {
     bool FisherDiffusiveInhibition = false;
     bool ReactionSystemWithoutCellsUsingInhomogenousSolver = false;
     bool ReactionSystemInhibitedDiffusionWithoutCellsUsingInhomogenousSolver = false;
-    bool ReactionSystemWithCells = true;
-    bool ReactionSystemWithNodeBasedCells = true;
+    bool ReactionSystemWithCells = false;
+    bool ReactionSystemWithNodeBasedCells = false;
 } control;
 
 class TestChemChaste : public AbstractCellBasedTestSuite
@@ -865,6 +868,105 @@ public:
     }
 
 
+    void TestCellLayerRead()
+    {
+        std::string dataFileRoot = "/home/chaste/projects/ChemChaste/DataInput/Data/MulticellCase/DomainField/";
+        std::string cellFileRoot = "/home/chaste/projects/ChemChaste/DataInput/Data/MulticellCase/Cell/";
+        std::string cellLabelFilename = "CellLayerTopology.csv";
+        std::string cellKeyFilename = "CellLayerKey.csv";
+        std::string domainFilename = "Domain.csv";
+        std::string domainKeyFilename = "DomainKey.csv";
+        std::string odeLabelFilename = "NodeSelector.csv";
+        std::string odeKeyFilename = "OdeReactionFileKey.csv";
+        std::string diffusionFilename = "DiffusionDatabaseFile.csv";
+        std::string initialConditionsFilename = "InitialConditionFile.csv";
+        std::string boundaryConditionsFilename = "BoundaryConditionFile.csv";
+        
+        // System properties
+        const unsigned probDim =4; // need to set manually to the number of diffusive variables for the pde solver to solve
+        const unsigned spaceDim=2;
+        const unsigned elementDim=2;
+
+        //TetrahedralMesh<elementDim,spaceDim>* p_field = new TetrahedralMesh<elementDim,spaceDim>();
+        // generate domain
+        // run the domain field set up and parse files
+        ChemicalDomainFieldForCellCoupling<elementDim,spaceDim,probDim>* p_Pde_field = new ChemicalDomainFieldForCellCoupling<elementDim,spaceDim,probDim>(dataFileRoot,cellFileRoot+cellLabelFilename,cellFileRoot+cellKeyFilename,dataFileRoot+domainFilename, dataFileRoot+domainKeyFilename, dataFileRoot+odeLabelFilename, dataFileRoot+odeKeyFilename, dataFileRoot+diffusionFilename, dataFileRoot+initialConditionsFilename, dataFileRoot+boundaryConditionsFilename);
+
+        //TetrahedralMesh<elementDim,spaceDim>* p_cell_mesh = p_Pde_field->rGetCellMesh();
+    std::cout<<"here"<<std::endl;
+        TetrahedralMesh<elementDim,spaceDim>* p_cell_mesh = p_Pde_field->rGetCellMesh();
+        //std::vector<unsigned> location_indices = generator.GetCellLocationIndices();
+  std::cout<<"here"<<std::endl;
+
+        NodesOnlyMesh<spaceDim> mesh;
+        mesh.ConstructNodesWithoutMesh(*p_cell_mesh, 1.5);
+
+        std::cout<<"here"<<std::endl;
+        std::vector<CellPtr> cells;
+        // assume cell at each node in cell layer mesh
+        std::cout<<"here"<<std::endl;
+        std::string cell_label;
+        std::string cell_key;
+        std::string given_cell_root;
+        for (unsigned i=0; i<p_cell_mesh->GetNumNodes(); i++)
+        {
+            cell_label = p_Pde_field->GetCellLabelByIndex(i);
+            cell_key = p_Pde_field->ReturnCellKeyFromCellLabel(cell_label);
+            std::cout<<"Cell i: "<<i<<" label: "<<cell_label<<std::endl;
+            std::cout<<"Cell i: "<<i<<" label: "<<cell_key<<std::endl;
+            given_cell_root = cellFileRoot+cell_key+"/";
+
+            ChemicalCellFromFile* p_cell_reader = new ChemicalCellFromFile(
+                                given_cell_root+"SpeciesThreshold.csv", 
+                                given_cell_root+"Srn.txt",
+                                given_cell_root+"InitialCellConcentrations.csv",
+                                given_cell_root+"TransportReactions.txt",
+                                given_cell_root+"MembraneReactions.txt"
+                                );
+
+            cells.push_back(p_cell_reader -> GetCellPtr());
+        }   
+
+
+        NodeBasedCellPopulation<2> cell_population(mesh, cells);
+        
+        // Create a ChasteCuboid on which to base the finite element mesh used to solve the PDE
+        ChastePoint<2> lower(-4.0, -4.0);
+        ChastePoint<2> upper(7.0, 7.0);
+        MAKE_PTR_ARGS(ChasteCuboid<2>, p_cuboid, (lower, upper));
+
+        std::cout<<"initial conditions"<<std::endl;
+        std::vector<double> init_conditions = p_Pde_field -> GetInitialNodeConditions();
+        for(unsigned i=0; i<init_conditions.size(); i++)
+        {
+            std::cout<<init_conditions[i]<<std::endl;
+        }
+
+        
+        boost::shared_ptr<ParabolicBoxDomainPdeSystemModifier<elementDim,spaceDim,probDim>> p_pde_modifier(new ParabolicBoxDomainPdeSystemModifier<elementDim,spaceDim,probDim>(p_Pde_field, p_cuboid));
+        
+        boost::shared_ptr<ChemicalTrackingModifier<2,2>> p_chemical_tracking_modifier(new ChemicalTrackingModifier<2,2>()); //= chemical_structure -> rGetPtrChemicalTrackingModifier();
+        
+        OffLatticeSimulation<2> simulator(cell_population);
+
+        simulator.AddSimulationModifier(p_pde_modifier);
+
+        simulator.AddSimulationModifier(p_chemical_tracking_modifier);
+    
+        simulator.SetOutputDirectory("TestNodeBasedCellsFromFile");
+        simulator.SetEndTime(10.0);
+
+        MAKE_PTR(GeneralisedLinearSpringForce<2>, p_linear_force);
+        p_linear_force->SetCutOffLength(1.5);
+        simulator.AddForce(p_linear_force);
+
+        std::cout<<"=============================================="<<std::endl;
+        std::cout<<"OffLatticeSimulation -> AbstractCellBasedSumulation :: Solve()"<<std::endl;
+        std::cout<<"=============================================="<<std::endl;
+        simulator.Solve();
+
+
+    }
 };
 
 #endif

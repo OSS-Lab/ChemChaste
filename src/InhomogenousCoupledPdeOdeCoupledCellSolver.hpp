@@ -978,6 +978,7 @@ template<unsigned ELEMENT_DIM, unsigned SPACE_DIM, unsigned PROBLEM_DIM>
 void InhomogenousCoupledPdeOdeCoupledCellSolver<ELEMENT_DIM, SPACE_DIM, PROBLEM_DIM>::SolveAndWriteResultsToFile()
 {
     //std::cout<<"InhomogenousCoupledPdeOdeCoupledCellSolver - SolveAndWriteResultsToFile - start"<<std::endl;
+   
     // A number of methods must have been called prior to this method
     if (this->mOutputDirectory == "")
     {
@@ -1002,6 +1003,7 @@ void InhomogenousCoupledPdeOdeCoupledCellSolver<ELEMENT_DIM, SPACE_DIM, PROBLEM_
 
 #ifdef CHASTE_VTK
     // Create a .pvd output file
+
     OutputFileHandler output_file_handler(this->mOutputDirectory, mClearOutputDirectory);
     mpVtkMetaFile = output_file_handler.OpenOutputFile("results.pvd");
     *mpVtkMetaFile << "<?xml version=\"1.0\"?>\n";

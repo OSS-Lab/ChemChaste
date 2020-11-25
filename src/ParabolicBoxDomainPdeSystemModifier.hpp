@@ -161,7 +161,6 @@ void ParabolicBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::Upd
 
     this->UpdateCellData(rCellPopulation);
     mConditionsInterpolated = true;
-
     //std::cout<<"ParabolicBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::UpdateAtEndOfTimeStep - end"<<std::endl;
 }
 

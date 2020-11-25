@@ -1,6 +1,7 @@
 #ifndef CHEMICALCELL_HPP_
 #define CHEMICALCELL_HPP_
 
+#include "Cell_virtual.hpp"
 #include <boost/utility.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
