@@ -212,13 +212,13 @@ def determineExecutable(config_file):
 
         if pde_substring in line:
             pde_number = line.split("=")[1].strip()
-            print("found number_of_reaction_pdes ="+str(pde_number))
+            #print("found number_of_reaction_pdes ="+str(pde_number))
         elif space_substring in line:
             space_dim = line.split("=")[1].strip()
-            print("found spatial_dimensions ="+str(space_dim))
+            #print("found spatial_dimensions ="+str(space_dim))
         elif element_substring in line:
             element_dim = line.split("=")[1].strip()
-            print("found FE_element_dimension ="+str(element_dim))
+            #print("found FE_element_dimension ="+str(element_dim))
 
     config.close() 
 
