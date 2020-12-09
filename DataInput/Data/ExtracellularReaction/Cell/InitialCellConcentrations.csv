@@ -1,12 +1,12 @@
 #species, concentration, perturb?
-E2S,1.0,true
-E2_,1.0,true
-S,1.0,true
-NAD,1.0,true
-ADP,1.0,true
-P,1.0,true
-NADH,1.0,true
-ATP,1.0,true
-Oxygen,1.0,true
-H2O,1.0,true
-Biomass,1.0,true
+E2S,0.0,false
+E2_,1.0,false
+S,0.0,false
+NAD,1.0,false
+ADP,1.0,false
+P,1.0,false
+NADH,1.0,false
+ATP,1.0,false
+Oxygen,1.0,false
+H2O,1.0,false
+Biomass,1.0,false

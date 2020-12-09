@@ -123,6 +123,11 @@
 #include "PdeSchnackenbergCoupledPdeOdeSystem.hpp"
 #include "OdeSchnackenbergCoupledPdeOdeSystem.hpp"
 
+// Fisher equation
+#include "InhomogenousFisherPde.hpp"
+#include "InhomogenousFisherDiffusiveInhibitionPde.hpp"
+
+
 #include "AbstractChemicalOdeSystem.hpp"
 #include "AbstractChemicalOdeForCoupledPdeSystem.hpp"
 

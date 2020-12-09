@@ -21,7 +21,7 @@
 
 struct ControlStruct {
     bool ReactionSystemWithoutCells = false;
-    bool Fisher = false;
+    bool Fisher = true;
     bool FisherDiffusiveInhibition = false;
     bool ReactionSystemWithoutCellsUsingInhomogenousSolver = false;
     bool ReactionSystemInhibitedDiffusionWithoutCellsUsingInhomogenousSolver = false;
@@ -209,7 +209,7 @@ public:
             unsigned rowNum = 0;
             for (unsigned i=0; i<p_mesh->GetNumNodes(); i++)
             {   // set as being a random perturbation about the boundary values
-                std::cout<<"node number: "<<i<<std::endl;
+               
                 if(spaceDim==2)
                 {
                     columnNum = 0;
@@ -222,7 +222,7 @@ public:
                     }
                     
                     columnNum = i - (rowNum-1)*(MeshDimensions[0]+1);
-                    std::cout<<"Column number: "<<columnNum<<" rowNum: "<<rowNum<<" mesh dim: "<<MeshDimensions[0]<<std::endl;
+                 
                     if(columnNum<10)
                     {
                         for(unsigned pdeDim=0; pdeDim<probDim; pdeDim++)
@@ -272,9 +272,9 @@ public:
 
             // solver properties
         
-            solver.SetTimes(0, 60);
-            solver.SetTimeStep(1);
-            solver.SetSamplingTimeStep(1);
+            solver.SetTimes(0, 200);
+            solver.SetTimeStep(1e-1);
+            solver.SetSamplingTimeStep(1e-1);
             solver.SetOutputDirectory("TestFisherPaper");
             solver.SetInitialCondition(initial_condition);
             // solve
@@ -359,7 +359,7 @@ public:
             unsigned rowNum = 0;
             for (unsigned i=0; i<p_mesh->GetNumNodes(); i++)
             {   // set as being a random perturbation about the boundary values
-                std::cout<<"node number: "<<i<<std::endl;
+              
                 if(spaceDim==2)
                 {
                     columnNum = 0;
@@ -372,7 +372,6 @@ public:
                     }
                     
                     columnNum = i - (rowNum-1)*(MeshDimensions[0]+1);
-                    std::cout<<"Column number: "<<columnNum<<" rowNum: "<<rowNum<<" mesh dim: "<<MeshDimensions[0]<<std::endl;
                     if(columnNum<10)
                     {
                         for(unsigned pdeDim=0; pdeDim<probDim; pdeDim++)
@@ -414,9 +413,9 @@ public:
 
             // solver properties
         
-            solver.SetTimes(0, 60);
+            solver.SetTimes(0,      00);
             solver.SetTimeStep(1);
-            solver.SetSamplingTimeStep(1);
+            solver.SetSamplingTimeStep(1e-1);
             solver.SetOutputDirectory("TestFisherPaperDiffusionInhibition_2_close_regions");
             solver.SetInitialCondition(initial_condition);
             // solve
@@ -967,6 +966,10 @@ public:
 
 
     }
+
+
+
+
 };
 
 #endif

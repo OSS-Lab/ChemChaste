@@ -547,7 +547,7 @@ ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ChemicalD
             mpCellMesh = dynamic_cast<TetrahedralMesh<ELEMENT_DIM,SPACE_DIM>*>(p_generator -> GetMesh());
 
             SetCellMeshGenerator(p_generator);
-            std::cout<<"set cell honeycomb mesh: "<<mpCellMesh->GetNumNodes()<<std::endl;
+  
             SetCellMesh(mpCellMesh);
         }
         else
@@ -568,7 +568,7 @@ ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ChemicalD
                 default:
                     NEVER_REACHED;
             }
-            std::cout<<"set tetrahedral cell mesh: "<<mpCellMesh->GetNumNodes()<<std::endl;
+
             SetCellMesh(mpCellMesh);
         }
     }

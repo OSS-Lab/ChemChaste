@@ -133,10 +133,8 @@ void ChemicalDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::SetUpDomai
     }
     
     // populate abstract domain with a chemistry
-
     // map odes systems to nodes 
     FormReactionSystemAtNodes();
-
     // update properties of the domain field
     //DeriveSystemProperties();
     DeriveExtendedSystemProperties();
@@ -274,6 +272,7 @@ void ChemicalDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::DeriveSyst
 template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
 void ChemicalDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::DeriveExtendedSystemProperties()
 {
+
     // determine the system properties from the read in reaction systems
     AbstractDiffusiveChemistry* p_diffusive_chemistry = new AbstractDiffusiveChemistry();
 

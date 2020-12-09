@@ -519,7 +519,7 @@ void InhomogenousCoupledPdeOdeSolverTemplated<ELEMENT_DIM, SPACE_DIM, PROBLEM_DI
     TimeStepper stepper(this->mTstart, this->mTend, mSamplingTimeStep);
 
 
-    // Main time loop
+    // Main time loop, interate the stepper
     while (!stepper.IsTimeAtEnd())
     {   
         // Reset start and end times
