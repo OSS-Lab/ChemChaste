@@ -1,6 +1,6 @@
 #species, concentration, perturb?
-E2S,0.0,false
-E2_,0.0,false
+ES,0.0,false
+E,0.0,false
 S,0.0,false
 NAD,1.0,false
 ADP,1.0,false

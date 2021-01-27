@@ -69,6 +69,8 @@ protected:
 
     std::vector<std::vector<std::string>> mCellKeys;
 
+    std::vector<std::string> mCellKeyVector;
+
     std::vector<unsigned> mCartesianCellLayerDimensions; // (x, y) of the input csv file grid
 
     std::vector<double> mCartesianCellLayerScaleXY; // (Sx, Sy) scale factor of the input csv grid, default (1,1)
@@ -165,14 +167,17 @@ public:
 
     std::string ReturnMappedCellLabel(unsigned, unsigned, std::vector<double>);
 
-    std::string ReturnCellLabelAtPosition(const c_vector<double,2>&);
+    std::string ReturnCellLabelAtPosition(const c_vector<double,SPACE_DIM>&);
 
+    unsigned ReturnUnsignedIDFromCellKeyString(std::string);
 
     void SetCellLabels(std::vector<std::vector<std::string>>);
 
     void SetCellLabelVector(std::vector<std::string>);
 
     void SetCellKeys(std::vector<std::vector<std::string>>);
+
+    void SetCellKeyVector(std::vector<std::string>);
 
     void SetCartesianCellLayerDimensions(std::vector<unsigned>);
 
@@ -187,6 +192,8 @@ public:
     std::vector<std::string> GetCellLabelVector();
 
     std::vector<std::vector<std::string>> GetCellKeys();
+
+    std::vector<std::string> GetCellKeyVector();
 
     void SetCartesianChasteCellDimensions(std::vector<unsigned>);
 
@@ -206,6 +213,11 @@ public:
     boost::shared_ptr<InhomogenousParabolicPdeForCoupledOdeSystemTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>> ReturnSharedPtrPdeSystem();
   
     boost::shared_ptr<BoundaryConditionsContainer<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM> > ReturnSharedPtrBoundaryConditionsContainer();
+
+
+    void PrintCellIDWithKey();
+
+    void PrintCellIDWithCellLabel();
 
     // set methods
 
@@ -329,6 +341,9 @@ ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ChemicalD
 
         SetUpDomainFromFiles();
 
+        PrintCellIDWithKey();
+
+        PrintCellIDWithCellLabel();
     }
 
     template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
@@ -345,6 +360,8 @@ ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ChemicalD
         FormCellMesh();
         // label the newly formed mesh
         LabelCellMeshNodally();
+
+        PrintCellIDWithCellLabel();
 
         mIsCellMeshGenerated = true;
     }
@@ -602,7 +619,7 @@ ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ChemicalD
 
 
     template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
-    std::string ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ReturnCellLabelAtPosition(const c_vector<double,2>& position)
+    std::string ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ReturnCellLabelAtPosition(const c_vector<double,SPACE_DIM>& position)
     {
         // search through the cell labels to provide the specific label at the given position
         std::vector<unsigned> labelIndex(SPACE_DIM,0);
@@ -629,7 +646,21 @@ ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ChemicalD
     }
 
 
+    template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
+    unsigned ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ReturnUnsignedIDFromCellKeyString(std::string keyString)
+    {
+        std::vector<std::string> keyVector = GetCellKeyVector();
 
+        for(unsigned i=0; i<keyVector.size();i++)
+        {
+            if(keyVector[i]==keyString)
+            {
+                return i;
+            }
+        }
+        std::cout<<"Error: unsigned ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ReturnUnsignedIDFromCellKeyString(std::string) index out of bounds"<<std::endl;
+        return keyVector.size()+1;
+    }
 
 
     template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
@@ -648,6 +679,10 @@ ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ChemicalD
         std::vector<std::vector<std::string>> cellKeys;
 
         cellKeys = AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ReadMatrix(mCellKeyFilename);
+
+        // set the cell key vector for identifying the cell/strain type
+
+        SetCellKeyVector(AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ReturnUnique(cellKeys));
 
         SetCellKeys(cellKeys);
     }
@@ -762,12 +797,6 @@ ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ChemicalD
             }
         }
 
-        std::cout<<"labelXIndex: "<<labelXIndex<<std::endl;
-        std::cout<<"labelYIndex: "<<labelYIndex<<std::endl;
-        std::cout<<"label: "<<mCellLabels[labelYIndex][labelXIndex]<<std::endl;
-
-        std::cout<<"--------"<<std::endl;
-
         return mCellLabels[labelYIndex][labelXIndex];
     }
 
@@ -778,17 +807,34 @@ ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ChemicalD
         SetNodeCells(LabelNodesWithCells());
     }
 
+
+    template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
+    void ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::PrintCellIDWithKey()
+    {
+        std::vector<std::string> keyVector = GetCellKeyVector();
+        std::cout<<"CellID,CellKey"<<std::endl;
+        for(unsigned i=0; i<keyVector.size(); i++)
+        {
+            std::cout<<ReturnUnsignedIDFromCellKeyString(keyVector[i])<<","<<keyVector[i]<<std::endl;
+        }
+    }
+
+    template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
+    void ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::PrintCellIDWithCellLabel()
+    {
+        std::vector<std::string> labelVector = GetCellLabelVector();
+        std::cout<<"CellID,CellKey"<<std::endl;
+        for(unsigned i=0; i<labelVector.size(); i++)
+        {
+            std::cout<<ReturnUnsignedIDFromCellKeyString(ReturnCellKeyFromCellLabel(labelVector[i]))<<","<<labelVector[i]<<std::endl;
+        }
+    }
+
     template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
     void ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::SetNodeCells(std::vector<std::string> nodeCells)
     {
         mCellNodes = nodeCells;
     }
-
-
-
-
-
-
 
 
     template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
@@ -807,6 +853,12 @@ ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ChemicalD
     void ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::SetCellKeys(std::vector<std::vector<std::string>> cellKeys)
     {
         mCellKeys = cellKeys;
+    }
+
+    template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
+    void ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::SetCellKeyVector(std::vector<std::string> cellKeyVector)
+    {
+        mCellKeyVector = cellKeyVector;
     }
 
     template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
@@ -860,6 +912,12 @@ ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ChemicalD
     std::vector<std::vector<std::string>> ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::GetCellKeys()
     {
         return mCellKeys;
+    }
+
+    template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
+    std::vector<std::string> ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::GetCellKeyVector()
+    {
+        return mCellKeyVector;
     }
 
     template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>

@@ -1,5 +1,5 @@
 # initial conditions for the states: state,subdomain,value,perturb?
-U,Bulk,2.1,false
-U,Film,2.0,false
-V,Bulk,0.85,false
-V,Film,0.75,false
+U,Bulk,2.5,true
+U,Film,2.5,true
+V,Bulk,1.0,true
+V,Film,1.0,true

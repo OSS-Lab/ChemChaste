@@ -22,6 +22,7 @@
 #include "AbstractChemistry.hpp"
 #include "MembraneCellProperty.hpp"
 #include "TransportCellProperty.hpp"
+#include "CellAnalyticsProperty.hpp"
 
 class AbstractCellCycleModel; // Circular definition (cells need to know about cycle models and vice-versa).
 class AbstractSrnModel; // Circular definition (cells need to know about subcellular reaction network models and vice-versa).
@@ -178,11 +179,11 @@ CellPtr ChemicalCell::Divide()
 
 
     // run through cell properties and create new objects for them 
-    // transport property
+    
     //daughter_property_collection = mCellPropertyCollection;
 
 
-
+    // transport property
     if(mCellPropertyCollection.HasProperty<TransportCellProperty>())
     {
         // parent property
@@ -205,7 +206,7 @@ CellPtr ChemicalCell::Divide()
     if(mCellPropertyCollection.HasProperty<MembraneCellProperty>())
     {
         boost::shared_ptr<MembraneCellProperty> membrane_cell_property = boost::static_pointer_cast<MembraneCellProperty>(mCellPropertyCollection.GetPropertiesType<MembraneCellProperty>().GetProperty());
-        AbstractChemistry* membraneChemistry = membrane_cell_property ->GetMembraneReactionSystem()->GetCellChemistry();
+
 
         // create new membrane cell property
         daughter_property_collection.RemoveProperty(membrane_cell_property);
@@ -215,6 +216,24 @@ CellPtr ChemicalCell::Divide()
         // split the properties betwene the two cells
         membrane_cell_property->PreparePostDivisionParent(mSplitRatio);
         p_daughter_membrane_property->PreparePostDivisionDaughter(*membrane_cell_property, mSplitRatio);
+    }
+
+    // cellAnalytics property
+    if(mCellPropertyCollection.HasProperty<CellAnalyticsProperty>())
+    {
+        // parent property
+        boost::shared_ptr<CellAnalyticsProperty> cellAnalytics_cell_property = boost::static_pointer_cast<CellAnalyticsProperty>(mCellPropertyCollection.GetPropertiesType<CellAnalyticsProperty>().GetProperty());
+
+        // create new transport cell property
+        daughter_property_collection.RemoveProperty(cellAnalytics_cell_property);
+        // use copy construtor
+        boost::shared_ptr<CellAnalyticsProperty> p_daughter_cellAnalytics_property(new CellAnalyticsProperty(*cellAnalytics_cell_property));
+        daughter_property_collection.AddProperty(p_daughter_cellAnalytics_property);
+
+        // split the properties betwene the two cells
+        cellAnalytics_cell_property->PreparePostDivisionParent(mSplitRatio);
+        p_daughter_cellAnalytics_property->PreparePostDivisionDaughter(*cellAnalytics_cell_property, mSplitRatio);
+
     }
 
 
@@ -289,7 +308,7 @@ bool ChemicalCell::ReadyToDivide()
 
 void ChemicalCell::DetermineSplitRation()
 {
-    mSplitRatio =0.7;
+    mSplitRatio =0.5;
 }
 
 

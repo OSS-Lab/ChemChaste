@@ -1,0 +1,4 @@
+# Transport across membrane, Bulk <-> Cell
+MassActionTransportReaction : Oxygen <-> Oxygen ;  kf = 0.1 kr = 0.1
+MassActionTransportReaction : ES <-> ES ;  kf = 0.1 kr = 0.1
+MassActionTransportReaction : E <-> E ;  kf = 0.1 kr = 0.1

@@ -1,0 +1,2 @@
+# Reaction at membrane, Bulk <-> Bulk | Cell <-> Cell
+MassActionCoupledMembraneReaction : S <-> S | S <-> S ;  kf = 0.0 kr = 0.0

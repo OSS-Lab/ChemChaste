@@ -43,6 +43,7 @@
 #include "CellAgesWriter.hpp"
 #include "CellAncestorWriter.hpp"
 #include "CellAppliedForceWriter.hpp"
+#include "CellAnalyticsWriter.hpp"
 
 
 // chemChaste headers
@@ -85,7 +86,7 @@
 #include "ChemicalTrackingModifier.hpp"
 
 #include "ChemicalCell.hpp"
-
+#include "ComplexCell.hpp"
 
 
 
@@ -102,7 +103,7 @@
 #include "ChemicalCellProperty.hpp"
 #include "ExtendedCellProperty.hpp"
 #include "MembraneCellProperty.hpp"
-
+#include "CellAnalyticsProperty.hpp"
 
 // chemical includes
 #include "AbstractChemical.hpp"
@@ -133,7 +134,7 @@
 
 
 #include "ChemicalCellFromFile.hpp"
-
+#include "ComplexCellFromFile.hpp"
 
 
 #include "AbstractPdeSystemModifier.hpp"

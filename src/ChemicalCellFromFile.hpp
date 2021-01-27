@@ -10,6 +10,7 @@
 #include "InitialCellConditionsFromFile.hpp"
 #include "TransportCellPropertyFromFile.hpp"
 #include "MembraneCellPropertyFromFile.hpp"
+#include "CellAnalyticsPropertyFromCellID.hpp"
 
 
 class ChemicalCellFromFile
@@ -25,6 +26,8 @@ protected:
     boost::shared_ptr<MembraneCellProperty> mp_cell_membrane;
 
     boost::shared_ptr<TransportCellProperty> mp_cell_transport;
+
+    boost::shared_ptr<CellAnalyticsProperty> mp_cell_analytics;
 
     std::string mCellCycleFilename;
 
@@ -46,6 +49,11 @@ protected:
 
     bool mIsMembranePropertySet = false;
 
+    unsigned mCellID;
+
+    bool mIsCellIDSet = false;
+
+
 
     StateVariableRegister* mpFullChemicalStateRegister; 
 
@@ -59,7 +67,9 @@ public:
                             std::string srnFilename="",
                             std::string initialConditionFilename="",
                             std::string transportPropertyFilename="",
-                            std::string membranePropertyFilename="");
+                            std::string membranePropertyFilename="",
+                            unsigned cellID =0,
+                            bool isCellIDSet = false);
 
     virtual ~ChemicalCellFromFile()
     {
@@ -85,6 +95,8 @@ public:
     boost::shared_ptr<MembraneCellProperty> GetMembraneCellProperty();
 
     boost::shared_ptr<TransportCellProperty> GetTransportCellProperty();
+    
+    boost::shared_ptr<CellAnalyticsProperty> GetCellAnalyticsProperty();
 
     ChemicalSrnModel* GetChemicalSrnModel();
 
@@ -110,6 +122,12 @@ public:
 
     bool GetIsMembranePropertySet();
 
+    unsigned GetCellID();
+
+    bool GetIsCellIDSet();
+
+
+
     StateVariableRegister* GetFullChemicalStateRegister();
 
     std::vector<std::string> GetFullChemicalNamesVector();
@@ -127,6 +145,8 @@ public:
 
     void SetTransportCellProperty(boost::shared_ptr<TransportCellProperty>);
 
+    void SetCellAnalyticsProperty(boost::shared_ptr<CellAnalyticsProperty>);
+
     void SetChemicalSrnModel(ChemicalSrnModel*);
 
     void SetChemicalCellCycleModel(SimpleChemicalThresholdCellCycleModel*);
@@ -141,6 +161,7 @@ public:
 
     void SetMembranePropertyFilename(std::string);
 
+
     void SetFullChemicalStateRegister(StateVariableRegister*);
 
 
@@ -151,12 +172,16 @@ ChemicalCellFromFile::ChemicalCellFromFile(
                         std::string srnFilename,
                         std::string initialConditionFilename,
                         std::string transportPropertyFilename,
-                        std::string membranePropertyFilename)
+                        std::string membranePropertyFilename,
+                        unsigned cellID,
+                        bool isCellIDSet)
         :   mCellCycleFilename(cellCycleFilename),
             mSrnFilename(srnFilename),
             mInitialConditionsFilename(initialConditionFilename),
             mTransportPropertyFilename(transportPropertyFilename),
-            mMembranePropertyFilename(membranePropertyFilename)
+            mMembranePropertyFilename(membranePropertyFilename),
+            mCellID(cellID),
+            mIsCellIDSet(isCellIDSet)
 {
 
     if(mCellCycleFilename != "")
@@ -192,6 +217,15 @@ ChemicalCellFromFile::ChemicalCellFromFile(
 
         SetMembraneCellProperty(p_cell_membrane);
     }
+
+    
+    if(mIsCellIDSet)
+    {
+        boost::shared_ptr<CellAnalyticsProperty> p_cell_analytics(new CellAnalyticsProperty());
+
+        SetCellAnalyticsProperty(p_cell_analytics);
+    }
+
 
     SetUpSRNandCellCycle();
 
@@ -293,6 +327,18 @@ void ChemicalCellFromFile::SetUpCellProperties()
 
         mp_cell_membrane -> SetMembraneThickness(5.0);
     }
+
+    if(mIsCellIDSet)
+    {
+        CellAnalyticsPropertyFromCellID* p_cell_analytics_property_from_cellID = new CellAnalyticsPropertyFromCellID(mCellID);
+
+        p_cell_analytics_property_from_cellID -> SetUpCellAnalyticsProperty(mpCell);
+
+        mp_cell_analytics = p_cell_analytics_property_from_cellID -> GetCellAnalyticsProperty();
+    }
+
+
+
     //std::cout<<"ChemicalCellFromFile::SetUpCellProperties - end"<<std::endl;
 }
 
@@ -340,6 +386,11 @@ void ChemicalCellFromFile::SetUpCellObject()
     if(mIsMembranePropertySet)
     {
         collection.AddProperty(mp_cell_membrane);
+    }
+
+    if(mIsCellIDSet)
+    {
+        collection.AddProperty(mp_cell_analytics);
     }
 
     // check if srn and cell cycle are set, if not provide default models
@@ -405,7 +456,10 @@ boost::shared_ptr<TransportCellProperty> ChemicalCellFromFile::GetTransportCellP
     return mp_cell_transport;
 }
 
-
+boost::shared_ptr<CellAnalyticsProperty> ChemicalCellFromFile::GetCellAnalyticsProperty()
+{
+    return mp_cell_analytics;
+}
 
 
 ChemicalSrnModel* ChemicalCellFromFile::GetChemicalSrnModel()
@@ -468,6 +522,18 @@ bool ChemicalCellFromFile::GetIsMembranePropertySet()
     return mIsMembranePropertySet;
 }
 
+unsigned ChemicalCellFromFile::GetCellID()
+{
+    return mCellID;
+}
+
+bool ChemicalCellFromFile::GetIsCellIDSet()
+{
+    return mIsCellIDSet;
+}
+
+
+
 StateVariableRegister* ChemicalCellFromFile::GetFullChemicalStateRegister()
 {
     return mpFullChemicalStateRegister;
@@ -506,6 +572,10 @@ void ChemicalCellFromFile::SetTransportCellProperty(boost::shared_ptr<TransportC
     mp_cell_transport = p_transport;
 }
 
+void ChemicalCellFromFile::SetCellAnalyticsProperty(boost::shared_ptr<CellAnalyticsProperty> p_cellAnalytics)
+{
+    mp_cell_analytics = p_cellAnalytics;
+}
 
 void ChemicalCellFromFile::SetChemicalSrnModel(ChemicalSrnModel* p_chemicalSrn)
 {
