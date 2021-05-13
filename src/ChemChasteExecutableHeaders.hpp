@@ -89,7 +89,7 @@
 #include "ComplexCell.hpp"
 
 
-
+#include "LinearParabolicPdeSystemWithCoupledOdeSystemSolver.hpp"
 
 #include "InhomogenousParabolicPdeForCoupledOdeSystem_templated.hpp"
 
@@ -127,6 +127,20 @@
 // Fisher equation
 #include "InhomogenousFisherPde.hpp"
 #include "InhomogenousFisherDiffusiveInhibitionPde.hpp"
+
+#include "InhomogenousHeatEquationPde.hpp"
+#include "InhomogenousHeatEquationWithSourcePde.hpp"
+
+#include "InhomogenousSchnackenbergPde.hpp"
+#include "InhomogenousSchnackenbergNonDimPde.hpp"
+
+
+#include "LinearParabolicFisherPde.hpp"
+#include "LinearParabolicHeatEquationPde.hpp"
+#include "LinearParabolicHeatEquationWithSourcePde.hpp"
+
+#include "LinearParabolicSchnackenbergPde.hpp"
+#include "LinearParabolicSchnackenbergNonDimPde.hpp"
 
 
 #include "AbstractChemicalOdeSystem.hpp"

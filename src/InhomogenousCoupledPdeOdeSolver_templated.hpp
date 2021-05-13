@@ -1,18 +1,28 @@
 #ifndef INHOMOGENOUSCOUPLEDPDEODESOLVER_TEMPLATED_HPP_
 #define INHOMOGENOUSCOUPLEDPDEODESOLVER_TEMPLATED_HPP_
 
+#include "ChemChasteFeAssemblerCommon.hpp"
+#include "ChemChasteVolumeAssembler.hpp"
+#include "ChemChasteSurfaceAssembler.hpp"
 #include "AbstractAssemblerSolverHybrid.hpp"
 #include "AbstractDynamicLinearPdeSolver.hpp"
 #include "AbstractLinearParabolicPdeSystemForCoupledOdeSystem.hpp"
 #include "TetrahedralMesh.hpp"
 #include "BoundaryConditionsContainer.hpp"
 #include "AbstractInhomogenousOdeSystemForCoupledPdeSystem.hpp"
+#include "InhomogenousParabolicPdeForCoupledOdeSystem_templated.hpp"
 #include "AbstractOdeSystemForCoupledPdeSystem.hpp"
 #include "CvodeAdaptor.hpp"
 #include "BackwardEulerIvpOdeSolver.hpp"
 #include "Warnings.hpp"
 #include "VtkMeshWriter.hpp"
 #include "StateVariableRegister.hpp"
+
+
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <vector>
 
 #include <boost/shared_ptr.hpp>
 
@@ -59,6 +69,37 @@ private:
      * Can be changed when setting the output directory
      */
     bool mClearOutputDirectory;
+
+
+    // for calculating the total mass, interpolate the nodal solution and add to sum
+    bool mCalculateTotalMass = true;
+    
+    std::vector<double> mTotalMass = {0.0};
+
+    std::vector<double> mOldTotalMass = {0.0};
+
+
+    bool mInterpolateStateVariable = true;
+
+ //   std::vector<double> mValueAtX(PROBLEM_DIM,0.0);
+
+   
+
+    // for calculating the trace over a line segment
+    bool mCalculateSliceMass = true;
+
+    unsigned mInterpolationNodeCount =0;
+
+    unsigned mNodesInElement =3;
+
+    bool mInterpolatePosition=true;
+
+  //  ChastePoint<SPACE_DIM> mX(0,0,0);
+
+    std::vector<std::vector<double>> mSliceMass;
+
+    std::vector<std::vector<double>> mSlicePositions;
+
 
     /**
      * Write the current results to mpVtkMetaFile.
@@ -203,6 +244,10 @@ public:
      * @return mOdeSystemsAtNodes[index]
      */
     AbstractOdeSystemForCoupledPdeSystem* GetOdeSystemAtNode(unsigned index);
+
+    void ResetInterpolatedQuantitiesOnNewTimeStep();
+
+    void OutputInterpolatedQuantitiesOnTimestep();
 };
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -295,12 +340,24 @@ void InhomogenousCoupledPdeOdeSolverTemplated<ELEMENT_DIM, SPACE_DIM, PROBLEM_DI
         unsigned num_state_variables = mpPdeSystem->GetStateVariableRegister()->GetNumberOfStateVariables();
         mInterpolatedOdeStateVariables.resize(num_state_variables, 0.0);
     }
+
+
+    // reset for interpolation of slice mass
+  //  ChastePoint<SPACE_DIM> tempX(0,0,0)
+  //  mX = tempX;
+    mInterpolationNodeCount = 0;
+
+  //  std::vector<double> temp(PROBLEM_DIM,0.0);
+
+   // mValueAtX = temp;
+
+
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM, unsigned PROBLEM_DIM>
 void InhomogenousCoupledPdeOdeSolverTemplated<ELEMENT_DIM, SPACE_DIM, PROBLEM_DIM>::IncrementInterpolatedQuantities(double phiI, const Node<SPACE_DIM>* pNode)
 {
-
+    //std::cout<<"InhomogenousCoupledPdeOdeSolverTemplated::IncrementInterpolatedQuantities"<<std::endl;
     if (mOdeSystemsPresent)
     {   
         unsigned matchedIndex;
@@ -324,6 +381,86 @@ void InhomogenousCoupledPdeOdeSolverTemplated<ELEMENT_DIM, SPACE_DIM, PROBLEM_DI
         }
 
     }
+
+    if(mCalculateTotalMass)
+    {
+        // interpolate the previous timestep solution at nodes
+        // sum the interpolated value 
+
+        unsigned num_state_variables = mpPdeSystem->GetStateVariableRegister()->GetNumberOfStateVariables();
+
+        ReplicatableVector current_nodal_values(this->mInitialCondition);
+
+        for (unsigned i=0; i<num_state_variables; i++)
+        {
+            mOldTotalMass[i] += phiI * current_nodal_values[PROBLEM_DIM*pNode->GetIndex()+i];
+        }
+    }
+
+    if(mInterpolatePosition)
+    {
+     //   mX.rGetLocation() += phiI*pNode->rGetLocation();
+    }
+
+    if(mInterpolateStateVariable)
+    {
+    //    ReplicatableVector current_nodal_values(this->mInitialCondition);
+
+    //    for (unsigned i=0; i<num_state_variables; i++)
+     //   {
+      //      mValueAtX[i] += phiI * current_nodal_values[PROBLEM_DIM*pNode->GetIndex()+i];
+       // }
+
+    }
+
+    mInterpolationNodeCount++;
+
+    if(mInterpolationNodeCount == mNodesInElement)
+    {
+        // position and state variable vector are fully known
+        ChastePoint<SPACE_DIM> X = AbstractFeVolumeIntegralAssembler<ELEMENT_DIM, SPACE_DIM, PROBLEM_DIM, true, true, NORMAL>::GetPosition();
+
+        c_vector<double,PROBLEM_DIM> U = AbstractFeVolumeIntegralAssembler<ELEMENT_DIM, SPACE_DIM, PROBLEM_DIM, true, true, NORMAL>::GetStateVariable();
+
+
+        if(mCalculateTotalMass)
+        {
+            for (unsigned i=0; i<PROBLEM_DIM; i++)
+            {
+                mTotalMass[i] += phiI * U[i];
+            }
+        }
+
+        
+        if(mCalculateSliceMass)
+        {
+            //std::cout<<"y: "<<X[1]<<std::endl;
+            if(2.85>X[1] && X[1]>2.8)
+            {
+                // store the x position and the state variable U
+                std::vector<double> thisSlicePosition;
+                std::vector<double> thisSliceMass;
+                
+                for(unsigned i=0; i<SPACE_DIM; i++)
+                {
+                    thisSlicePosition.push_back(X[i]);
+                    //std::cout<<"x: "<<X[i]<<std::endl;
+                }
+
+                for(unsigned j=0; j<PROBLEM_DIM; j++)
+                {
+                    thisSliceMass.push_back(U[j]);
+                }
+
+                mSlicePositions.push_back(thisSlicePosition);
+                mSliceMass.push_back(thisSliceMass);
+
+            }
+            // else ignore point
+        }
+
+    }
+
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM, unsigned PROBLEM_DIM>
@@ -377,7 +514,6 @@ InhomogenousCoupledPdeOdeSolverTemplated<ELEMENT_DIM, SPACE_DIM, PROBLEM_DIM>::I
       mClearOutputDirectory(false)
 {
     this->mpBoundaryConditions = pBoundaryConditions;
-
     /*
      * If any ODE systems are passed in to the constructor, then we aren't just
      * solving a coupled PDE system, in which case the number of ODE system objects
@@ -499,14 +635,21 @@ void InhomogenousCoupledPdeOdeSolverTemplated<ELEMENT_DIM, SPACE_DIM, PROBLEM_DI
         EXCEPTION("SetInitialCondition() must be called prior to SolveAndWriteResultsToFile()");
     }
 
-#ifdef CHASTE_VTK
+//#ifdef CHASTE_VTK
+    ResetInterpolatedQuantitiesOnNewTimeStep();
     // Create a .pvd output file
+    //std::cout<<"outputfilehandeler: "<<this->mOutputDirectory<<std::endl;
+
     OutputFileHandler output_file_handler(this->mOutputDirectory, mClearOutputDirectory);
+   
     mpVtkMetaFile = output_file_handler.OpenOutputFile("results.pvd");
     *mpVtkMetaFile << "<?xml version=\"1.0\"?>\n";
     *mpVtkMetaFile << "<VTKFile type=\"Collection\" version=\"0.1\" byte_order=\"LittleEndian\" compressor=\"vtkZLibDataCompressor\">\n";
     *mpVtkMetaFile << "    <Collection>\n";
 
+    std::cout<<"Get output loc: "<<output_file_handler.GetChasteTestOutputDirectory()<<std::endl;
+    std::cout<<"Get output dir full path: "<<output_file_handler.GetOutputDirectoryFullPath()<<std::endl;
+    std::cout<<"Get relative path: "<<output_file_handler.GetRelativePath()<<std::endl;
 
     // Write initial condition to VTK
     Vec initial_condition = this->mInitialCondition;
@@ -519,11 +662,88 @@ void InhomogenousCoupledPdeOdeSolverTemplated<ELEMENT_DIM, SPACE_DIM, PROBLEM_DI
     TimeStepper stepper(this->mTstart, this->mTend, mSamplingTimeStep);
 
 
+    std::vector<std::string> p_pde_stateVariableNames = mpPdeSystem -> GetStateVariableRegister() ->GetStateVariableRegisterVector();
+    
+    
+    // make a vector of file streams to store slice values per pde dim
+    std::vector<std::shared_ptr<ofstream> > sliceMassFiles;
+    for(unsigned i=0; i<PROBLEM_DIM; i++)
+    {
+    //    std::ofstream sliceMassFile;
+     //   std::string sliceMassFilename = "/home/chaste/testoutput/"+this->mOutputDirectory+"sliceMass_"+p_pde_stateVariableNames[i]+".csv";
+     //   std::cout<<"sliceMassFilename: "<<sliceMassFilename<<std::endl;
+     //   sliceMassFile.open(sliceMassFilename);
+     //   sliceMassFiles.push_back(sliceMassFile);
+        std::shared_ptr<std::ofstream> sliceMassFile(new std::ofstream);
+        std::string sliceMassFilename = "/home/chaste/testoutput/"+this->mOutputDirectory+"sliceMass_"+p_pde_stateVariableNames[i]+".csv";
+        std::cout<<"sliceMassFilename: "<<sliceMassFilename<<std::endl;
+        sliceMassFile -> open(sliceMassFilename);
+        sliceMassFiles.push_back(sliceMassFile);
+    }
+
+    std::ofstream slicePositionFile;
+    std::string slicePositionFilename = "/home/chaste/testoutput/"+this->mOutputDirectory+"slicePosition.csv";
+    std::cout<<"slicePositionFilename: "<<slicePositionFilename<<std::endl;
+    slicePositionFile.open (slicePositionFilename);
+
+
+    std::ofstream sumCoeffFile;
+    std::string sumCoeffFilename = "/home/chaste/testoutput/"+this->mOutputDirectory+"sumCoeff.csv";
+    std::cout<<"sumCoeffFilename: "<<sumCoeffFilename<<std::endl;
+    sumCoeffFile.open (sumCoeffFilename);
+
+    for(unsigned pde_index=0; pde_index<PROBLEM_DIM; pde_index++)
+    {
+        double sumCoeff=0;
+        for(unsigned node_index=0;node_index<mpMesh->GetNumNodes();node_index++)
+        {
+            sumCoeff += result_repl[PROBLEM_DIM*node_index + pde_index];
+        }
+        sumCoeffFile << sumCoeff<<",";
+    }
+    sumCoeffFile <<"\n";
+
+
+    std::ofstream totalMassFile;
+    std::string totalMassFilename = "/home/chaste/testoutput/"+this->mOutputDirectory+"totalMass.csv";
+    std::cout<<"totalMassFilename: "<<totalMassFilename<<std::endl;
+    totalMassFile.open (totalMassFilename);
+
+    std::ofstream totalMassOldFile;
+    std::string totalMassOldFilename = "/home/chaste/testoutput/"+this->mOutputDirectory+"totalMassOld.csv";
+    std::cout<<"totalMassFilename: "<<totalMassOldFilename<<std::endl;
+    totalMassOldFile.open (totalMassOldFilename);
+
+    std::ofstream timeFile;
+    std::string timeFilename = "/home/chaste/testoutput/"+this->mOutputDirectory+"time.csv";
+    std::cout<<"timeFilename: "<<timeFilename<<std::endl;
+    timeFile.open (timeFilename);
+
+
+    if(mCalculateTotalMass)
+    {
+        for(unsigned pdeNum=1; pdeNum<PROBLEM_DIM;pdeNum++)
+        {
+            mTotalMass.push_back(0.0);
+            mOldTotalMass.push_back(0.0);
+        }
+    }
+    
+    
+
     // Main time loop, interate the stepper
     while (!stepper.IsTimeAtEnd())
     {   
         // Reset start and end times
         this->SetTimes(stepper.GetTime(), stepper.GetNextTime());
+
+        timeFile << stepper.GetTime()<<"\n";
+        
+
+
+        ResetInterpolatedQuantitiesOnNewTimeStep();
+
+        
 
         // Solve the system up to the new end time
         Vec soln = this->Solve();
@@ -539,9 +759,69 @@ void InhomogenousCoupledPdeOdeSolverTemplated<ELEMENT_DIM, SPACE_DIM, PROBLEM_DI
         // Move forward in time
         stepper.AdvanceOneTimeStep();
 
+        for(unsigned pde_index=0; pde_index<PROBLEM_DIM; pde_index++)
+        {
+            double sumCoeff=0;
+            for(unsigned node_index=0;node_index<mpMesh->GetNumNodes();node_index++)
+            {
+                sumCoeff += result_repl[PROBLEM_DIM*node_index + pde_index];
+            }
+            sumCoeffFile << sumCoeff<<",";
+        }
+        sumCoeffFile << "\n";
+       
+
+
+        for(unsigned pde_index=0; pde_index<PROBLEM_DIM;pde_index++)
+        {
+           totalMassFile << mTotalMass[pde_index]<<",";
+        }
+        totalMassFile <<"\n";
+
+        
+        for(unsigned pde_index=0; pde_index<PROBLEM_DIM;pde_index++)
+        {
+           totalMassOldFile << mOldTotalMass[pde_index]<<",";
+        }
+        totalMassOldFile <<"\n";
+
+        // for a given timestep output the slice data
+        for(unsigned pos=0; pos<mSlicePositions.size(); pos++)
+        {
+            // take the x value of the position
+            slicePositionFile << mSlicePositions[pos][0]<<",";
+            for(unsigned pde_index=0; pde_index<PROBLEM_DIM; pde_index++)
+            {
+                *sliceMassFiles[pde_index] << mSliceMass[pos][pde_index]<<",";
+            }
+        }  
+        // set the new line for the next time trace
+        slicePositionFile << "\n";
+        for(unsigned i=0; i<PROBLEM_DIM; i++)
+        {
+            *sliceMassFiles[i] << "\n";
+        }
+
+
+
+
+
         // Write solution to VTK
         WriteVtkResultsToFile(soln, stepper.GetTotalTimeStepsTaken());
     }
+
+
+    // close all files
+    timeFile.close();
+    sumCoeffFile.close();
+    totalMassFile.close();
+    totalMassOldFile.close();
+    slicePositionFile.close();
+    for(unsigned i=0; i<PROBLEM_DIM; i++)
+    {
+        sliceMassFiles[i]->close();
+    }
+
 
     // Restore saved initial condition to avoid user confusion!
     if (this->mInitialCondition != initial_condition)
@@ -554,11 +834,11 @@ void InhomogenousCoupledPdeOdeSolverTemplated<ELEMENT_DIM, SPACE_DIM, PROBLEM_DI
     *mpVtkMetaFile << "    </Collection>\n";
     *mpVtkMetaFile << "</VTKFile>\n";
     mpVtkMetaFile->close();
-#else //CHASTE_VTK
+//#else //CHASTE_VTK
 // LCOV_EXCL_START // We only test this in weekly builds
-    WARNING("VTK is not installed and is required for this functionality");
+//    WARNING("VTK is not installed and is required for this functionality");
 // LCOV_EXCL_STOP
-#endif //CHASTE_VTK
+//#endif //CHASTE_VTK
 //std::cout<<"InhomogenousCoupledPdeOdeSolverTemplated<ELEMENT_DIM, SPACE_DIM, PROBLEM_DIM>::SolveAndWriteResultsToFile( - end"<<std::endl;
 }
 
@@ -568,10 +848,10 @@ void InhomogenousCoupledPdeOdeSolverTemplated<ELEMENT_DIM, SPACE_DIM, PROBLEM_DI
 
 #ifdef CHASTE_VTK
 
-
     // Create a new VTK file for this time step
     std::stringstream time;
     time << numTimeStepsElapsed;
+    //std::cout<<this->mOutputDirectory<<std::endl;
     VtkMeshWriter<ELEMENT_DIM, SPACE_DIM> mesh_writer(this->mOutputDirectory, "results_"+time.str(), false);
     // need to ensure StateVariableRegister is defined
   
@@ -662,5 +942,35 @@ AbstractOdeSystemForCoupledPdeSystem* InhomogenousCoupledPdeOdeSolverTemplated<E
 {
     return mOdeSystemsAtNodes[index];
 }
+
+template<unsigned ELEMENT_DIM, unsigned SPACE_DIM, unsigned PROBLEM_DIM>
+void InhomogenousCoupledPdeOdeSolverTemplated<ELEMENT_DIM, SPACE_DIM, PROBLEM_DIM>::ResetInterpolatedQuantitiesOnNewTimeStep()
+{
+
+    if(mCalculateTotalMass)
+    {
+        // reset previous timstep value of total mass
+        std::fill(mTotalMass.begin(), mTotalMass.end(), 0.0);
+        
+        std::fill(mOldTotalMass.begin(), mOldTotalMass.end(), 0.0);
+    }
+
+    if(mCalculateSliceMass)
+    {
+        mSliceMass = std::vector<std::vector<double>> ();
+
+        mSlicePositions = std::vector<std::vector<double>> ();
+
+    }
+
+
+}
+
+template<unsigned ELEMENT_DIM, unsigned SPACE_DIM, unsigned PROBLEM_DIM>
+void InhomogenousCoupledPdeOdeSolverTemplated<ELEMENT_DIM, SPACE_DIM, PROBLEM_DIM>::OutputInterpolatedQuantitiesOnTimestep()
+{
+
+}
+
 
 #endif
