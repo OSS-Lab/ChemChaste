@@ -1,0 +1,5 @@
+# initial conditions for the states: state,subdomain,value,perturb?
+Oxygen,Bulk,2.0,false
+Oxygen,Film,2.0,false
+S,Bulk,2.0,false
+S,Film,2.0,false

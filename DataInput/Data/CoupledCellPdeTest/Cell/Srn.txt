@@ -1,0 +1,2 @@
+Domain : membrane
+MassActionReaction : U <-> Biomass ; kf = 0.1 kr = 0.0

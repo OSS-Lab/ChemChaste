@@ -1,0 +1,12 @@
+U,Bulk,1e-3
+U,Cell,1e-5
+V,Bulk,1e-2
+V,Cell,1e-5
+A,Bulk,1e-1
+A,Cell,1e-2
+B,Bulk,1e-1
+B,Cell,1e-2
+Alpha,Bulk,1e-3
+Alpha,Cell,1e-5
+Beta,Bulk,1e-2
+Beta,Cell,1e-5

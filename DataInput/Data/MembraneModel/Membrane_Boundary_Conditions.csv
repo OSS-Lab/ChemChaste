@@ -1,0 +1,5 @@
+# Boundry conditions on the edge of the domain: state,type,value 
+A,Neumann,0.0
+A_Complex,Neumann,0.0
+B,Neumann,0.0
+Biomass,Neumann,0.0

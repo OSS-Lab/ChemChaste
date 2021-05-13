@@ -1,0 +1,12 @@
+#species, concentration, perturb?
+E,0.0,false
+S,0.0,false
+ES,0.0,false
+Oxygen,1.0,false
+NAD,1,false
+NADH,0.05,false
+ADP,0.8,false
+ATP,2.5,false
+H2O,10.0,false
+Precursor,10.0,false
+Biomass,10.0,false

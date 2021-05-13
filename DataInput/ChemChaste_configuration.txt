@@ -1,0 +1,9 @@
+ChemChaste_executable_location = ~/lib/projects/ChemChaste/apps/
+
+ChemChaste_simulation_configuration_location = /home/chaste/projects/ChemChaste/DataInput/
+
+ChemChaste_cpp_location = /home/chaste/projects/ChemChaste/apps/src/ChemChaste.cpp
+
+domain_problem_dimensions = 0,2,4,1
+domain_space_dimensions = 2
+domain_FE_element_dimensions = 2

@@ -1,0 +1,2 @@
+Domain : Cell
+MassActionReaction : 0 <-> U ; kr = 0.2 kf = 0.1

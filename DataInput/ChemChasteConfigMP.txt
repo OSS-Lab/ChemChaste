@@ -1,0 +1,31 @@
+# simulation
+output_filename = ChemChaste/MolenaarPaper
+simulation_end_time = 10.0
+number_of_reaction_pdes =1
+spatial_dimensions = 2
+FE_element_dimension = 2
+
+# bulk
+domain_file_root = /home/chaste/projects/ChemChaste/DataInput/Data/MolenaarPaper/DomainField/
+domain_file = Domain.csv
+domain_key_file = DomainKey.csv
+ode_file = NodeSelector.csv
+ode_key_file = OdeReactionFileKey.csv
+diffusion_database = DiffusionDatabaseFile.csv
+initial_conditions = InitialConditionFile.csv
+boundary_conditions = BoundaryConditionFile.csv
+
+# cell
+cell_file_root = /home/chaste/projects/ChemChaste/DataInput/Data/MolenaarPaper/Cell/
+cell_initial_conditions = InitialCellConcentrations.csv
+membrane_property = MembraneReactions.txt
+transport_property = TransportReactions.txt
+srn_file = Srn.txt
+cell_cycle_file = SpeciesThreshold.csv
+
+# mesh
+number_cells_across = 1
+number_cells_high = 1
+node_cutoff_length = 1.5 
+cell_mesh_origin = -4.0
+linear_force_cutoff = 1.5

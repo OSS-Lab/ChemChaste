@@ -1,0 +1,6 @@
+Domain : membrane
+MassActionReaction : ES <-> E + S ; kf = 3.6e2 kr = 3.6e1
+MassActionReaction : S + NAD + ADP <-> Precursor + NADH + ATP ; kf = 1.0e1 kr = 1.0e1
+MassActionReaction : NADH + ADP + Oxygen <-> NAD + H2O + ATP ; kf = 1.0e1 kr = 1.0e1
+MassActionReaction : Precursor + ATP -> Biomass + ADP ; kf = 1.5e2
+MassActionReaction : Precursor + ATP -> E + ADP ; kf = 1.5e2

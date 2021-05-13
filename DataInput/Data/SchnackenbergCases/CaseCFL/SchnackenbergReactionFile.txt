@@ -1,0 +1,4 @@
+Domain : Bulk
+MassActionReaction : 2U + V -> 3U ; kf = 92000
+MassActionReaction : 0 <-> U ; kf = 18400 kr = 92000
+MassActionReaction : 0 -> V ; kf = 119600

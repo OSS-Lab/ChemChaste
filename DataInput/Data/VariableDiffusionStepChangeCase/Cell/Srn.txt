@@ -1,0 +1,4 @@
+Domain : membrane
+MassActionReaction : S + NAD + ADP <-> P + NADH + ATP ; kf = 0.1 kr = 0.1
+MassActionReaction : NADH + ADP + Oxygen <-> NAD + H2O + ATP ; kf = 0.1 kr = 0.1
+MassActionReaction : S + ATP <-> Biomass + ADP ; kf = 0.1 kr = 0.1

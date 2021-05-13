@@ -1,0 +1,2 @@
+# Transport across membrane, Bulk <-> Cell
+MassActionTransportReaction : S -> S ;  kf = 1.0

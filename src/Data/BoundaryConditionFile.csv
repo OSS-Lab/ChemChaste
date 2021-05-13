@@ -1,0 +1,6 @@
+# Boundry conditions on the edge of the domain: state,type,value 
+U,Dirichlet,1.0
+V,Neumann,2.0
+A,Dirichlet,3.0
+Alpha,Dirichlet,4.0
+Beta,Dirichlet,5.0
