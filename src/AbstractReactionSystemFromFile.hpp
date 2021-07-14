@@ -196,7 +196,7 @@ std::vector<std::tuple<std::string, bool, std::vector<std::string>, std::vector<
                     }
                 }else{
                 
-                    // assume the enxt line is a reacton line
+                    // assume the next line is a reaction line
                     // point at which the reaction type text and the reaction string deliniate
                     size_t separate_point_type_reaction = line.find(mTypeDelimiter);
                     // point at which the reaction string and the reaction information deliniate

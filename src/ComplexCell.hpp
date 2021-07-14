@@ -36,7 +36,7 @@ class ComplexCell : public Cell
 {
 protected:
     using Cell::Divide;
-    //using Cell::ReadyToDivide;
+    using Cell::ReadyToDivide;
 
     double mSplitRatio =0.5; // proportion of parent cell volume retained, the rest goes to daughter 
 
@@ -62,17 +62,17 @@ public:
 
     virtual CellPtr Divide();
 
-    virtual void DetermineSplitRation();
+    virtual void DetermineSplitRatio();
 
     virtual double SplitParentCellData(double);
 
     bool IsChemicalShared(std::string);
 
-    //virtual bool ReadyToDivide();
+    virtual bool ReadyToDivide();
 
-    double GetSplitRation();
+    double GetSplitRatio();
 
-    void SetSplitRation(double);
+    void SetSplitRatio(double);
 
     std::vector<std::string> GetShareKey();
 
@@ -102,6 +102,7 @@ ComplexCell::ComplexCell(
 
 CellPtr ComplexCell::Divide()
 {
+    std::cout<<"ComplexCell::Divide()"<<std::endl;
     // Check we're allowed to divide
     assert(!IsDead());
     assert(mCanDivide);
@@ -174,7 +175,7 @@ CellPtr ComplexCell::Divide()
 
 
     // based on the parent cell data determine the split ratio
-    DetermineSplitRation();
+    DetermineSplitRatio();
 
     // share the two cellDatas between the two cells, use cellChemistry
     // split chemical cell data
@@ -191,6 +192,7 @@ CellPtr ComplexCell::Divide()
 
         if(IsChemicalShared(cellChemistry -> GetChemicalNamesByIndex(i)))
         {
+            std::cout<<"shared"<<std::endl;
             // chemical concentration is shared upon division
             new_parent_species_concentration = SplitParentCellData(parent_species_concentration);
 
@@ -198,6 +200,7 @@ CellPtr ComplexCell::Divide()
         }
         else
         {
+            std::cout<<"duplicate"<<std::endl;
             // chemical concentration is duplicated upon division
             new_parent_species_concentration = parent_species_concentration;
             daughter_species_concentration = parent_species_concentration;
@@ -280,13 +283,20 @@ CellPtr ComplexCell::Divide()
     // Initialise properties of daughter cell
 
     p_new_cell->GetCellCycleModel()->InitialiseDaughterCell();
+//    if(static_cast<SimpleChemicalThresholdCellCycleModel*>(mpCellCycleModel)->CellCycleType()=="Chemical")
+//   {
+
+   // p_new_cell->GetCellCycleModel()->SetUp(static_cast<SimpleChemicalThresholdCellCycleModel*>(mpCellCycleModel)->GetThresholdChemistry());
+//    }
 
     p_new_cell->GetSrnModel()->InitialiseDaughterCell();
 
     // Set the daughter cell to inherit the apoptosis time of the parent cell
     p_new_cell->SetApoptosisTime(mApoptosisTime);
 
+    boost::static_pointer_cast<ComplexCell>(p_new_cell)->SetChemicalNames(mChemicalNames);
 
+    boost::static_pointer_cast<ComplexCell>(p_new_cell)->SetChemicalDivsionRules(mChemicalDivsionRules);
 
 
     std::vector<double> prime_cell_threshold_species_concentrations(static_cast<SimpleChemicalThresholdCellCycleModel*>(this->GetCellCycleModel())->GetNumberThresholdSpecies(),0.0);
@@ -320,6 +330,8 @@ CellPtr ComplexCell::Divide()
     }
 
     // update chemical cell cycles for each of the daughter cells
+     
+  //  static_cast<SimpleChemicalThresholdCellCycleModel*>(p_new_cell->GetCellCycleModel())->SetUp(static_cast<SimpleChemicalThresholdCellCycleModel*>(mpCellCycleModel)->GetThresholdChemistry());
     static_cast<SimpleChemicalThresholdCellCycleModel*>(this->GetCellCycleModel())->SetSpeciesConcentrations(prime_cell_threshold_species_concentrations);
     static_cast<SimpleChemicalThresholdCellCycleModel*>(p_new_cell->GetCellCycleModel())->SetSpeciesConcentrations(daughter_cell_threshold_species_concentrations);
 
@@ -331,42 +343,45 @@ CellPtr ComplexCell::Divide()
     return p_new_cell;
 }
 
-/*
+
 bool ComplexCell::ReadyToDivide()
 {
-    std::cout<<"ComplexCell::ReadyToDivide()"<<std::endl;
+ //   std::cout<<"ComplexCell::ReadyToDivide()"<<std::endl;
     bool readyToDivide = Cell::ReadyToDivide();
-    std::cout<<"ReadtToDivide? "<<readyToDivide<<std::endl;
+ //   std::cout<<"ReadtToDivide? "<<readyToDivide<<std::endl;
     return readyToDivide;
 }
-*/
 
 
 
-void ComplexCell::DetermineSplitRation()
+
+void ComplexCell::DetermineSplitRatio()
 {
-    mSplitRatio =0.5;
+    //mSplitRatio =0.5;
 }
 
 
 double ComplexCell::SplitParentCellData(double current_parent_value)
 {
-    return current_parent_value*GetSplitRation();
+    return current_parent_value*GetSplitRatio();
 }
 
 bool ComplexCell::IsChemicalShared(std::string chemical_name)
 {
     // determine whether the chemical concetration is shared between parnt and daughter after division
-
+    std::cout<<"IsChemicalShared"<<std::endl;
     bool isChemicalShared=false;
 
+    std::cout<<"test: "<<chemical_name<<" : "<<mChemicalNames.size()<<std::endl;
     for(unsigned i=0; i<mChemicalNames.size(); i++)
     {
+        std::cout<<mChemicalNames[i]<<std::endl;
         // for each cellular chemical
         if(mChemicalNames[i]==chemical_name)
         {
             for(unsigned j=0; j<mShareKey.size(); j++)
             {
+                std::cout<<"here"<<std::endl;
                 // test if the chemical is to be shared
                 if(mChemicalDivsionRules[i]==mShareKey[j])
                 {
@@ -379,12 +394,12 @@ bool ComplexCell::IsChemicalShared(std::string chemical_name)
     return isChemicalShared; 
 }
 
-double ComplexCell::GetSplitRation()
+double ComplexCell::GetSplitRatio()
 {
     return mSplitRatio;
 }
 
-void ComplexCell::SetSplitRation(double split_ratio)
+void ComplexCell::SetSplitRatio(double split_ratio)
 {
     mSplitRatio = split_ratio;
 }

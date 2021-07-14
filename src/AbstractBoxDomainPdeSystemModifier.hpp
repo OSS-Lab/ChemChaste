@@ -40,6 +40,8 @@ protected:
      */
     double mStepSize;
 
+    bool mIsCenterMesh;
+
     /**
      * Whether to set the boundary condition on the edge of the box domain rather than the cell population.
      * Default to true.
@@ -53,6 +55,7 @@ public:
     AbstractBoxDomainPdeSystemModifier(ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>* p_domain_field,
                                  boost::shared_ptr<ChasteCuboid<SPACE_DIM> > pMeshCuboid=boost::shared_ptr<ChasteCuboid<SPACE_DIM> >(),
                                  double stepSize=1.0,
+                                 bool isCenterMesh = true,
                                  Vec solution=nullptr);
 
     virtual ~AbstractBoxDomainPdeSystemModifier();
@@ -93,7 +96,7 @@ public:
      * @param pMeshCuboid the outer boundary for the FE mesh.
      * @param stepSize the step size to be used in the FE mesh.
      */
-    void GenerateFeMesh(boost::shared_ptr<ChasteCuboid<SPACE_DIM> > pMeshCuboid, double stepSize);
+    void GenerateFeMesh(boost::shared_ptr<ChasteCuboid<SPACE_DIM> > pMeshCuboid, double stepSize, bool isCenterMesh);
 
     /**
      * Helper method to copy the PDE solution to CellData
@@ -136,18 +139,20 @@ template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
 AbstractBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::AbstractBoxDomainPdeSystemModifier(ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>* p_domain_field,
                                                                 boost::shared_ptr<ChasteCuboid<SPACE_DIM> > pMeshCuboid,
                                                                 double stepSize,
+                                                                bool isCenterMesh,
                                                                 Vec solution) 
     : AbstractPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>(p_domain_field,
                                solution), 
       mpMeshCuboid(pMeshCuboid),
       mStepSize(stepSize),
+      mIsCenterMesh(isCenterMesh),
       mSetBcsOnBoxBoundary(true)
       
 {
     if (pMeshCuboid)
     {
         // We only need to generate mpFeMesh once, as it does not vary with time
-        this->GenerateFeMesh(mpMeshCuboid, mStepSize);
+        this->GenerateFeMesh(mpMeshCuboid, mStepSize, mIsCenterMesh);
         this->mDeleteFeMesh = true;
     }
 }
@@ -179,15 +184,15 @@ bool AbstractBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::AreB
 template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
 void AbstractBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::SetupSolve(AbstractCellPopulation<ELEMENT_DIM,SPACE_DIM>& rCellPopulation, std::string outputDirectory)
 {
-    //std::cout<<"AbstractBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::SetupSolve - start"<<std::endl;
+//    std::cout<<"AbstractBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::SetupSolve - start"<<std::endl;
     AbstractPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::SetupSolve(rCellPopulation, outputDirectory);
 
     InitialiseCellPdeElementMap(rCellPopulation);
-    //std::cout<<"AbstractBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::SetupSolve - end"<<std::endl;
+ //   std::cout<<"AbstractBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::SetupSolve - end"<<std::endl;
 }
 
 template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
-void AbstractBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::GenerateFeMesh(boost::shared_ptr<ChasteCuboid<SPACE_DIM> > pMeshCuboid, double stepSize)
+void AbstractBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::GenerateFeMesh(boost::shared_ptr<ChasteCuboid<SPACE_DIM> > pMeshCuboid, double stepSize, bool isCenterMesh)
 {
     // generate mesh and PDE system from the Abstract domain and the mesh cuboid
 
@@ -200,18 +205,51 @@ void AbstractBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::Gene
 
     this->mpCoupledDomainField -> GenerateFeMesh();
     this->mpCoupledDomainField -> SetUpDomainFromFiles();
+
+ //   std::cout<<"AbstractBoxDomain::generateFeMesh ScaleFeMesh"<<std::endl;
+    this->mpCoupledDomainField -> ScaleFeMesh();
     
     this->mpFeMesh = this->mpCoupledDomainField -> rGetDomainFeMesh();
+
 
     // set the lower point of the cuboid as the origin of the mesh
     std::vector<double> origin(SPACE_DIM,0.0);
     c_vector<double,SPACE_DIM> offset = zero_vector<double>(SPACE_DIM);
 
-    for(unsigned dim=0; dim<SPACE_DIM; dim++)
+    if(isCenterMesh)
     {
-        offset[dim] = lower[dim];
-        origin[dim] = lower[dim];
+ //       std::cout<<"AbstractBoxDomain::generateFeMesh IsCenterMesh"<<std::endl;
+        // calculate the center of both meshes
+        // Find the centre of the PDE mesh
+        c_vector<double,SPACE_DIM> centre_of_coarse_mesh = zero_vector<double>(SPACE_DIM);
+        for (unsigned i=0; i<this->mpFeMesh->GetNumNodes(); i++)
+        {
+            centre_of_coarse_mesh += this->mpFeMesh->GetNode(i)->rGetLocation();
+        }
+        centre_of_coarse_mesh /= this->mpFeMesh->GetNumNodes();
+
+        // Find the centre of the cell mesh
+        std::vector<double> centre_of_cell_mesh = this->mpCoupledDomainField ->GetMeshDomainCentre();
+
+        for(unsigned dim=0; dim<SPACE_DIM; dim++)
+        {
+            offset[dim] = centre_of_cell_mesh[dim] - centre_of_coarse_mesh(dim);
+            origin[dim] = centre_of_cell_mesh[dim] - centre_of_coarse_mesh(dim);
+  //          std::cout<<"dim: "<<dim<<" offset: "<<offset[dim]<<std::endl;
+        }
+
     }
+    else
+    {
+        for(unsigned dim=0; dim<SPACE_DIM; dim++)
+        {
+            offset[dim] = lower[dim];
+            origin[dim] = lower[dim];
+  //          std::cout<<"dim: "<<dim<<" origin: "<<origin[dim]<<std::endl;
+        }
+    }
+
+    
 
     // Now move the mesh to the correct location
     //this->mpFeMesh->Translate(centre_of_cuboid - offset);
@@ -225,7 +263,7 @@ void AbstractBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::Gene
 template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
 void AbstractBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::UpdateCellData(AbstractCellPopulation<ELEMENT_DIM,SPACE_DIM>& rCellPopulation)
 {
-    //std::cout<<"AbstractBoxDomainPdeSystemModifier - UpdateCellData - start"<<std::endl;
+ //   std::cout<<"AbstractBoxDomainPdeSystemModifier - UpdateCellData - start"<<std::endl;
     // Store the PDE solution in an accessible form
     ReplicatableVector solution_repl(this->mSolution); // nodal solution from pdeSolver
 
@@ -410,7 +448,7 @@ void AbstractBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::Upda
         }
 
     }
-    //std::cout<<"AbstractBoxDomainPdeSystemModifier - UpdateCellData - end"<<std::endl;
+ //   std::cout<<"AbstractBoxDomainPdeSystemModifier - UpdateCellData - end"<<std::endl;
 }
 
 template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
@@ -444,7 +482,7 @@ void AbstractBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::Upda
 
         mCellPdeElementMap[*cell_iter] = elem_index;
     }
-    //std::cout<<"AbstractBoxDomainPdeSystemModifier - UpdateCellPdeElementMap -end"<<std::endl;
+  //  std::cout<<"AbstractBoxDomainPdeSystemModifier - UpdateCellPdeElementMap -end"<<std::endl;
 }
 
 template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>

@@ -34,7 +34,7 @@ class ChemicalCell : public Cell
 {
 protected:
     using Cell::Divide;
-    //using Cell::ReadyToDivide;
+    using Cell::ReadyToDivide;
 
     double mSplitRatio =0.5; // proportion of parent cell volume retained, rest goes to daughter 
 
@@ -56,7 +56,7 @@ public:
 
     virtual double SplitParentCellData(double);
 
-    //virtual bool ReadyToDivide();
+    virtual bool ReadyToDivide();
 
     double GetSplitRation();
 
@@ -78,6 +78,7 @@ ChemicalCell::ChemicalCell(
 
 CellPtr ChemicalCell::Divide()
 {
+    std::cout<<"ChemicalCell::Divide()"<<std::endl;
     // Check we're allowed to divide
     assert(!IsDead());
     assert(mCanDivide);
@@ -282,6 +283,7 @@ CellPtr ChemicalCell::Divide()
         }
     }
 
+ //   static_cast<SimpleChemicalThresholdCellCycleModel*>(p_new_cell->GetCellCycleModel())->SetUp(thresholdChemistry);
     // update chemical cell cycles for each of the daughter cells
     static_cast<SimpleChemicalThresholdCellCycleModel*>(this->GetCellCycleModel())->SetSpeciesConcentrations(prime_cell_threshold_species_concentrations);
     static_cast<SimpleChemicalThresholdCellCycleModel*>(p_new_cell->GetCellCycleModel())->SetSpeciesConcentrations(daughter_cell_threshold_species_concentrations);
@@ -294,15 +296,15 @@ CellPtr ChemicalCell::Divide()
     return p_new_cell;
 }
 
-/*
+
 bool ChemicalCell::ReadyToDivide()
 {
-    std::cout<<"ChemicalCell::ReadyToDivide()"<<std::endl;
+//    std::cout<<"ChemicalCell::ReadyToDivide()"<<std::endl;
     bool readyToDivide = Cell::ReadyToDivide();
-    std::cout<<"ReadtToDivide? "<<readyToDivide<<std::endl;
+//    std::cout<<"ReadtToDivide? "<<readyToDivide<<std::endl;
     return readyToDivide;
 }
-*/
+
 
 
 

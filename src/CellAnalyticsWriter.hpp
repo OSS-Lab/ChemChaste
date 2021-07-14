@@ -33,14 +33,16 @@ CellAnalyticsWriter<ELEMENT_DIM, SPACE_DIM>::CellAnalyticsWriter()
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 double CellAnalyticsWriter<ELEMENT_DIM, SPACE_DIM>::GetCellDataForVtkOutput(CellPtr pCell, AbstractCellPopulation<ELEMENT_DIM, SPACE_DIM>* pCellPopulation)
 {
-    if(pCell->HasCellProperty<CellAnalyticsProperty>())
+    if(pCell->rGetCellPropertyCollection().HasProperty<CellAnalyticsProperty>())
     {
 
-        CellPropertyCollection& prop_collection = pCell->rGetCellPropertyCollection();
-        CellPropertyCollection prop_2 = prop_collection.GetPropertiesType<CellAnalyticsProperty>();
+        boost::shared_ptr<CellAnalyticsProperty> cellAnalyticsProperty = boost::static_pointer_cast<CellAnalyticsProperty>(pCell->rGetCellPropertyCollection().GetPropertiesType<CellAnalyticsProperty>().GetProperty());
 
-        boost::shared_ptr<CellAnalyticsProperty> cellAnalyticsProperty = 
-        boost::static_pointer_cast<CellAnalyticsProperty>(prop_2.GetProperty());
+       // CellPropertyCollection& prop_collection = pCell->rGetCellPropertyCollection();
+       // CellPropertyCollection prop_2 = prop_collection.GetPropertiesType<CellAnalyticsProperty>();
+
+      //  boost::shared_ptr<CellAnalyticsProperty> cellAnalyticsProperty = 
+       // boost::static_pointer_cast<CellAnalyticsProperty>(prop_2.GetProperty());
 
 
         unsigned typeID = cellAnalyticsProperty -> GetCellID();
@@ -54,6 +56,7 @@ double CellAnalyticsWriter<ELEMENT_DIM, SPACE_DIM>::GetCellDataForVtkOutput(Cell
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 void CellAnalyticsWriter<ELEMENT_DIM, SPACE_DIM>::VisitCell(CellPtr pCell, AbstractCellPopulation<ELEMENT_DIM, SPACE_DIM>* pCellPopulation)
 {
+    std::cout<<"cellAnalytics - visit cell start"<<std::endl;
     // Output the location index corresponding to this cell
     unsigned location_index = pCellPopulation->GetLocationIndexUsingCell(pCell);
     *this->mpOutStream << location_index << " ";
@@ -69,9 +72,10 @@ void CellAnalyticsWriter<ELEMENT_DIM, SPACE_DIM>::VisitCell(CellPtr pCell, Abstr
         *this->mpOutStream << centre_location[i] << " ";
     }
 
-    if(pCell->HasCellProperty<CellAnalyticsProperty>())
+    if(pCell->rGetCellPropertyCollection().HasProperty<CellAnalyticsProperty>())
     {
 
+        //boost::shared_ptr<CellAnalyticsProperty> cellAnalyticsProperty = boost::static_pointer_cast<CellAnalyticsProperty>(pCell->rGetCellPropertyCollection().GetPropertiesType<CellAnalyticsProperty>().GetProperty());
         boost::shared_ptr<CellAnalyticsProperty> cellAnalyticsProperty = boost::static_pointer_cast<CellAnalyticsProperty>(pCell->rGetCellPropertyCollection().GetPropertiesType<CellAnalyticsProperty>().GetProperty());
 
 

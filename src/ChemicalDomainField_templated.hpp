@@ -33,6 +33,19 @@ protected:
 
     AbstractDiffusiveChemistry* mpDiffusiveChemistry;
 
+    // Fe mesh scaling
+    bool mIsScaleBy  =true;
+
+    double mTargetWidth;
+
+    double mTargetHeight;
+
+    double mScaleWidth;
+
+    double mScaleHeight;
+
+
+
 public:
 
     ChemicalDomainFieldTemplated(
@@ -62,6 +75,14 @@ public:
     void DeriveSystemProperties();
 
     void DeriveExtendedSystemProperties();
+
+    void FeMeshScaling( double targetWidth = 0.0,
+                        double targetHeight= 0.0,
+                        double scaleWidth  = 1.0,
+                        double scaleHeight = 1.0
+    );
+
+    void ScaleFeMesh();
 
     // interface methods
 
@@ -310,6 +331,52 @@ void ChemicalDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::DeriveExte
         }
     }
 }
+
+
+template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
+void ChemicalDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::FeMeshScaling( double targetWidth,
+                        double targetHeight,
+                        double scaleWidth,
+                        double scaleHeight)
+{
+
+    this->mTargetWidth = targetWidth;
+    this->mTargetHeight = targetHeight;
+    this->mScaleWidth = scaleWidth;
+    this->mScaleHeight = scaleHeight;
+
+    double tol =1e-10;
+    if(std::abs(targetWidth)>tol)
+    {
+        mIsScaleBy=false;
+    }
+}
+
+template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
+void ChemicalDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ScaleFeMesh()
+{
+
+    std::cout<<"pre-scaled width: "<<this->mpFeMesh->GetWidth(0)<<" pre-scaled height: "<<this->mpFeMesh->GetWidth(1)<<std::endl;
+
+    if(mIsScaleBy)
+    {
+        std::cout<<"mIsScaleBy"<<std::endl;
+        // apply constant factor to the scale in x and y
+        //this->mpFeMesh->Scale(mScaleWidth,mScaleHeight);
+    }
+    else
+    {
+        std::cout<<"scale to"<<std::endl;
+        // scale to a given target width/height
+        this->mpFeMesh->Scale(mTargetWidth/this->mpFeMesh->GetWidth(0),mTargetHeight/this->mpFeMesh ->GetWidth(1));
+    }
+
+
+    std::cout<<"Scaled width: "<<this->mpFeMesh->GetWidth(0)<<" Scaled height: "<<this->mpFeMesh->GetWidth(1)<<std::endl;
+
+}
+
+
 
 
 template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>

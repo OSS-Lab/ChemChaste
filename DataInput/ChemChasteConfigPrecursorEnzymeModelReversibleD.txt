@@ -26,3 +26,10 @@ number_cells_high = 1
 node_cutoff_length = 1.5 
 cell_mesh_origin = -14.0
 linear_force_cutoff = 1.5
+
+FE_mesh_step_size = 0.1
+scale_domain_width = 10
+scale_domain_height = 10
+
+mesh_location = Center
+cell_configuration = test

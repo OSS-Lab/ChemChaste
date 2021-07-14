@@ -87,7 +87,7 @@
 
 #include "ChemicalCell.hpp"
 #include "ComplexCell.hpp"
-
+//#include "CustomCell.hpp"
 
 #include "LinearParabolicPdeSystemWithCoupledOdeSystemSolver.hpp"
 
@@ -149,7 +149,7 @@
 
 #include "ChemicalCellFromFile.hpp"
 #include "ComplexCellFromFile.hpp"
-
+#include "CustomCellFromFile.hpp"
 
 #include "AbstractPdeSystemModifier.hpp"
 

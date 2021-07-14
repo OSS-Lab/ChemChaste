@@ -14,6 +14,7 @@
 #include "VtkMeshWriter.hpp"
 #include "StateVariableRegister.hpp"
 #include "InhomogenousCoupledPdeOdeSolver_templated.hpp"
+#include "TransportCellProperty.hpp"
 
 #include <boost/shared_ptr.hpp>
 
@@ -244,7 +245,7 @@ c_matrix<double, PROBLEM_DIM*(ELEMENT_DIM+1), PROBLEM_DIM*(ELEMENT_DIM+1)> Inhom
     c_matrix<double, PROBLEM_DIM, SPACE_DIM>& rGradU,
     Element<ELEMENT_DIM, SPACE_DIM>* pElement)
 {
-    //std::cout<<"InhomogenousCoupledPdeOdeCoupledCellSolver - ComputeMatrixTerm"<<std::endl;
+ //   std::cout<<"InhomogenousCoupledPdeOdeCoupledCellSolver - ComputeMatrixTerm"<<std::endl;
     double timestep_inverse = PdeSimulationTime::GetPdeTimeStepInverse();
     c_matrix<double, PROBLEM_DIM*(ELEMENT_DIM+1), PROBLEM_DIM*(ELEMENT_DIM+1)> matrix_term = zero_matrix<double>(PROBLEM_DIM*(ELEMENT_DIM+1), PROBLEM_DIM*(ELEMENT_DIM+1));
 
@@ -269,7 +270,7 @@ c_matrix<double, PROBLEM_DIM*(ELEMENT_DIM+1), PROBLEM_DIM*(ELEMENT_DIM+1)> Inhom
             }
         }
     }
-    //std::cout<<"InhomogenousCoupledPdeOdeCoupledCellSolver - ComputeMatrixTerm - end"<<std::endl;
+  //  std::cout<<"InhomogenousCoupledPdeOdeCoupledCellSolver - ComputeMatrixTerm - end"<<std::endl;
     return matrix_term;
 }
 
@@ -281,7 +282,7 @@ c_vector<double, PROBLEM_DIM*(ELEMENT_DIM+1)> InhomogenousCoupledPdeOdeCoupledCe
     c_vector<double,PROBLEM_DIM>& rU,
     c_matrix<double,PROBLEM_DIM,SPACE_DIM>& rGradU,
     Element<ELEMENT_DIM, SPACE_DIM>* pElement)
-{   //std::cout<<"InhomogenousCoupledPdeOdeCoupledCellSolver - ComputeVectorTerm - start"<<std::endl;
+{ //  std::cout<<"InhomogenousCoupledPdeOdeCoupledCellSolver - ComputeVectorTerm - start"<<std::endl;
     double timestep_inverse = PdeSimulationTime::GetPdeTimeStepInverse();
     c_vector<double, PROBLEM_DIM*(ELEMENT_DIM+1)> vector_term;
     vector_term = zero_vector<double>(PROBLEM_DIM*(ELEMENT_DIM+1));
@@ -314,12 +315,12 @@ c_vector<double, PROBLEM_DIM*(ELEMENT_DIM+1)> InhomogenousCoupledPdeOdeCoupledCe
                 unsigned cell_location_index = mrCellPopulation.GetLocationIndexUsingCell(*cell_iter);
                 const ChastePoint<SPACE_DIM>& cellCentrePoint = mrCellPopulation.GetLocationOfCellCentre(*cell_iter);
                 
-                if (cell_iter->HasCellProperty<TransportCellProperty>())
+                if (cell_iter->rGetCellPropertyCollection().HasProperty<TransportCellProperty>())
                 {
                    
                     boost::shared_ptr<TransportCellProperty> transport_cell_property = boost::static_pointer_cast<TransportCellProperty>(cell_iter->rGetCellPropertyCollection().GetPropertiesType<TransportCellProperty>().GetProperty());
  
-                    if(cell_iter->HasCellProperty<ExtendedCellProperty<SPACE_DIM>>())
+                    if(false)//cell_iter->HasCellProperty<ExtendedCellProperty<SPACE_DIM>>())
                     {
                         boost::shared_ptr<ExtendedCellProperty<SPACE_DIM>> extended_cell_property = boost::static_pointer_cast<ExtendedCellProperty<SPACE_DIM>>(cell_iter->rGetCellPropertyCollection().GetPropertiesType<ExtendedCellProperty<SPACE_DIM>>().GetProperty());
 
@@ -385,7 +386,7 @@ c_vector<double, PROBLEM_DIM*(ELEMENT_DIM+1)> InhomogenousCoupledPdeOdeCoupledCe
                 } 
                 
                 // check for membrane system
-                if (cell_iter->HasCellProperty<MembraneCellProperty>())
+                if (cell_iter->rGetCellPropertyCollection().HasProperty<MembraneCellProperty>())
                 {
                    
                     boost::shared_ptr<MembraneCellProperty> membrane_cell_property = boost::static_pointer_cast<MembraneCellProperty>(cell_iter->rGetCellPropertyCollection().GetPropertiesType<MembraneCellProperty>().GetProperty());
@@ -432,13 +433,13 @@ c_vector<double, PROBLEM_DIM*(ELEMENT_DIM+1)> InhomogenousCoupledPdeOdeCoupledCe
             vector_term(i*PROBLEM_DIM + pde_index) = this_vector_term(i);
         }
     }
-    //std::cout<<"InhomogenousCoupledPdeOdeCoupledCellSolver - ComputeVectorTerm - end"<<std::endl;
+ //   std::cout<<"InhomogenousCoupledPdeOdeCoupledCellSolver - ComputeVectorTerm - end"<<std::endl;
     return vector_term;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM, unsigned PROBLEM_DIM>
 void InhomogenousCoupledPdeOdeCoupledCellSolver<ELEMENT_DIM, SPACE_DIM, PROBLEM_DIM>::ResetInterpolatedQuantities()                
-{   //std::cout<<"InhomogenousCoupledPdeOdeCoupledCellSolver - ResetInterpolatedQuantities"<<std::endl;
+{  // std::cout<<"InhomogenousCoupledPdeOdeCoupledCellSolver - ResetInterpolatedQuantities"<<std::endl;
     mInterpolatedOdeStateVariables.clear();
 
     if (mOdeSystemsPresent)
@@ -464,7 +465,7 @@ void InhomogenousCoupledPdeOdeCoupledCellSolver<ELEMENT_DIM, SPACE_DIM, PROBLEM_
         cell_iter != mrCellPopulation.End();
         ++cell_iter)
         {
-            if (cell_iter->HasCellProperty<ExtendedCellProperty<SPACE_DIM>>())
+            if (false)//cell_iter->HasCellProperty<ExtendedCellProperty<SPACE_DIM>>())
             {
                 boost::shared_ptr<ExtendedCellProperty<SPACE_DIM>> extended_cell_property = boost::static_pointer_cast<ExtendedCellProperty<SPACE_DIM>>(cell_iter->rGetCellPropertyCollection().GetPropertiesType<ExtendedCellProperty<SPACE_DIM>>().GetProperty());
 
@@ -477,12 +478,12 @@ void InhomogenousCoupledPdeOdeCoupledCellSolver<ELEMENT_DIM, SPACE_DIM, PROBLEM_
         }
 
     }
-    //std::cout<<"InhomogenousCoupledPdeOdeCoupledCellSolver - ResetInterpolatedQuantities - end"<<std::endl;
+  //  std::cout<<"InhomogenousCoupledPdeOdeCoupledCellSolver - ResetInterpolatedQuantities - end"<<std::endl;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM, unsigned PROBLEM_DIM>
 void InhomogenousCoupledPdeOdeCoupledCellSolver<ELEMENT_DIM, SPACE_DIM, PROBLEM_DIM>::IncrementInterpolatedQuantities(double phiI, const Node<SPACE_DIM>* pNode)
-{   //std::cout<<"InhomogenousCoupledPdeOdeCoupledCellSolver - IncrementInterpolatedQuantities"<<std::endl;
+{  // std::cout<<"InhomogenousCoupledPdeOdeCoupledCellSolver - IncrementInterpolatedQuantities"<<std::endl;
     // interploates a quantity from a node location to point x through the basis function phi associated with the node 
     if (mOdeSystemsPresent)
     {
@@ -526,26 +527,26 @@ void InhomogenousCoupledPdeOdeCoupledCellSolver<ELEMENT_DIM, SPACE_DIM, PROBLEM_
         }
         
         // store mX and mU over the interpolation; assume ELEMENT_DIM + 1 nodes for interpolation
-        //std::cout<<"mInterpolationCount = "<<mInterpolationCount<<std::endl;
+     //   std::cout<<"mInterpolationCount = "<<mInterpolationCount<<std::endl;
         if(mInterpolationCount==2)
         {
             // the mX and mU are fully interpolated
-            //std::cout<<"hit interpolation"<<std::endl;
+     //       std::cout<<"hit interpolation"<<std::endl;
             // check whether point mX is associated with a cell
             bool this_point_found = false;
             for (AbstractCellPopulation<2>::Iterator cell_iter = mrCellPopulation.Begin();
             cell_iter != mrCellPopulation.End();
             ++cell_iter)
             {
-
-                if(cell_iter->HasCellProperty<TransportCellProperty>())
+               
+                if(cell_iter->rGetCellPropertyCollection().HasProperty<TransportCellProperty>())
                 {
-                    //std::cout<<"transport"<<std::endl;
+          //          std::cout<<"transport"<<std::endl;
                     const ChastePoint<SPACE_DIM>& cellCentrePoint = mrCellPopulation.GetLocationOfCellCentre(*cell_iter);
 
                     //ChastePoint<SPACE_DIM> cellCentrePoint(cell_location);
 
-                    if (cell_iter->HasCellProperty<ExtendedCellProperty<SPACE_DIM>>())
+                    if (false)//cell_iter->HasCellProperty<ExtendedCellProperty<SPACE_DIM>>())
                     {
 
                         boost::shared_ptr<ExtendedCellProperty<SPACE_DIM>> extended_cell_property = boost::static_pointer_cast<ExtendedCellProperty<SPACE_DIM>>(cell_iter->rGetCellPropertyCollection().GetPropertiesType<ExtendedCellProperty<SPACE_DIM>>().GetProperty());
@@ -572,10 +573,10 @@ void InhomogenousCoupledPdeOdeCoupledCellSolver<ELEMENT_DIM, SPACE_DIM, PROBLEM_
                         boost::shared_ptr<TransportCellProperty> transport_cell_property = boost::static_pointer_cast<TransportCellProperty>(cell_iter->rGetCellPropertyCollection().GetPropertiesType<TransportCellProperty>().GetProperty());
 
                         // check whether the interpolated point is on the cell centre
-                        //std::cout<<"Check for equality"<<std::endl;
+             //           std::cout<<"Check for equality"<<std::endl;
                         if(CheckChastePointsForEquality(cellCentrePoint, mX))
                         {
-                            //std::cout<<"IncrementInterpolatedQuantities - CheckChastePointsForEquality "<<std::endl;
+              //              std::cout<<"IncrementInterpolatedQuantities - CheckChastePointsForEquality "<<std::endl;
                             // set the value for rU as the mBulkBoundaryConcentrationVector
                             // need mU as std::vector<double>
                             std::vector<double> mUstd(PROBLEM_DIM,0.0);
@@ -595,8 +596,8 @@ void InhomogenousCoupledPdeOdeCoupledCellSolver<ELEMENT_DIM, SPACE_DIM, PROBLEM_
                     }
                     
                 }
-
-                if(cell_iter->HasCellProperty<MembraneCellProperty>())
+          
+                if(cell_iter->rGetCellPropertyCollection().HasProperty<MembraneCellProperty>())
                 {
 
                     const ChastePoint<SPACE_DIM>& cellCentrePoint = mrCellPopulation.GetLocationOfCellCentre(*cell_iter);
@@ -638,12 +639,12 @@ void InhomogenousCoupledPdeOdeCoupledCellSolver<ELEMENT_DIM, SPACE_DIM, PROBLEM_
             mInterpolationCount +=1;
         }
     }
-    //std::cout<<"InhomogenousCoupledPdeOdeCoupledCellSolver - IncrementInterpolatedQuantities - end"<<std::endl;
+  //  std::cout<<"InhomogenousCoupledPdeOdeCoupledCellSolver - IncrementInterpolatedQuantities - end"<<std::endl;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM, unsigned PROBLEM_DIM>
 void InhomogenousCoupledPdeOdeCoupledCellSolver<ELEMENT_DIM, SPACE_DIM, PROBLEM_DIM>::InitialiseForSolve(Vec initialSolution)
-{   //std::cout<<"InhomogenousCoupledPdeOdeCoupledCellSolver - InitialiseForSolve"<<std::endl;
+{  // std::cout<<"InhomogenousCoupledPdeOdeCoupledCellSolver - InitialiseForSolve"<<std::endl;
     if (this->mpLinearSystem == NULL)
     {
         unsigned preallocation = mpFeMesh->CalculateMaximumContainingElementsPerProcess() + ELEMENT_DIM;
@@ -683,7 +684,7 @@ void InhomogenousCoupledPdeOdeCoupledCellSolver<ELEMENT_DIM, SPACE_DIM, PROBLEM_
         cell_iter != mrCellPopulation.End();
         ++cell_iter)
         {   
-            if (cell_iter->HasCellProperty<ExtendedCellProperty<SPACE_DIM>>())
+            if (false)//cell_iter -> rGetCellPropertyCollection().HasProperty<ExtendedCellProperty>())
             {
                 boost::shared_ptr<ExtendedCellProperty<SPACE_DIM>> extended_cell_property = boost::static_pointer_cast<ExtendedCellProperty<SPACE_DIM>>(cell_iter->rGetCellPropertyCollection().GetPropertiesType<ExtendedCellProperty<SPACE_DIM>>().GetProperty());
 
@@ -715,14 +716,14 @@ void InhomogenousCoupledPdeOdeCoupledCellSolver<ELEMENT_DIM, SPACE_DIM, PROBLEM_
 
     }
 
-    //std::cout<<"InhomogenousCoupledPdeOdeCoupledCellSolver - InitialiseForSolve -end"<<std::endl;
+  //  std::cout<<"InhomogenousCoupledPdeOdeCoupledCellSolver - InitialiseForSolve -end"<<std::endl;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM, unsigned PROBLEM_DIM>
 void InhomogenousCoupledPdeOdeCoupledCellSolver<ELEMENT_DIM, SPACE_DIM, PROBLEM_DIM>::SetupLinearSystem(Vec currentSolution, bool computeMatrix)
-{   //std::cout<<"InhomogenousCoupledPdeOdeCoupledCellSolver - SetupLinearSystem"<<std::endl;
+{  // std::cout<<"InhomogenousCoupledPdeOdeCoupledCellSolver - SetupLinearSystem"<<std::endl;
     this->SetupGivenLinearSystem(currentSolution, computeMatrix, this->mpLinearSystem);
-    //std::cout<<"InhomogenousCoupledPdeOdeCoupledCellSolver - SetupLinearSystem -end"<<std::endl;
+  //  std::cout<<"InhomogenousCoupledPdeOdeCoupledCellSolver - SetupLinearSystem -end"<<std::endl;
 }
 
 
@@ -753,7 +754,7 @@ InhomogenousCoupledPdeOdeCoupledCellSolver<ELEMENT_DIM, SPACE_DIM, PROBLEM_DIM>:
       mCellTransportOdeSystemsPresent(false),
       mCellMembraneOdeSystemsPresent(false),
       mClearOutputDirectory(false)
-{   //std::cout<<"InhomogenousCoupledPdeOdeCoupledCellSolver - InhomogenousCoupledPdeOdeCoupledCellSolver - start"<<std::endl;
+{  // std::cout<<"InhomogenousCoupledPdeOdeCoupledCellSolver - InhomogenousCoupledPdeOdeCoupledCellSolver - start"<<std::endl;
     this->mpBoundaryConditions = pBoundaryConditions;
 
     /*
@@ -761,8 +762,10 @@ InhomogenousCoupledPdeOdeCoupledCellSolver<ELEMENT_DIM, SPACE_DIM, PROBLEM_DIM>:
      * solving a coupled PDE system, in which case the number of ODE system objects
      * must match the number of nodes in the finite element mesh.
      */
+    
     if (!mOdeSystemsAtNodes.empty())
     {
+      
         mOdeSystemsPresent = true;
         assert(mOdeSystemsAtNodes.size() == mpFeMesh->GetNumNodes());
 
@@ -788,33 +791,40 @@ InhomogenousCoupledPdeOdeCoupledCellSolver<ELEMENT_DIM, SPACE_DIM, PROBLEM_DIM>:
         }
     }
 
-    // run through the cell popualtion for the occurance of a cell with the transport property defined
-    for (AbstractCellPopulation<2>::Iterator cell_iter = mrCellPopulation.Begin();
-        cell_iter != mrCellPopulation.End();
-        ++cell_iter)
-    {
-
-        if (cell_iter->HasCellProperty<TransportCellProperty>())
-        {
-            // if there exists at least one cell with the transport property then solve transport odes
-            mCellTransportOdeSystemsPresent=true;
-            break;
-        }
-    }
-
+//std::cout<<"coupledPdeCellSolver set membrane property"<<std::endl;
     // run through the cell popualtion for the occurance of a cell with the membrane property defined
-    for (AbstractCellPopulation<2>::Iterator cell_iter = mrCellPopulation.Begin();
-        cell_iter != mrCellPopulation.End();
+    for (AbstractCellPopulation<2>::Iterator cell_iter = rCellPopulation.Begin();
+        cell_iter != rCellPopulation.End();
         ++cell_iter)
     {
+   //     std::cout<<"test membrane "<<cell_iter->HasCellProperty<MembraneCellProperty>()<<std::endl;
 
-        if (cell_iter->HasCellProperty<MembraneCellProperty>())
+        //if (cell_iter-> template HasCellProperty<MembraneCellProperty>())
+        
+        if (cell_iter-> rGetCellPropertyCollection().HasProperty<MembraneCellProperty>())
         {
             // if there exists at least one cell with the membrane property then solve transport odes
             mCellMembraneOdeSystemsPresent=true;
             break;
         }
     }
+
+  //  std::cout<<"coupledPdeCellSolver set transport property"<<std::endl;
+    // run through the cell popualtion for the occurance of a cell with the transport property defined
+    for (AbstractCellPopulation<2>::Iterator cell_iter = rCellPopulation.Begin();
+        cell_iter != rCellPopulation.End();
+        ++cell_iter)
+    {
+  
+        if (cell_iter-> rGetCellPropertyCollection().HasProperty<TransportCellProperty>())
+        {
+  //          std::cout<<"has transport"<<std::endl;
+            // if there exists at least one cell with the transport property then solve transport odes
+            mCellTransportOdeSystemsPresent=true;
+            break;
+        }
+    }
+
     //std::cout<<"InhomogenousCoupledPdeOdeCoupledCellSolver - InhomogenousCoupledPdeOdeCoupledCellSolver - end"<<std::endl;
 }
 
@@ -837,7 +847,7 @@ InhomogenousCoupledPdeOdeCoupledCellSolver<ELEMENT_DIM, SPACE_DIM, PROBLEM_DIM>:
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM, unsigned PROBLEM_DIM>
 void InhomogenousCoupledPdeOdeCoupledCellSolver<ELEMENT_DIM, SPACE_DIM, PROBLEM_DIM>::PrepareForSetupLinearSystem(Vec currentPdeSolution)
 {   
- //std::cout<<"InhomogenousCoupledPdeOdeCoupledCellSolver - PrepareForSetupLinearSystem - strat"<<std::endl;
+// std::cout<<"InhomogenousCoupledPdeOdeCoupledCellSolver - PrepareForSetupLinearSystem - strat"<<std::endl;
     if (mOdeSystemsPresent)
     {
         double time = PdeSimulationTime::GetTime();
@@ -882,12 +892,12 @@ void InhomogenousCoupledPdeOdeCoupledCellSolver<ELEMENT_DIM, SPACE_DIM, PROBLEM_
              ++cell_iter)
         {
              //std::cout<<"for cell:"<<std::endl;
-            if (cell_iter->HasCellProperty<TransportCellProperty>())
+            if (cell_iter->rGetCellPropertyCollection().HasProperty<TransportCellProperty>())
             {
                 
                 boost::shared_ptr<TransportCellProperty> transport_property = boost::static_pointer_cast<TransportCellProperty>(cell_iter->rGetCellPropertyCollection().GetPropertiesType<TransportCellProperty>().GetProperty());
-
-                if(cell_iter->HasCellProperty<ExtendedCellProperty<SPACE_DIM>>())
+                if(cell_iter->rGetCellPropertyCollection().HasProperty<ExtendedCellProperty<SPACE_DIM>>())
+                //if(false)//cell_iter->HasCellProperty<ExtendedCellProperty<SPACE_DIM>>())
                 {
                     boost::shared_ptr<ExtendedCellProperty<SPACE_DIM>> extended_cell_property = boost::static_pointer_cast<ExtendedCellProperty<SPACE_DIM>>(cell_iter->rGetCellPropertyCollection().GetPropertiesType<ExtendedCellProperty<SPACE_DIM>>().GetProperty());
     
@@ -933,7 +943,7 @@ void InhomogenousCoupledPdeOdeCoupledCellSolver<ELEMENT_DIM, SPACE_DIM, PROBLEM_
                 }
             }
    
-            if (cell_iter->HasCellProperty<MembraneCellProperty>())
+            if (cell_iter->rGetCellPropertyCollection().HasProperty<MembraneCellProperty>())
             {
                     
                 boost::shared_ptr<MembraneCellProperty> membrane_property = boost::static_pointer_cast<MembraneCellProperty>(cell_iter->rGetCellPropertyCollection().GetPropertiesType<MembraneCellProperty>().GetProperty());
@@ -977,7 +987,7 @@ void InhomogenousCoupledPdeOdeCoupledCellSolver<ELEMENT_DIM, SPACE_DIM, PROBLEM_
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM, unsigned PROBLEM_DIM>
 void InhomogenousCoupledPdeOdeCoupledCellSolver<ELEMENT_DIM, SPACE_DIM, PROBLEM_DIM>::SolveAndWriteResultsToFile()
 {
-    //std::cout<<"InhomogenousCoupledPdeOdeCoupledCellSolver - SolveAndWriteResultsToFile - start"<<std::endl;
+  //  std::cout<<"InhomogenousCoupledPdeOdeCoupledCellSolver - SolveAndWriteResultsToFile - start"<<std::endl;
    
     // A number of methods must have been called prior to this method
     if (this->mOutputDirectory == "")
@@ -1059,13 +1069,13 @@ void InhomogenousCoupledPdeOdeCoupledCellSolver<ELEMENT_DIM, SPACE_DIM, PROBLEM_
 // LCOV_EXCL_STOP
 #endif //CHASTE_VTK
 
-    //std::cout<<"InhomogenousCoupledPdeOdeCoupledCellSolver - SolveAndWriteResultsToFile - end"<<std::endl;
+//    std::cout<<"InhomogenousCoupledPdeOdeCoupledCellSolver - SolveAndWriteResultsToFile - end"<<std::endl;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM, unsigned PROBLEM_DIM>
 void InhomogenousCoupledPdeOdeCoupledCellSolver<ELEMENT_DIM, SPACE_DIM, PROBLEM_DIM>::WriteVtkResultsToFile(Vec solution, unsigned numTimeStepsElapsed)
 {
-    //std::cout<<"InhomogenousCoupledPdeOdeCoupledCellSolver - WriteVtkResultsToFile - start"<<std::endl;
+ //   std::cout<<"InhomogenousCoupledPdeOdeCoupledCellSolver - WriteVtkResultsToFile - start"<<std::endl;
 #ifdef CHASTE_VTK
 
 
@@ -1159,7 +1169,7 @@ void InhomogenousCoupledPdeOdeCoupledCellSolver<ELEMENT_DIM, SPACE_DIM, PROBLEM_
     *mpVtkMetaFile << numTimeStepsElapsed;
     *mpVtkMetaFile << ".vtu\"/>\n";
 #endif // CHASTE_VTK
-    //std::cout<<"InhomogenousCoupledPdeOdeCoupledCellSolver - SolveAndWriteResultsToFile - end"<<std::endl;
+  //  std::cout<<"InhomogenousCoupledPdeOdeCoupledCellSolver - SolveAndWriteResultsToFile - end"<<std::endl;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM, unsigned PROBLEM_DIM>

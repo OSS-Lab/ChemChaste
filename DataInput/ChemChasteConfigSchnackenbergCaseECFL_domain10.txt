@@ -1,0 +1,21 @@
+# simulation
+output_filename = ChemChaste/SchnackenbergCases/CaseECFL_domain10
+simulation_end_time = 100.0
+number_of_reaction_pdes = 2
+spatial_dimensions = 2
+FE_element_dimension = 2
+
+# bulk
+domain_file_root = /home/chaste/projects/ChemChaste/DataInput/Data/SchnackenbergCases/CaseECFL/
+domain_file = Domain.csv
+domain_key_file = DomainKey.csv
+ode_file = NodeSelector.csv
+ode_key_file = OdeReactionFileKey.csv
+diffusion_database = DiffusionDatabaseFile.csv
+initial_conditions = InitialConditionFile.csv
+boundary_conditions = BoundaryConditionFile.csv
+
+domain_width = 10
+domain_height = 10
+scale_domain_width = 1
+scale_domain_height = 1

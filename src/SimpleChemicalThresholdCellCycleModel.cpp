@@ -1,6 +1,7 @@
 #include "SimpleChemicalThresholdCellCycleModel.hpp"
 #include "RandomNumberGenerator.hpp"
 #include "ApoptoticCellProperty.hpp"
+#include "CellData.hpp"
 
 SimpleChemicalThresholdCellCycleModel::SimpleChemicalThresholdCellCycleModel()
 { 
@@ -18,10 +19,16 @@ SimpleChemicalThresholdCellCycleModel::SimpleChemicalThresholdCellCycleModel(con
     mMinThresholdConcentrationValues(rModel.mMinThresholdConcentrationValues),
     mIsMinimumThresholdSet(rModel.mIsMinimumThresholdSet)
 {
+    std::cout<<"Call copy constructor ---       SimpleChemicalThresholdCellCycleModel"<<std::endl;
+    std::vector<double> mSpeciesConcentrations(mNumberThresholdSpecies,0.0);
+    SetSpeciesConcentrations(mSpeciesConcentrations);
+    mCurrentStarvationOnsetTime = SimulationTime::Instance()->GetTime();
+    mIsSetUp = true;
 }
 
 void SimpleChemicalThresholdCellCycleModel::SetUp(AbstractChemistry* thresholdChemistry)
 {
+    std::cout<<"---------------------------------------------------setup ccm-------------"<<std::endl;
     SetThresholdChemistry(thresholdChemistry);
     SetNumberThresholdSpecies(thresholdChemistry->GetNumberChemicals());
 
@@ -38,7 +45,7 @@ void SimpleChemicalThresholdCellCycleModel::SetUp(AbstractChemistry* thresholdCh
     SetMinimumThresholdCheck(isMinimumThresholdSet);
 
     SetSpeciesConcentrations(mSpeciesConcentrations);
-
+    mIsSetUp = true;
     mCurrentStarvationOnsetTime = SimulationTime::Instance()->GetTime();
 }
 
@@ -64,10 +71,12 @@ double SimpleChemicalThresholdCellCycleModel::GetCurrentStarvationOnsetTime() co
 
 void SimpleChemicalThresholdCellCycleModel::UpdateCellCyclePhase()
 {
-    //std::cout<<"SimpleChemicalThresholdCellCycleModel::UpdateCellCyclePhase() - start"<<std::endl;
+  //  std::cout<<"SimpleChemicalThresholdCellCycleModel::UpdateCellCyclePhase() - start"<<std::endl;
     // mG1Duration is set when the cell-cycle model is given a cell
-    bool cell_is_apoptotic = mpCell->HasCellProperty<ApoptoticCellProperty>();
+    //bool cell_is_apoptotic = mpCell->HasCellProperty<ApoptoticCellProperty>();
 
+
+    bool cell_is_apoptotic = mpCell->rGetCellPropertyCollection().HasProperty<ApoptoticCellProperty>();
     if (!cell_is_apoptotic)
     {
 
@@ -82,18 +91,19 @@ void SimpleChemicalThresholdCellCycleModel::UpdateCellCyclePhase()
             mG1Duration += dt; // modified from simpleOxygen... as no mQuiescentConcentration   
         }
     }
-    //std::cout<<"SimpleChemicalThresholdCellCycleModel::UpdateCellCyclePhase() - end"<<std::endl;
+  //  std::cout<<"SimpleChemicalThresholdCellCycleModel::UpdateCellCyclePhase() - end"<<std::endl;
 }
 
 bool SimpleChemicalThresholdCellCycleModel::ReadyToDivide()
 {
-    //std::cout<<"SimpleChemicalThresholdCellCycleModel::ReadyToDivide() - start"<<std::endl;
+  //  std::cout<<"SimpleChemicalThresholdCellCycleModel::ReadyToDivide() - start"<<std::endl;
     assert(mpCell != nullptr);
     
     if (!mReadyToDivide)
     {
+ //       std::cout<<"UpdateCellCyclePhase"<<std::endl;
         UpdateCellCyclePhase();
-
+  //      std::cout<<"Check concenrations above thresh"<<std::endl;
         if ((mCurrentCellCyclePhase != G_ZERO_PHASE) &&
             (ConcentrationAboveMaxThreshold()))
         {
@@ -102,7 +112,7 @@ bool SimpleChemicalThresholdCellCycleModel::ReadyToDivide()
             
         }
     }
-    //std::cout<<"SimpleChemicalThresholdCellCycleModel::ReadyToDivide() - end "<<mReadyToDivide<<std::endl;
+//    std::cout<<"SimpleChemicalThresholdCellCycleModel::ReadyToDivide() - end "<<mReadyToDivide<<std::endl;
     return mReadyToDivide;
 }
 
@@ -113,47 +123,71 @@ AbstractCellCycleModel* SimpleChemicalThresholdCellCycleModel::CreateCellCycleMo
 
 void SimpleChemicalThresholdCellCycleModel::UpdateStarvationDuration()
 {  
-    //std::cout<<"SimpleChemicalThresholdCellCycleModel::UpdateStarvationDuration() - start"<<std::endl;
-    assert(!(mpCell->HasCellProperty<ApoptoticCellProperty>()));
+ //   std::cout<<"SimpleChemicalThresholdCellCycleModel::UpdateStarvationDuration() - start"<<std::endl;
+    //assert(!(mpCell->HasCellProperty<ApoptoticCellProperty>()));
 
+    assert(!(mpCell->rGetCellPropertyCollection().HasProperty<ApoptoticCellProperty>()));
     assert(!mpCell->HasApoptosisBegun());
-
+//std::cout<<"get chem names"<<std::endl;
     std::vector<std::string> chemicalNames = mpThresholdChemistry->GetChemicalNames();
-
+//std::cout<<"get concentrations"<<std::endl;
     // get concentration vector
-    for(unsigned species=0; species<mNumberThresholdSpecies; species++)
-    {
-        SetSpeciesConcentrationsByIndex(mpCell->GetCellData()->GetItem(mpThresholdChemistry->GetChemicalNamesByIndex(species)), species);
-    }
+   // if(!mIsSetUp)
+    //{
+     //   boost::shared_ptr<AbstractCellProperty> p_apoptotic_property =
+      //      mpCell->rGetCellPropertyCollection().GetCellPropertyRegistry()->Get<ApoptoticCellProperty>();
+      //      mpCell->AddCellProperty(p_apoptotic_property);
+        
+    //}
+    //else{
 
-    // check each species for starvation
-    bool isStarving=false;
-    for(unsigned species=0; species<mNumberThresholdSpecies; species++)
-    {
-
-        if(GetMinimumThresholdCheckByIndex(species) && GetSpeciesConcentrationsByIndex(species)<GetMinimumThresholdByIndex(species))
+        for(unsigned species=0; species<mNumberThresholdSpecies; species++)
         {
-            mCurrentStarvationDuration = (SimulationTime::Instance()->GetTime() - mCurrentStarvationOnsetTime);
- 
-            if (mCurrentStarvationDuration > mCriticalStarvationDuration && RandomNumberGenerator::Instance()->ranf() < CellDeathProbability({GetSpeciesConcentrationsByIndex(species),GetMinimumThresholdByIndex(species)}))
-            {
-            
-                boost::shared_ptr<AbstractCellProperty> p_apoptotic_property =
-                mpCell->rGetCellPropertyCollection().GetCellPropertyRegistry()->Get<ApoptoticCellProperty>();
-                mpCell->AddCellProperty(p_apoptotic_property);
-                isStarving=true;
 
-                break;
+          //  std::cout<<"can access cell data?"<<std::endl;
+            boost::shared_ptr<CellData> cell_data = boost::static_pointer_cast<CellData>(mpCell->rGetCellPropertyCollection().GetPropertiesType<CellData>().GetProperty());
+        //    std::cout<<"number of cell data items: "<<cell_data->GetNumItems()<<std::endl;
+      //      std::cout<<"look for species:"<<std::endl;
+    //        std::cout<<cell_data->GetItem(mpThresholdChemistry->GetChemicalNamesByIndex(species))<<std::endl;
+
+
+
+  //          std::cout<<"species: "<<species<<" : "<<mpThresholdChemistry->GetChemicalNamesByIndex(species)<<std::endl;
+  //          std::cout<<"Concentration: "<<mpCell->GetCellData()->GetItem(mpThresholdChemistry->GetChemicalNamesByIndex(species))<<std::endl;
+            SetSpeciesConcentrationsByIndex(mpCell->GetCellData()->GetItem(mpThresholdChemistry->GetChemicalNamesByIndex(species)), species);
+        }
+
+        // check each species for starvation
+        bool isStarving=false;
+        for(unsigned species=0; species<mNumberThresholdSpecies; species++)
+        {
+   // std::cout<<"here0"<<std::endl;
+            if(GetMinimumThresholdCheckByIndex(species) && GetSpeciesConcentrationsByIndex(species)<GetMinimumThresholdByIndex(species))
+            {
+     //           std::cout<<"here1"<<std::endl;
+                mCurrentStarvationDuration = (SimulationTime::Instance()->GetTime() - mCurrentStarvationOnsetTime);
+   // std::cout<<"here2"<<std::endl;
+                if (mCurrentStarvationDuration > mCriticalStarvationDuration && RandomNumberGenerator::Instance()->ranf() < CellDeathProbability({GetSpeciesConcentrationsByIndex(species),GetMinimumThresholdByIndex(species)}))
+                {
+   //             std::cout<<"here3"<<std::endl;
+                    boost::shared_ptr<AbstractCellProperty> p_apoptotic_property =
+                    mpCell->rGetCellPropertyCollection().GetCellPropertyRegistry()->Get<ApoptoticCellProperty>();
+                    mpCell->AddCellProperty(p_apoptotic_property);
+                    isStarving=true;
+
+                    break;
+                }
             }
         }
-    }
-    if(!isStarving)
-    {
-        // Reset the cell's Starvation duration and update the time at which the onset of Starvation occurs
-        mCurrentStarvationDuration = 0.0;
-        mCurrentStarvationOnsetTime = SimulationTime::Instance()->GetTime();
-    }
-    //std::cout<<"SimpleChemicalThresholdCellCycleModel::UpdateStarvationDuration() - end"<<std::endl;
+ //       std::cout<<"if is not starving"<<std::endl;
+        if(!isStarving)
+        {
+            // Reset the cell's Starvation duration and update the time at which the onset of Starvation occurs
+            mCurrentStarvationDuration = 0.0;
+            mCurrentStarvationOnsetTime = SimulationTime::Instance()->GetTime();
+        }
+    
+ //   std::cout<<"SimpleChemicalThresholdCellCycleModel::UpdateStarvationDuration() - end"<<std::endl;
 }
 
 double SimpleChemicalThresholdCellCycleModel::CellDeathProbability(std::vector<double> parameters)
@@ -161,7 +195,7 @@ double SimpleChemicalThresholdCellCycleModel::CellDeathProbability(std::vector<d
 
     //double species_concentration = parameters[0];
     //double starvation_concentration = parameters[1];
-    double prob_of_death = 0.9;// - 0.5*(species_concentration/starvation_concentration);
+    double prob_of_death = 1.0;// - 0.5*(species_concentration/starvation_concentration);
 
     return prob_of_death;
 }
@@ -169,14 +203,25 @@ double SimpleChemicalThresholdCellCycleModel::CellDeathProbability(std::vector<d
 bool SimpleChemicalThresholdCellCycleModel::ConcentrationAboveMaxThreshold()
 {
     // search through all the threhsold species for whether nay are above the maximum threshold
-
+//    std::cout<<"SimpleChemicalThresholdCellCycleModel::ConcentrationAboveMaxThreshold() - START"<<std::endl;
+//    std::cout<<"number threshold species: "<<mNumberThresholdSpecies<<std::endl;
+//    if(!mIsSetUp)
+//    { return false;
+//    }
+    
     for(unsigned species=0; species<mNumberThresholdSpecies; species++)
     {
+//        std::cout<<"Species: "<<species<<std::endl;
+//        std::cout<< GetMaximumThresholdCheckByIndex(species) <<std::endl;
+//        std::cout<<GetSpeciesConcentrationsByIndex(species) <<std::endl;
+//        std::cout<< GetMaximumThresholdByIndex(species)<<std::endl;
         if(GetMaximumThresholdCheckByIndex(species) && GetSpeciesConcentrationsByIndex(species)>GetMaximumThresholdByIndex(species))
         {
+ //           std::cout<<"SimpleChemicalThresholdCellCycleModel::ConcentrationAboveMaxThreshold() - end true"<<std::endl;
             return true;
         }
     }
+//    std::cout<<"SimpleChemicalThresholdCellCycleModel::ConcentrationAboveMaxThreshold() - end false"<<std::endl;
     return false;
 }
 
@@ -237,11 +282,16 @@ void SimpleChemicalThresholdCellCycleModel::SetSpeciesConcentrations(std::vector
     mSpeciesConcentrations = concentrations;
 }
 
-void SimpleChemicalThresholdCellCycleModel::SetSpeciesConcentrationsByIndex(double threshold, unsigned index)
+void SimpleChemicalThresholdCellCycleModel::SetSpeciesConcentrationsByIndex(double concentration, unsigned index)
 {
+ //   std::cout<<"SimpleChemicalThresholdCellCycleModel::SetSpeciesConcentrationsByIndex"<<std::endl;
+//    std::cout<<concentration<<std::endl;
+//    std::cout<<index<<std::endl;
+//    std::cout<<mNumberThresholdSpecies<<std::endl;
+   
     if(index<mNumberThresholdSpecies)
     {
-        mSpeciesConcentrations[index] = threshold;
+        mSpeciesConcentrations[index] = concentration;
     }
     else
     {

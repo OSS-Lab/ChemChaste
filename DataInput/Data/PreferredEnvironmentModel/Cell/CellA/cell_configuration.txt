@@ -1,0 +1,3 @@
+split_ratio = 0.7
+preferred_pH = 7
+preferred_concentrations = preferredConcentrations.csv

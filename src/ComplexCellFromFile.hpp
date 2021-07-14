@@ -201,12 +201,12 @@ ComplexCellFromFile::ComplexCellFromFile(
             mCellID(cellID),
             mIsCellIDSet(isCellIDSet)
 {
-
+std::cout<<"ComplexCellFromFile - start"<<std::endl;
     if(mCellCycleFilename != "")
     {
         mIsCellCycleSet = true;
     }
-    
+    std::cout<<"division filename: "<<mDivisionRulesFilename<<std::endl;
     if(mDivisionRulesFilename != "")
     {
         mIsDivisionRulesSet = true;
@@ -228,6 +228,7 @@ ComplexCellFromFile::ComplexCellFromFile(
 
     if(mTransportPropertyFilename != "")
     {
+        std::cout<<"################test if there is and set transprot"<<std::endl;
         mIsTransportPropertySet = true;
         boost::shared_ptr<TransportCellProperty> p_cell_transport(new TransportCellProperty());
 
@@ -236,6 +237,7 @@ ComplexCellFromFile::ComplexCellFromFile(
 
     if(mMembranePropertyFilename != "")
     {
+        std::cout<<"################test if there is and set membrane"<<std::endl;
         mIsMembranePropertySet = true;
         boost::shared_ptr<MembraneCellProperty> p_cell_membrane(new MembraneCellProperty());
 
@@ -288,6 +290,7 @@ ComplexCellFromFile::ComplexCellFromFile(
     {
         std::vector<std::string> cell_membrane_chemical_names = mp_cell_membrane -> GetCellStateVariableRegister() -> GetStateVariableRegisterVector();
         pFullStateVariableRegister -> AddStateVariableVector(cell_membrane_chemical_names);
+        std::cout<<"set membrane property"<<std::endl;
     }    
 
     // chemical species from transport property
@@ -295,6 +298,7 @@ ComplexCellFromFile::ComplexCellFromFile(
     {
         std::vector<std::string> cell_transport_chemical_names = mp_cell_transport -> GetCellStateVariableRegister() -> GetStateVariableRegisterVector();
         pFullStateVariableRegister -> AddStateVariableVector(cell_transport_chemical_names);
+        std::cout<<"set transport property"<<std::endl;
     } 
 
 
@@ -312,13 +316,14 @@ ComplexCellFromFile::ComplexCellFromFile(
     SetFullChemicalStateRegister(pFullStateVariableRegister);
 
     SetUpCellInitialConditions(mpCell, cellChemicalNames, cellConcentrationVector);
+    std::cout<<"ComplexCellFromFile - end"<<std::endl;
 }
 
 
 
 void ComplexCellFromFile::SetUpCellProperties()
 {
-    //std::cout<<"ComplexCellFromFile::SetUpCellProperties - start"<<std::endl;
+    std::cout<<"ComplexCellFromFile::SetUpCellProperties - start"<<std::endl;
     if(mIsInitConditionsSet)
     {
 
@@ -334,6 +339,7 @@ void ComplexCellFromFile::SetUpCellProperties()
 
     if(mIsTransportPropertySet)
     {
+        std::cout<<"here transport property is set"<<std::endl;
         TransportCellPropertyFromFile* p_transport_property_from_file = new TransportCellPropertyFromFile(mTransportPropertyFilename);
 
         p_transport_property_from_file -> SetUpTransportProperty(mpCell);
@@ -343,6 +349,7 @@ void ComplexCellFromFile::SetUpCellProperties()
 
     if(mIsMembranePropertySet)
     {
+        std::cout<<"here membrane property is set"<<std::endl;
         MembraneCellPropertyFromFile* p_membrane_property_from_file = new MembraneCellPropertyFromFile(mMembranePropertyFilename);
 
         p_membrane_property_from_file -> SetUpMembraneProperty(mpCell);
@@ -363,11 +370,12 @@ void ComplexCellFromFile::SetUpCellProperties()
 
 
 
-    //std::cout<<"ComplexCellFromFile::SetUpCellProperties - end"<<std::endl;
+    std::cout<<"ComplexCellFromFile::SetUpCellProperties - end"<<std::endl;
 }
 
 void ComplexCellFromFile::SetUpSRNandCellCycle()
 {
+    std::cout<<"ComplexCellFromFile::SetUpSRNandCellCycle() - start"<<std::endl;
     if(mIsSRNSet)
     {
  
@@ -388,12 +396,13 @@ void ComplexCellFromFile::SetUpSRNandCellCycle()
         pCellCycle -> SetUp();
         SetChemicalCellCycleModel(pCellCycle);
     }
+    std::cout<<"ComplexCellFromFile::SetUpSRNandCellCycle() - end"<<std::endl;
 
 }
 
 void ComplexCellFromFile::SetUpCellObject()
 {
-    //std::cout<<"ComplexCellFromFile::SetUpCellObject - start"<<std::endl;
+    std::cout<<"ComplexCellFromFile::SetUpCellObject - start"<<std::endl;
     // form cell
     CellPropertyCollection collection;
     MAKE_PTR(WildTypeCellMutationState, p_state);
@@ -404,7 +413,9 @@ void ComplexCellFromFile::SetUpCellObject()
 
     if(mIsTransportPropertySet)
     {
+        std::cout<<"cell has a transport property ################"<<std::endl;
         collection.AddProperty(mp_cell_transport);
+        std::cout<<"-------has transport: "<<collection.HasProperty<TransportCellProperty>()<<std::endl;
     }
     
     if(mIsMembranePropertySet)
@@ -440,15 +451,17 @@ void ComplexCellFromFile::SetUpCellObject()
     MAKE_PTR(StemCellProliferativeType, p_stem_type);
     p_cell->SetCellProliferativeType(p_stem_type);
 
-    
+
+    std::cout<<"-------has transport: "<<p_cell-> rGetCellPropertyCollection().HasProperty<TransportCellProperty>()<<std::endl;
     if(mIsDivisionRulesSet)
     {
+        std::cout<<"set up division rules"<<std::endl;
         SetUpCellDivisionRules(p_cell);
     }
 
     
     SetCellPtr(p_cell);
-    //std::cout<<"ComplexCellFromFile::SetUpCellObject - end"<<std::endl;
+    std::cout<<"ComplexCellFromFile::SetUpCellObject - end"<<std::endl;
 }
 
 

@@ -295,7 +295,7 @@ TetrahedralMesh<ELEMENT_DIM,SPACE_DIM>* AbstractPdeSystemModifier<ELEMENT_DIM,SP
 template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
 void AbstractPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::SetupSolve(AbstractCellPopulation<ELEMENT_DIM,SPACE_DIM>& rCellPopulation, std::string outputDirectory)
 {
-    //std::cout<<"AbstractPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::SetupSolve - start"<<std::endl;
+    std::cout<<"AbstractPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::SetupSolve - start"<<std::endl;
     // Cache the output directory
     this->mOutputDirectory = outputDirectory; 
 
@@ -311,13 +311,13 @@ void AbstractPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::SetupSolve(Ab
    
         }
     }
-    //std::cout<<"AbstractPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::SetupSolve - end"<<std::endl;
+    std::cout<<"AbstractPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::SetupSolve - end"<<std::endl;
 }
 
 template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
 void AbstractPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::UpdateAtEndOfOutputTimeStep(AbstractCellPopulation<ELEMENT_DIM,SPACE_DIM>& rCellPopulation)
 {
-    //std::cout<<"AbstractPdeSystemModifier - UpdateAtEndOfOutputTimeStep - start"<<std::endl;
+    std::cout<<"AbstractPdeSystemModifier - UpdateAtEndOfOutputTimeStep - start"<<std::endl;
     if (mOutputSolutionAtPdeNodes)
     {
         if (PetscTools::AmMaster())
@@ -377,7 +377,7 @@ void AbstractPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::UpdateAtEndOf
         
     }
 #endif //CHASTE_VTK
-    //std::cout<<"AbstractPdeSystemModifier - UpdateAtEndOfOutputTimeStep - end"<<std::endl;
+    std::cout<<"AbstractPdeSystemModifier - UpdateAtEndOfOutputTimeStep - end"<<std::endl;
 }
 
 template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>

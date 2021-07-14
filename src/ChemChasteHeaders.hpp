@@ -34,6 +34,7 @@
 #include "ChemicalTrackingModifier.hpp"
 
 #include "ChemicalCell.hpp"
+#include "ComplexCell.hpp"
 
 #include "AbstractBoxDomainPdeSystemModifier.hpp"
 #include "AbstractPdeSystemModifier.hpp"
@@ -87,3 +88,6 @@
 
 
 #include "SchnackenbergCoupledPdeSystem.hpp"
+
+// writers
+#include "CellProliferativeTypesWriter_ChemChaste.hpp"

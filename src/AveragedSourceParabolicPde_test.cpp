@@ -83,6 +83,9 @@ void AveragedSourceParabolicPde<DIM>::SetupSourceTerms(TetrahedralMesh<DIM,DIM>&
 
         // Update element map if cell has moved
         bool cell_is_apoptotic = cell_iter->template HasCellProperty<ApoptoticCellProperty>();
+        //bool cell_is_apoptotic = cell_iter-> rGetCellPropertyCollection().HasProperty<ApoptoticCellProperty>();
+
+
 
         if (!cell_is_apoptotic)
         {

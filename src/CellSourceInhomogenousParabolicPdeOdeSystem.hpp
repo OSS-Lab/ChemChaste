@@ -138,7 +138,10 @@ public:
             }
 
             // Update element map if cell has moved
-            bool cell_is_apoptotic = cell_iter->template HasCellProperty<ApoptoticCellProperty>();
+            //bool cell_is_apoptotic = cell_iter->template HasCellProperty<ApoptoticCellProperty>();
+
+
+            bool cell_is_apoptotic = cell_iter->template rGetCellPropertyCollection().HasProperty<ApoptoticCellProperty>();
 
             if (!cell_is_apoptotic)
             {

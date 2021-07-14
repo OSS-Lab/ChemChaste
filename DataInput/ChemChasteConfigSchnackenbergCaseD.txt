@@ -1,6 +1,6 @@
 # simulation
-output_filename = ChemChaste/SchnackenbergCases/CaseDCFL
-simulation_end_time = 100.0
+output_filename = ChemChaste/SchnackenbergCases/CaseD
+simulation_end_time = 1.0
 number_of_reaction_pdes = 2
 spatial_dimensions = 2
 FE_element_dimension = 2

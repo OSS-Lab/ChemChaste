@@ -404,9 +404,9 @@ void AbstractFeVolumeIntegralAssembler<ELEMENT_DIM, SPACE_DIM, PROBLEM_DIM, CAN_
                 }
             }
 
-            SetPosition(x);
+            this->SetPosition(x);
 
-            SetStateVariable(u);
+            this->SetStateVariable(u);
 
             // Allow the concrete version of the assembler to interpolate any desired quantities
             this->IncrementInterpolatedQuantities(phi(i), p_node);

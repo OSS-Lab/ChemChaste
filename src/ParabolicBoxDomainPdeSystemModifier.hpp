@@ -24,6 +24,7 @@ public:
     ParabolicBoxDomainPdeSystemModifier(ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>* p_domain_field,
                                   boost::shared_ptr<ChasteCuboid<SPACE_DIM> > pMeshCuboid=boost::shared_ptr<ChasteCuboid<SPACE_DIM> >(),
                                   double stepSize=1.0,
+                                  bool isCenterMesh=true,
                                   Vec solution=nullptr);
 
     /**
@@ -97,10 +98,12 @@ ParabolicBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::Paraboli
                                     ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>* p_domain_field,
                                                                   boost::shared_ptr<ChasteCuboid<SPACE_DIM> > pMeshCuboid,
                                                                   double stepSize,
+                                                                  bool isCenterMesh,
                                                                   Vec solution)
     : AbstractBoxDomainPdeSystemModifier<ELEMENT_DIM, SPACE_DIM, PROBLEM_DIM>(p_domain_field,
                                         pMeshCuboid,
                                         stepSize,
+                                        isCenterMesh,
                                         solution)
 {
 
@@ -115,7 +118,7 @@ ParabolicBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::~Parabol
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM, unsigned PROBLEM_DIM>
 void ParabolicBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::UpdateAtEndOfTimeStep(AbstractCellPopulation<ELEMENT_DIM,SPACE_DIM>& rCellPopulation)
 {
-    //std::cout<<"ParabolicBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::UpdateAtEndOfTimeStep - start"<<std::endl;
+//    std::cout<<"ParabolicBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::UpdateAtEndOfTimeStep - start"<<std::endl;
     // Set up boundary conditions, comes from the rCellPopulation rather than the constructor
     boost::shared_ptr<BoundaryConditionsContainer<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM> > p_bcc = ConstructBoundaryConditionsContainer(rCellPopulation);
 
@@ -127,7 +130,7 @@ void ParabolicBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::Upd
     // this line shoudl be fine for the pOdeSystem
 
     this->SetUpSourceTermsForAveragedSourcePde(this->mpFeMesh, &this->mCellPdeElementMap);
-
+std::cout<<"construct pde solver"<<std::endl;
     InhomogenousCoupledPdeOdeCoupledCellSolver<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM> solver(
                                                 this->mpFeMesh, 
                                                 this->mpCoupledDomainField->ReturnSharedPtrPdeSystem().get(), 
@@ -139,7 +142,7 @@ void ParabolicBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::Upd
                                                 );
 
     ///\todo Investigate more than one PDE time step per spatial step
-
+;
     SimulationTime* p_simulation_time = SimulationTime::Instance();
     double current_time = p_simulation_time->GetTime();
     double dt = p_simulation_time->GetTimeStep();
@@ -147,27 +150,27 @@ void ParabolicBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::Upd
    
     solver.SetTimes(current_time,current_time + dt);
     solver.SetTimeStep(dt);
- 
+// std::cout<<"get old solution"<<std::endl;
     // Use previous solution as the initial condition
     Vec previous_solution = this->mSolution;
     solver.SetInitialCondition(previous_solution);
 
     // Note that the linear solver creates a vector, so we have to keep a handle on the old one
     // in order to destroy it
-
+//std::cout<<"call pde solver"<<std::endl;
     this->mSolution = solver.Solve();
-
+//std::cout<<"after pde solver"<<std::endl;
     PetscTools::Destroy(previous_solution);
-
+//std::cout<<"update cell datar"<<std::endl;
     this->UpdateCellData(rCellPopulation);
     mConditionsInterpolated = true;
-    //std::cout<<"ParabolicBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::UpdateAtEndOfTimeStep - end"<<std::endl;
+//    std::cout<<"ParabolicBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::UpdateAtEndOfTimeStep - end"<<std::endl;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM, unsigned PROBLEM_DIM>
 void ParabolicBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::SetupSolve(AbstractCellPopulation<ELEMENT_DIM,SPACE_DIM>& rCellPopulation, std::string outputDirectory)
 {
-    //std::cout<<"ParabolicBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM>::SetupSolve - start"<<std::endl;
+//    std::cout<<"ParabolicBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM>::SetupSolve - start"<<std::endl;
     AbstractBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::SetupSolve(rCellPopulation,outputDirectory);
 
     // Copy the cell data to mSolution (this is the initial condition)
@@ -175,7 +178,7 @@ void ParabolicBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::Set
 
     // Output the initial conditions on FeMesh
     this->UpdateAtEndOfOutputTimeStep(rCellPopulation);
-    //std::cout<<"ParabolicBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM>::SetupSolve - end"<<std::endl;
+//    std::cout<<"ParabolicBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM>::SetupSolve - end"<<std::endl;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM, unsigned PROBLEM_DIM> // why does this take in a cell population? if() is true, shrinks the box onto the tissue (cellpopulation) here makes no difference

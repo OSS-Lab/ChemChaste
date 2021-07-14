@@ -32,6 +32,8 @@ protected:
 
     std::vector<bool> mIsMinimumThresholdSet;
 
+    bool mIsSetUp = false;
+
 public:
 
     SimpleChemicalThresholdCellCycleModel();

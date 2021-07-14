@@ -204,9 +204,9 @@ void AbstractFeSurfaceIntegralAssembler<ELEMENT_DIM, SPACE_DIM, PROBLEM_DIM>::As
             x.rGetLocation() += phi(i)*node_loc;
         }
 
-        SetPosition(x);
+        this->SetPosition(x);
 
-        SetStateVariable(zero_vector<double>(PROBLEM_DIM));
+        this->SetStateVariable(zero_vector<double>(PROBLEM_DIM));
 
         for (unsigned i=0; i<rSurfaceElement.GetNumNodes(); i++)
         {

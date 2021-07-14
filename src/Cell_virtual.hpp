@@ -1,4 +1,3 @@
-
 #ifndef CELL_HPP_
 #define CELL_HPP_
 
@@ -309,7 +308,8 @@ public:
     template<typename CLASS>
     bool HasCellProperty() const
     {
-        return mCellPropertyCollection.HasProperty<CLASS>();
+        return this->rGetCellPropertyCollection().HasProperty<CLASS>();
+        //return mCellPropertyCollection.HasProperty<CLASS>();
     }
 
     /**

@@ -59,7 +59,7 @@ public:
         
         //boost::shared_ptr<TransportCellProperty> pTransportProperty(new TransportCellProperty());
         p_transport -> SetUp(p_transport_system_from_file, p_cell);
-
+        std::cout<<"Transport property from file"<<std::endl;
         SetTransportProperty(p_transport);
     }
 

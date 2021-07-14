@@ -9,3 +9,4 @@ TestChemicalCellObject.hpp
 TestChemChastePaper.hpp
 TestChastePdeLeakage.hpp
 TestTotalMass.hpp
+TestSpatialPatterning.hpp
