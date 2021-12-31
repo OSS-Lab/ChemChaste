@@ -35,7 +35,7 @@ configFisher00008 = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfig
 configPatterning = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigSchnackenbergCaseCCFL_domain100.txt"
 
 # Figure 4-5
-configCrossfeeding6 = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigCrossFeedingEnzymePaper.txt"
+configCrossfeedingPaper = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigCrossFeedingEnzymePaper.txt"
 
 # timesteps for time parameter sweeping, Figure 2
 timesteps = [1,0.1,0.01,0.001,0.0001,0.08,0.06,0.04,0.02,0.008,0.006,0.004,0.002,0.0008,0.0006,0.0004,0.0002]
