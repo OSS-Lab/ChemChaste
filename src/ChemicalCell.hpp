@@ -15,6 +15,9 @@
 #include "CellVecData.hpp"
 #include "Cell.hpp"
 
+#include "ChemicalSrnModel.hpp"
+#include "SimpleChemicalThresholdCellCycleModel.hpp"
+
 #include "AbstractCellCycleModel.hpp"
 #include "AbstractSrnModel.hpp"
 #include "CellPropertyCollection.hpp"
@@ -26,7 +29,7 @@
 
 class AbstractCellCycleModel; // Circular definition (cells need to know about cycle models and vice-versa).
 class AbstractSrnModel; // Circular definition (cells need to know about subcellular reaction network models and vice-versa).
-class Cell;
+//class Cell;
 
 // version of cell.hpp in which the cell division properties may be overridden
 
@@ -102,7 +105,8 @@ CellPtr ChemicalCell::Divide()
     boost::shared_ptr<CellData> p_cell_data = GetCellData();
     daughter_property_collection.RemoveProperty(p_cell_data);
     // Create a new cell data object using the copy constructor and add this to the daughter cell
-    MAKE_PTR_ARGS(CellData, p_daughter_cell_data, (*p_cell_data));
+    boost::shared_ptr<CellData> p_daughter_cell_data(new CellData(*p_cell_data));
+    //MAKE_PTR_ARGS(CellData, p_daughter_cell_data, (*p_cell_data));
     daughter_property_collection.AddProperty(p_daughter_cell_data);
     // Copy all cell Vec data (note we create a new object not just copying the pointer)
     if (daughter_property_collection.HasPropertyType<CellVecData>())
@@ -111,7 +115,8 @@ CellPtr ChemicalCell::Divide()
         boost::shared_ptr<CellVecData> p_cell_vec_data = GetCellVecData();
         daughter_property_collection.RemoveProperty(p_cell_vec_data);
         // Create a new cell data object using the copy constructor and add this to the daughter cell
-        MAKE_PTR_ARGS(CellVecData, p_daughter_cell_vec_data, (*p_cell_vec_data));
+        boost::shared_ptr<CellVecData> p_daughter_cell_vec_data(new CellVecData(*p_cell_vec_data));
+        //MAKE_PTR_ARGS(CellVecData, p_daughter_cell_vec_data, (*p_cell_vec_data));
         daughter_property_collection.AddProperty(p_daughter_cell_vec_data);
     }
 
@@ -246,6 +251,10 @@ CellPtr ChemicalCell::Divide()
     p_new_cell->GetCellCycleModel()->InitialiseDaughterCell();
 
     p_new_cell->GetSrnModel()->InitialiseDaughterCell();
+
+    ChemicalSrnModel *p_chemical_srn = static_cast<ChemicalSrnModel*>(p_new_cell->GetSrnModel());
+    p_chemical_srn->GetReactionSystem()->SetCell(p_new_cell); 
+    p_chemical_srn->GetReactionSystem()->DistributeCellPtr();
 
     // Set the daughter cell to inherit the apoptosis time of the parent cell
     p_new_cell->SetApoptosisTime(mApoptosisTime);

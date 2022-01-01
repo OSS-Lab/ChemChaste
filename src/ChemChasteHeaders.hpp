@@ -91,3 +91,6 @@
 
 // writers
 #include "CellProliferativeTypesWriter_ChemChaste.hpp"
+
+// cell boundary conditions
+//#include "FixedCellBoundaryConditions.hpp"

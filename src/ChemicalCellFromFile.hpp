@@ -369,7 +369,7 @@ void ChemicalCellFromFile::SetUpSRNandCellCycle()
 
 void ChemicalCellFromFile::SetUpCellObject()
 {
-    //std::cout<<"ChemicalCellFromFile::SetUpCellObject - start"<<std::endl;
+    std::cout<<"ChemicalCellFromFile::SetUpCellObject - start"<<std::endl;
     // form cell
     CellPropertyCollection collection;
     MAKE_PTR(WildTypeCellMutationState, p_state);
@@ -417,7 +417,12 @@ void ChemicalCellFromFile::SetUpCellObject()
     p_cell->SetCellProliferativeType(p_stem_type);
     
     SetCellPtr(p_cell);
-    //std::cout<<"ChemicalCellFromFile::SetUpCellObject - end"<<std::endl;
+
+    ChemicalSrnModel *p_chemical_srn = static_cast<ChemicalSrnModel*>(pSrnModel);
+    std::cout<<"Distribute ########################"<<std::endl;
+    p_chemical_srn->GetReactionSystem()->SetCell(p_cell); // should work or else type cast to ChemicalSrnModel*
+    p_chemical_srn->GetReactionSystem()->DistributeCellPtr();
+    std::cout<<"ChemicalCellFromFile::SetUpCellObject - end"<<std::endl;
 }
 
 

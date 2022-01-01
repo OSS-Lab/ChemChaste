@@ -44,6 +44,7 @@
 #include "CellAncestorWriter.hpp"
 #include "CellAppliedForceWriter.hpp"
 #include "CellAnalyticsWriter.hpp"
+//#include "CellStateWriter.hpp"
 
 
 // chemChaste headers
@@ -149,7 +150,7 @@
 
 #include "ChemicalCellFromFile.hpp"
 #include "ComplexCellFromFile.hpp"
-#include "CustomCellFromFile.hpp"
+//#include "CustomCellFromFile.hpp"
 
 #include "AbstractPdeSystemModifier.hpp"
 
@@ -162,4 +163,6 @@
 
 #include "ChemicalDomainFieldForCellCoupling.hpp"
 #include "ChemicalDomainField_templated.hpp"
+
+//#include "FixedCellBoundaryConditions.hpp"
 

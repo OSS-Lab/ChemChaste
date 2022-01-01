@@ -1,0 +1,5 @@
+# initial conditions for the states: state,subdomain,value,perturb?
+pH,Bulk,0.01,false
+pH,Film,0.01,false
+Nutrient,Bulk,0.1,false
+Nutrient,Film,0.1,false

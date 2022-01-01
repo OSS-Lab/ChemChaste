@@ -1,7 +1,7 @@
 # simulation
-output_filename = ChemChaste/CrossFeeding
-simulation_end_time = 10.0
-number_of_reaction_pdes = 4
+output_filename = ChemChaste/PreferredEnvironment2
+simulation_end_time = 50.0
+number_of_reaction_pdes = 1
 spatial_dimensions = 2
 FE_element_dimension = 2
 
@@ -27,10 +27,3 @@ node_cutoff_length = 1.5
 cell_mesh_origin = -4.0
 linear_force_cutoff = 1.5
 
-FE_mesh_step_size = 1
-scale_domain_width = 10
-scale_domain_height = 10
-
-
-mesh_location = Center
-cell_configuration = test

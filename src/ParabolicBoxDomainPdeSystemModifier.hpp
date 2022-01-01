@@ -82,6 +82,8 @@ public:
 
     unsigned GetPdeDimension();
 
+    void CheckConcentrations();
+
     //void SetNodalInitialConditions(std::vector<double> init_nodal_conditions);
 
     //std::vector<double> GetNodalInitialConditions();
@@ -130,7 +132,7 @@ void ParabolicBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::Upd
     // this line shoudl be fine for the pOdeSystem
 
     this->SetUpSourceTermsForAveragedSourcePde(this->mpFeMesh, &this->mCellPdeElementMap);
-std::cout<<"construct pde solver"<<std::endl;
+
     InhomogenousCoupledPdeOdeCoupledCellSolver<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM> solver(
                                                 this->mpFeMesh, 
                                                 this->mpCoupledDomainField->ReturnSharedPtrPdeSystem().get(), 
@@ -152,6 +154,16 @@ std::cout<<"construct pde solver"<<std::endl;
     solver.SetTimeStep(dt);
 // std::cout<<"get old solution"<<std::endl;
     // Use previous solution as the initial condition
+
+    //std::vector<double> testCondition = this->mpCoupledDomainField -> GetInitialNodeConditions(); 
+    //std::cout<<"test initial condition"<<std::endl;
+    //ReplicatableVector solution_repl(this->mSolution);
+    //for (unsigned i=0; i<solution_repl.GetSize(); i++)
+    //{
+        
+    //   std::cout<<solution_repl[i]<<std::endl;
+    //}
+
     Vec previous_solution = this->mSolution;
     solver.SetInitialCondition(previous_solution);
 
@@ -161,6 +173,23 @@ std::cout<<"construct pde solver"<<std::endl;
     this->mSolution = solver.Solve();
 //std::cout<<"after pde solver"<<std::endl;
     PetscTools::Destroy(previous_solution);
+    //std::cout<<"after solve:================="<<std::endl;
+    //ReplicatableVector solution_repl2(this->mSolution);
+    //for (unsigned i=0; i<solution_repl2.GetSize(); i++)
+    //{
+        
+    //    std::cout<<solution_repl2[i]<<std::endl;
+    //}
+
+    // ensure concentrations of mSolution vector are non-negative
+    //CheckConcentrations();
+    //std::cout<<"after check concentration:####################"<<std::endl;
+    //ReplicatableVector solution_repl3(this->mSolution);
+    //for (unsigned i=0; i<solution_repl3.GetSize(); i++)
+    //{
+        
+    //    std::cout<<solution_repl3[i]<<std::endl;
+    //}
 //std::cout<<"update cell datar"<<std::endl;
     this->UpdateCellData(rCellPopulation);
     mConditionsInterpolated = true;
@@ -245,6 +274,13 @@ void ParabolicBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::Set
     // Initialise mSolution
     this->mSolution = PetscTools::CreateVec(this->mpCoupledDomainField -> GetInitialNodeConditions());
 
+    //std::vector<double> testCondition = this->mpCoupledDomainField -> GetInitialNodeConditions(); 
+    //std::cout<<"test initial condition"<<std::endl;
+    //for(unsigned i=0; i<testCondition.size(); i++)
+    //{
+    //    std::cout<<testCondition[i]<<" "<<std::endl;
+    //}
+
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM, unsigned PROBLEM_DIM>
@@ -254,5 +290,33 @@ void ParabolicBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::Out
     AbstractBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::OutputSimulationModifierParameters(rParamsFile);
 }
 
+
+template<unsigned ELEMENT_DIM, unsigned SPACE_DIM, unsigned PROBLEM_DIM>
+void ParabolicBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::CheckConcentrations()
+{
+    std::vector<double> checkedSolution;
+
+    //Vec static_solution = static_solver.Solve();
+    ReplicatableVector solution_repl(this->mSolution);
+
+    double solutionValue=0.0;
+    //std::cout<<"solution"<<std::endl;
+    for (unsigned i=0; i<solution_repl.GetSize(); i++)
+    {
+        
+        solutionValue = solution_repl[i];
+    //    std::cout<<solutionValue<<std::endl;
+        if(solutionValue<0.0)
+        {
+            solutionValue = 0.0;
+        }
+        checkedSolution.push_back(solutionValue);
+    }
+
+
+    this->mSolution = PetscTools::CreateVec(checkedSolution);
+
+    return;
+}
 
 #endif /*PARABOLICBOXDOMAINPDESYSTEMMODIFIER_HPP_*/

@@ -99,6 +99,8 @@ public:
 
     virtual void ParseReactionInformation(std::string, bool);
 
+    virtual void GiveCell(CellPtr);
+
     // Chemical handeling functions
     std::vector<AbstractChemical*> GetBulkSubstrates();
 
@@ -361,6 +363,12 @@ void AbstractMembraneReaction::ParseReactionInformation(std::string reaction_inf
 
         SetReactionRate(atof(reaction_information.substr(pos+mIrreversibleRateName.size()+1,std::string::npos).c_str()));
     }
+}
+
+void AbstractMembraneReaction::GiveCell(CellPtr p_cell)
+{
+    // In general do nothing 
+    return;
 }
 
 // Chemical handeling functions

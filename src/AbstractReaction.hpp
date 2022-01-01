@@ -9,6 +9,7 @@
 // custom includes
 #include "AbstractChemistry.hpp"
 #include "AbstractChemical.hpp"
+#include "Cell.hpp"
 
 // abstract property to contain information about the interactions of chemical species
 // base class for further reaction types
@@ -16,6 +17,9 @@
 class AbstractReaction 
 {
 protected:
+
+    CellPtr mpCell;
+
     // vector with AbstractChemical substrates, in the forward reaction sense.  To be used to track system concentrations
     std::vector<AbstractChemical*> mpSubstrates;
 
@@ -67,6 +71,7 @@ public:
 
     // function to take in pointer to current concentration state vector of the state vector for change in concentration.  Basic update via multiplying by constant reaction rate
     virtual void React(AbstractChemistry*, const std::vector<double>&, std::vector<double>&);
+    
 
     // pure vitual function to update member variables and conditions of derived classes
     virtual void UpdateReaction();
@@ -80,6 +85,8 @@ public:
     virtual std::string GetReactionType();
 
     virtual void ParseReactionInformation(std::string, bool);
+
+    virtual void GiveCell(CellPtr);
 
 
     // Chemical handeling functions
@@ -271,6 +278,12 @@ void AbstractReaction::ParseReactionInformation(std::string reaction_information
 
 }
 
+void AbstractReaction::GiveCell(CellPtr p_cell)
+{
+    // In general do nothing 
+    mpCell = p_cell;
+    return;
+}
 
 
 // member functions

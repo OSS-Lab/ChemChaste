@@ -1,0 +1,2 @@
+Domain : Bulk
+MassActionReaction : Nutrient <-> pH ; kf = 0.0 kr = 0.0

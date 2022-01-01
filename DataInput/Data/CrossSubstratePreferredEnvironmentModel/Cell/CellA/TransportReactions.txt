@@ -1,0 +1,2 @@
+# Transport across membrane, Bulk <-> Cell
+MassActionTransportReaction : Nutrient -> Nutrient ;  kf = 0.1

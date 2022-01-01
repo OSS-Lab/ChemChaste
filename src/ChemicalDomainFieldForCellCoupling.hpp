@@ -29,6 +29,7 @@ private:
 
     using ChemicalDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::GetFieldType;
     using ChemicalDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::SetUpDomainFromFiles;
+    //using ChemicalDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ParseBoundaryConditionsFromFile;
 
 protected:
 
@@ -40,13 +41,9 @@ protected:
 
     std::string mCellLabelFilename;
 
+    unsigned mNumberOfCellSlices=0;
+
     std::string mCellKeyFilename;
-
-    std::string mInitialConditionsFilename;
-
-    std::string mBoundaryConditionsFilename;
-
-    boost::shared_ptr<BoundaryConditionsContainer<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM> > mpBoundaryConditionsContainer; 
 
     boost::shared_ptr<InhomogenousParabolicPdeForCoupledOdeSystemTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>> mpPdeSystem; 
 
@@ -63,7 +60,7 @@ protected:
     // cell information input
     unsigned mNumberOfCellTypes;
 
-    std::vector<std::vector<std::string>> mCellLabels;
+    std::vector<std::vector<std::vector<std::string>>> mCellLabels;
 
     std::vector<std::string> mCellLabelVector;
 
@@ -96,7 +93,6 @@ protected:
     bool mIsCellHoneyCombMesh;
 
     std::vector<double> mCellLabelOrigin;
-
 
 public:
 
@@ -136,9 +132,6 @@ public:
         return "ChemicalDomainFieldForCellCoupling";
     };
 
-    virtual boost::shared_ptr<BoundaryConditionsContainer<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>> ProcessBoundaryConditions();
-
-
     virtual void SetUpPdeSystem();
 
     virtual void SetUpNodalOdeSystems();
@@ -165,13 +158,13 @@ public:
 
     std::string ReturnCellKeyFromCellLabel(std::string);
 
-    std::string ReturnMappedCellLabel(unsigned, unsigned, std::vector<double>);
+    std::string ReturnMappedCellLabel(unsigned, unsigned, unsigned, std::vector<double>);
 
     std::string ReturnCellLabelAtPosition(const c_vector<double,SPACE_DIM>&);
 
     unsigned ReturnUnsignedIDFromCellKeyString(std::string);
 
-    void SetCellLabels(std::vector<std::vector<std::string>>);
+    void SetCellLabels(std::vector<std::vector<std::vector<std::string>>>);
 
     void SetCellLabelVector(std::vector<std::string>);
 
@@ -185,7 +178,7 @@ public:
 
     void SetCartesianChasteCellLayer(std::vector<std::vector<std::string>>);
 
-    std::vector<std::vector<std::string>> GetCellLabels();
+    std::vector<std::vector<std::vector<std::string>>> GetCellLabels();
 
     std::string GetCellLabelByIndex(unsigned);
 
@@ -211,8 +204,6 @@ public:
 
 
     boost::shared_ptr<InhomogenousParabolicPdeForCoupledOdeSystemTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>> ReturnSharedPtrPdeSystem();
-  
-    boost::shared_ptr<BoundaryConditionsContainer<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM> > ReturnSharedPtrBoundaryConditionsContainer();
 
 
     void PrintCellIDWithKey();
@@ -220,8 +211,6 @@ public:
     void PrintCellIDWithCellLabel();
 
     // set methods
-
-    void SetBoundaryConditionsContainer(BoundaryConditionsContainer<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM> bcc);
 
     void SetPdeSystem(boost::shared_ptr<InhomogenousParabolicPdeForCoupledOdeSystemTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>> pdeSystem);
 
@@ -286,15 +275,14 @@ ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ChemicalD
                             odeLabelFilename, 
                             odeKeyFilename, 
                             diffusionFilename,
+                            initialConditionsFilename,
+                            boundaryConditionsFilename,
                             isHoneyCombMesh,
                             labelOrigin,
                             cartesianCellScaleXY,
                             cartesianOdeScaleXY),
         mCellLabelFilename(cellLabelFilename),
         mCellKeyFilename(cellKeyFilename),
-        mInitialConditionsFilename(initialConditionsFilename),
-        mBoundaryConditionsFilename(boundaryConditionsFilename),
-        mpBoundaryConditionsContainer(boost::shared_ptr<BoundaryConditionsContainer<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>>()),
         mpPdeSystem(boost::shared_ptr<InhomogenousParabolicPdeForCoupledOdeSystemTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>> ()),
         mMeshDomainLower(meshDomainLower),
         mMeshDomainUpper(meshDomainUpper),
@@ -372,13 +360,6 @@ ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ChemicalD
     {
         // set up a domain with a chemistry, form mesh and reaction nodes etc
 
-        // process initial conditions
-
-        this -> ParseInitialConditionsFromFile(mInitialConditionsFilename);
-        // process boundary conditions
-        this -> ParseBoundaryConditionsFromFile(mBoundaryConditionsFilename);
-
-        mpBoundaryConditionsContainer = ProcessBoundaryConditions();
 
         // convert pde and nodal ode systems for interface with cell based population simulation 
         SetUpPdeSystem();
@@ -387,57 +368,6 @@ ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ChemicalD
 
         CalculateFeMeshCentreOffset();
     }
-
-    template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
-    boost::shared_ptr<BoundaryConditionsContainer<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>> ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ProcessBoundaryConditions()
-    {
-
-        // retireive the boundary conditions information derived from the files inputs
-        std::vector<std::string> boundaryConditionTypes = this -> GetBoundaryConditionTypes();
-        std::vector<double> boundaryConditionValues = this -> GetBoundaryConditionValues();
-
-        // create containeers to store the boundary conditions, assume each boundary condition is constant over the simulation
-        boost::shared_ptr<BoundaryConditionsContainer<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>> p_bcc(new BoundaryConditionsContainer<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>());
-        std::vector<ConstBoundaryCondition<SPACE_DIM>*> vectorConstBCs;
- 
-        for(unsigned pdeDim=0; pdeDim<PROBLEM_DIM; pdeDim++){
-            vectorConstBCs.push_back(new ConstBoundaryCondition<SPACE_DIM>(boundaryConditionValues[pdeDim]));
-        }
-
-        for(unsigned pdeDim=0; pdeDim<PROBLEM_DIM; pdeDim++)
-        {
-            if(boundaryConditionTypes[pdeDim]=="Dirichlet"||boundaryConditionTypes[pdeDim]=="dirichlet"||boundaryConditionTypes[pdeDim]=="D"||boundaryConditionTypes[pdeDim]=="d")
-            {
-                // standardise
-                boundaryConditionTypes[pdeDim] = "Dirichlet";
-
-                // run though each bondary node and set boundary condition
-                for (typename TetrahedralMesh<ELEMENT_DIM,SPACE_DIM>::BoundaryNodeIterator node_iter = this->mpFeMesh->GetBoundaryNodeIteratorBegin();
-                 node_iter != this->mpFeMesh->GetBoundaryNodeIteratorEnd();
-                 ++node_iter)
-                {
-                    p_bcc->AddDirichletBoundaryCondition(*node_iter, vectorConstBCs[pdeDim], pdeDim);
-                }
-            }else if(boundaryConditionTypes[pdeDim]=="Neumann"||boundaryConditionTypes[pdeDim]=="neumann"||boundaryConditionTypes[pdeDim]=="N"||boundaryConditionTypes[pdeDim]=="n")
-            {
-                // standardise
-                boundaryConditionTypes[pdeDim] = "Neumann";
-
-                // run though each bondary node and set boundary condition
-                for (typename TetrahedralMesh<ELEMENT_DIM,SPACE_DIM>::BoundaryElementIterator boundary_iter = this->mpFeMesh->GetBoundaryElementIteratorBegin();
-                boundary_iter != this->mpFeMesh->GetBoundaryElementIteratorEnd();
-                boundary_iter++)
-                {
-                    p_bcc->AddNeumannBoundaryCondition(*boundary_iter, vectorConstBCs[pdeDim], pdeDim);
-                }
-            }
-        }
-        // update boundary condition types
-        this -> SetBoundaryConditionTypes(boundaryConditionTypes);
-
-        return p_bcc;
-    }
-
     
     
     template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
@@ -490,6 +420,7 @@ ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ChemicalD
         
         std::vector<unsigned> cartesianCellLayerDimensions;
 
+        cartesianCellLayerDimensions.push_back(mCellLabels[0][0].size());
         cartesianCellLayerDimensions.push_back(mCellLabels[0].size());
         cartesianCellLayerDimensions.push_back(mCellLabels.size());
 
@@ -507,11 +438,13 @@ ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ChemicalD
             switch (SPACE_DIM)
             {
                 case 2:
+                    
                     meshScale.push_back(1.0);
                     meshScale.push_back(0.866025);
+                    meshScale.push_back(1.0);
                     break;
                 default:
-                
+                    // not sure as to honeycomb dimensions
                     for(unsigned dim=0;dim<SPACE_DIM; dim++)
                     {
                         meshScale.push_back(1.0);
@@ -533,6 +466,7 @@ ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ChemicalD
         std::vector<double> meshSegment(SPACE_DIM,0.0);
         double meshElementX = 0.0;
         double meshElementY = 0.0;
+        double meshElementZ = 0.0;
         
         // determine the mesh dimensions up to the maximum allowed through the scaling
         // cover the whole cell set with the mesh
@@ -555,39 +489,47 @@ ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ChemicalD
     void ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::FormCellMesh()
     {
         // use the aforementioned mesh dimension to produce a new honeycomb mesh, as mutable mesh type
-
-        //HoneycombMeshGenerator generator(meshDimensions[0], meshDimensions[1], 0);
-        if(mIsCellHoneyCombMesh)
+        std::cout<<"ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::FormCellMesh()"<<std::endl;
+        switch (SPACE_DIM)
         {
-            HoneycombMeshGenerator* p_generator = new HoneycombMeshGenerator(mCellMeshDimensions[0], mCellMeshDimensions[1], 0);
+            case 2:
+                if(mIsCellHoneyCombMesh)
+                {
+                    HoneycombMeshGenerator* p_generator = new HoneycombMeshGenerator(mCellMeshDimensions[0], mCellMeshDimensions[1], 0,mCellStepSize);
 
-            mpCellMesh = dynamic_cast<TetrahedralMesh<ELEMENT_DIM,SPACE_DIM>*>(p_generator -> GetMesh());
+                    mpCellMesh = dynamic_cast<TetrahedralMesh<ELEMENT_DIM,SPACE_DIM>*>(p_generator -> GetMesh());
 
-            SetCellMeshGenerator(p_generator);
-  
-            SetCellMesh(mpCellMesh);
-        }
-        else
-        {
-            mpCellMesh = new TetrahedralMesh<ELEMENT_DIM,SPACE_DIM>();
+                    SetCellMeshGenerator(p_generator);
+        
+                    SetCellMesh(mpCellMesh);
+                }
+                else
+                {
+                    mpCellMesh = new TetrahedralMesh<ELEMENT_DIM,SPACE_DIM>();
 
-            switch (SPACE_DIM)
-            {
-                case 1:
-                    mpCellMesh->ConstructRegularSlabMesh(mCellStepSize, mCellMeshDimensions[0]);
-                    break;
-                case 2:
-                    mpCellMesh->ConstructRegularSlabMesh(mCellStepSize, mCellMeshDimensions[0], mCellMeshDimensions[1]);
-                    break;
-                case 3:
                     mpCellMesh->ConstructRegularSlabMesh(mCellStepSize, mCellMeshDimensions[0], mCellMeshDimensions[1], mCellMeshDimensions[2]);
-                    break;
-                default:
-                    NEVER_REACHED;
-            }
 
-            SetCellMesh(mpCellMesh);
+                    SetCellMesh(mpCellMesh);
+                }
+
+                break;
+
+            case 3:
+
+                mpCellMesh = new TetrahedralMesh<ELEMENT_DIM,SPACE_DIM>();
+                mpCellMesh->ConstructRegularSlabMesh(mCellStepSize, mCellMeshDimensions[0], mCellMeshDimensions[1]);
+                SetCellMesh(mpCellMesh);
+                break;
+
+            case 1:
+
+                mpCellMesh = new TetrahedralMesh<ELEMENT_DIM,SPACE_DIM>();
+                mpCellMesh->ConstructRegularSlabMesh(mCellStepSize, mCellMeshDimensions[0]);
+                SetCellMesh(mpCellMesh);
+                break;
+
         }
+        
     }
 
     template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
@@ -666,10 +608,38 @@ ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ChemicalD
     template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
     void ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ReadCellLabels()
     {
-        // read and store the information contained within the domain labels file
-        SetCellLabels(AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ReadMatrix(mCellLabelFilename));
+        // read and store the information contained within the cell labels topology file(s)
 
-        SetCellLabelVector(AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ReturnUnique(GetCellLabels()));
+        std::vector<std::vector<std::vector<std::string>>> tempCellLabels;
+
+        // mCellLabelFilename will eb a .csv if 2D or a directory containg .csv files if 3D
+        std::string filename = mCellLabelFilename;
+        switch(SPACE_DIM)
+        {
+            case 2:
+                tempCellLabels.push_back(AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ReadMatrix(filename));
+                break;
+
+            case 3:
+                for(unsigned i=0; i<mNumberOfCellSlices;i++)
+                {
+                    filename = mCellLabelFilename + "/" + std::to_string(i) + ".csv";
+                    tempCellLabels.push_back(AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ReadMatrix(filename));
+                }
+                break;
+
+            case 1:
+                std::cout<<"Error: ChemicalDomainFieldForCellCoupling 1D domain not supported"<<std::endl;
+                break;
+
+
+
+        }
+
+
+        SetCellLabels(tempCellLabels);
+
+        SetCellLabelVector(AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ReturnUnique(tempCellLabels));
     }
 
     template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
@@ -725,7 +695,7 @@ ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ChemicalD
             for(unsigned xindex=0; xindex<numberOfXSteps; xindex++)
             {
                 // push back the domain label of the file domain onto the mapped domain, here everything is in terms of std::string label
-                rowVector.push_back(ReturnMappedCellLabel(xindex,yindex,cartesianChasteCellScaleXY));
+                rowVector.push_back(ReturnMappedCellLabel(xindex,yindex,0,cartesianChasteCellScaleXY));
 
             }
 
@@ -765,39 +735,90 @@ ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ChemicalD
 
 
     template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
-    std::string ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ReturnMappedCellLabel(unsigned xindex, unsigned yindex, std::vector<double> scaleFactor)
+    std::string ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ReturnMappedCellLabel(unsigned xindex, unsigned yindex, unsigned zindex, std::vector<double> scaleFactor)
     {
         // compare the xindex and yindex of the new chaste domain to the label domain
         // return the label of the chaste domain, work from the top left to bottom right
 
         unsigned labelXIndex =0;
         unsigned labelYIndex =0;
+        unsigned labelZIndex =0;
 
         double positionX = xindex*scaleFactor[0];
         double positionY = yindex*scaleFactor[1];
-        
+        double positionZ = zindex*scaleFactor[2];
 
-        for(unsigned i=0; i<(mCartesianCellLayerDimensions[1]+1); i++) // top to bottom
+        switch(SPACE_DIM)
         {
-            if(positionY <= i*mCartesianCellLayerScaleXY[1])
-            {
-                labelYIndex = i;
+            case 2:
+
+                // for the y position
+
+                for(unsigned i=1; i<(mCartesianCellLayerDimensions[1]+1); i++) // top to bottom
+                {
+                    if(positionY <= i*mCartesianCellLayerScaleXY[1])
+                    {
+                        labelYIndex = i-1;
+                        break;
+                    }
+                }
+
+                // for the x position
+
+                for(unsigned i=1; i<(mCartesianCellLayerDimensions[0]+1); i++)
+                {
+                    if(positionX <= i*mCartesianCellLayerScaleXY[0])
+                    {
+                        labelXIndex = i-1;
+                        break;
+                    }
+                }
+
+                break; 
+
+            case 3:
+                // for the z position
+
+                for(unsigned i=1; i<(mCartesianCellLayerDimensions[2]+1); i++) // top to bottom
+                {
+                    if(positionZ <= i*mCartesianCellLayerScaleXY[2])
+                    {
+                        labelZIndex = i-1;
+                        break;
+                    }
+                }
+                
+                // for the y position
+
+                for(unsigned i=1; i<(mCartesianCellLayerDimensions[1]+1); i++) // top to bottom
+                {
+                    if(positionY <= i*mCartesianCellLayerScaleXY[1])
+                    {
+                        labelYIndex = i-1;
+                        break;
+                    }
+                }
+
+                // for the x position
+
+                for(unsigned i=1; i<(mCartesianCellLayerDimensions[0]+1); i++)
+                {
+                    if(positionX <= i*mCartesianCellLayerScaleXY[0])
+                    {
+                        labelXIndex = i-1;
+                        break;
+                    }
+                }
+
                 break;
-            }
+
+            case 1:
+                std::cout<<"Error: ChemicalDomainFieldForCellCoupling A 1D cell layer not supported"<<std::endl;
+                break;
         }
 
-        // for the x position
 
-        for(unsigned i=0; i<(mCartesianCellLayerDimensions[0]+1); i++)
-        {
-            if(positionX <= i*mCartesianCellLayerScaleXY[0])
-            {
-                labelXIndex = i;
-                break;
-            }
-        }
-
-        return mCellLabels[labelYIndex][labelXIndex];
+        return mCellLabels[labelZIndex][labelYIndex][labelXIndex];
     }
 
 
@@ -838,7 +859,7 @@ ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ChemicalD
 
 
     template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
-    void ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::SetCellLabels(std::vector<std::vector<std::string>> cellLabels)
+    void ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::SetCellLabels(std::vector<std::vector<std::vector<std::string>>> cellLabels)
     {
         mCellLabels = cellLabels;
     }
@@ -879,10 +900,8 @@ ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ChemicalD
         mCartesianChasteCellLayer = cartesianChasteCellLayer;
     }
 
-
-
     template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
-    std::vector<std::vector<std::string>> ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::GetCellLabels()
+    std::vector<std::vector<std::vector<std::string>>> ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::GetCellLabels()
     {
         return mCellLabels;
     }
@@ -977,38 +996,17 @@ ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ChemicalD
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
     boost::shared_ptr<InhomogenousParabolicPdeForCoupledOdeSystemTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>> ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ReturnSharedPtrPdeSystem()
     {
         return mpPdeSystem;
     }
   
-    template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
-    boost::shared_ptr<BoundaryConditionsContainer<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM> > ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ReturnSharedPtrBoundaryConditionsContainer()
-    {
-        return mpBoundaryConditionsContainer;
-    }
+    //template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
+    //boost::shared_ptr<BoundaryConditionsContainer<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM> > ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ReturnSharedPtrBoundaryConditionsContainer()
+    //{
+     //   return mpBoundaryConditionsContainer;
+    //}
 
     // set methods
 

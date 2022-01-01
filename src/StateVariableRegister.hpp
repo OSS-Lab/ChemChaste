@@ -17,6 +17,8 @@ protected:
 
 public:
 
+    StateVariableRegister();
+    
     StateVariableRegister(std::vector<std::string> VariableNameVector = std::vector<std::string>() );
 
     ~StateVariableRegister();

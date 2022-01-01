@@ -10,6 +10,7 @@
 // reaction includes
 #include "AbstractReaction.hpp"
 #include "AbstractChemistry.hpp"
+#include "Cell.hpp"
 
 // class to hold the information and data structures defining a system of chemical reactions. 
 
@@ -22,6 +23,8 @@ protected:
     std::vector<AbstractReaction*> mpReactionVector;
 
     unsigned mNumberOfReactions;
+
+    CellPtr mpCell;
 
 public:
     AbstractReactionSystem( AbstractChemistry* systemChemistry = new AbstractChemistry(), 
@@ -36,6 +39,8 @@ public:
     virtual void ReactSystem(const std::vector<double>&, std::vector<double>&);
 
     virtual void UpdateReactionSystem(const std::vector<double>&);
+
+    void DistributeCellPtr();
 
     std::vector<AbstractReaction*> GetReactionVector();
 
@@ -52,6 +57,10 @@ public:
     unsigned GetNumberOfReactions();
 
     void SetNumberOfReactions(unsigned);
+
+    CellPtr GetCell();
+
+    void SetCell(CellPtr);
 
 
 };
@@ -88,6 +97,7 @@ void AbstractReactionSystem::ReactSystem(const std::vector<double>& currentChemi
         
         AbstractReaction *p_system_reaction = dynamic_cast<AbstractReaction*>(*reaction_iter);
         
+        p_system_reaction -> GiveCell(mpCell); // some reactions may need the cell to extract properties 
         p_system_reaction -> React(mpSystemChemistry, currentChemistryConc, deltaConcentration);
        
         // update the change in concentration
@@ -104,7 +114,22 @@ void AbstractReactionSystem::ReactSystem(const std::vector<double>& currentChemi
 void AbstractReactionSystem::UpdateReactionSystem(const std::vector<double>& currentChemistryConc)
 {
     // virtual
-    return;
+}
+
+void AbstractReactionSystem::DistributeCellPtr()
+{
+    assert(mpCell != nullptr);
+    // distribute the cell ptr to the individual reactions
+    for(std::vector<AbstractReaction*>::iterator reaction_iter = mpReactionVector.begin();
+            reaction_iter != mpReactionVector.end();
+            ++reaction_iter)
+    {
+        AbstractReaction *p_system_reaction = dynamic_cast<AbstractReaction*>(*reaction_iter);
+        std::cout<<"AbstractReactionSystem::DistributeCellPtr()"<<std::endl;
+        p_system_reaction -> GiveCell(mpCell); // some reactions may need the cell to extract properties 
+
+    }
+
 }
 
 std::vector<AbstractReaction*> AbstractReactionSystem::GetReactionVector()
@@ -154,5 +179,17 @@ void AbstractReactionSystem::SetNumberOfReactions(unsigned numberOfReactions)
 {
     mNumberOfReactions = numberOfReactions;
 }
+
+void AbstractReactionSystem::SetCell(CellPtr pCell)
+{
+    mpCell = pCell;
+}
+
+CellPtr AbstractReactionSystem::GetCell()
+{
+    assert(mpCell != nullptr);
+    return mpCell;
+}
+
 
 #endif

@@ -30,11 +30,11 @@ public:
 
     void SetEnvironmentNamesVector(std::vector<std::string>);
 
-    void SetValueVector(std::vector<double> );
+    void SetEnvironmentValueVector(std::vector<double> );
 
     std::vector<std::string> GetEnvironmentNamesVector();
 
-    std::vector<double> GetValueVector();
+    std::vector<double> GetEnvironmentValueVector();
 };
 
 PreferredCellEnvironmentFromFile::PreferredCellEnvironmentFromFile(std::string environmentFilename) 
@@ -58,7 +58,7 @@ PreferredCellEnvironmentFromFile::PreferredCellEnvironmentFromFile(std::string e
 
     // store the information
     SetEnvironmentNamesVector(environmentNamesVector);
-    SetValueVector(valueVector);
+    SetEnvironmentValueVector(valueVector);
 }
 
 std::vector<std::vector<std::string>> PreferredCellEnvironmentFromFile::ReadMatrix(std::string filename)
@@ -141,7 +141,7 @@ void PreferredCellEnvironmentFromFile::SetEnvironmentNamesVector(std::vector<std
     mEnvironmentNamesVector = namesVector;
 }
 
-void PreferredCellEnvironmentFromFile::SetValueVector(std::vector<double> valueVector)
+void PreferredCellEnvironmentFromFile::SetEnvironmentValueVector(std::vector<double> valueVector)
 {
     mValueVector = valueVector;
 }
@@ -151,7 +151,7 @@ std::vector<std::string> PreferredCellEnvironmentFromFile::GetEnvironmentNamesVe
     return mEnvironmentNamesVector;
 }
 
-std::vector<double> PreferredCellEnvironmentFromFile::GetValueVector()
+std::vector<double> PreferredCellEnvironmentFromFile::GetEnvironmentValueVector()
 {
     return mValueVector;
 }

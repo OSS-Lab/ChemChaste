@@ -363,10 +363,11 @@ void AbstractPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::UpdateAtEndOf
             std::string results_file = "pde_results_" + mpCoupledDomainField->GetDomainStateVariableRegister()->RetrieveStateVariableName(pdeDim) + "_" + time_string.str();
             VtkMeshWriter<ELEMENT_DIM,SPACE_DIM>* p_vtk_mesh_writer = new VtkMeshWriter<ELEMENT_DIM,SPACE_DIM>(mOutputDirectory, results_file, false);
             std::vector<double> pde_solution;
-
+            std::cout<<results_file<<" : "<<std::endl;
             for (unsigned i=0; i<mpFeMesh->GetNumNodes(); i++)
             {
                 pde_solution.push_back(solution_repl[i*PROBLEM_DIM+pdeDim]); 
+                std::cout<<solution_repl[i*PROBLEM_DIM+pdeDim]<<std::endl;
             }
             p_vtk_mesh_writer->AddPointData(mpCoupledDomainField->GetDomainStateVariableRegister()->RetrieveStateVariableName(pdeDim), pde_solution);
 

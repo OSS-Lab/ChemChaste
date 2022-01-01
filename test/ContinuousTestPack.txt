@@ -10,3 +10,4 @@ TestChemChastePaper.hpp
 TestChastePdeLeakage.hpp
 TestTotalMass.hpp
 TestSpatialPatterning.hpp
+TestpHSwitching.hpp

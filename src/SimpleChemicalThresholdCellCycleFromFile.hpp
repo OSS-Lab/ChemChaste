@@ -34,6 +34,10 @@ public:
     std::vector<std::vector<std::string>> ReadMatrix(std::string);
 
     std::vector<std::string> parseMatrixLineString(std::string);
+
+    void SetCellCycleFilename(std::string);
+
+    std::string GetCellCycleFilename();
 };
 
 SimpleChemicalThresholdCellCycleFromFile::SimpleChemicalThresholdCellCycleFromFile(std::string thresholdFilename) 
@@ -200,6 +204,16 @@ std::vector<std::string> SimpleChemicalThresholdCellCycleFromFile::parseMatrixLi
         posSnew=line.find(delim);
     }
     return rowVector;
+}
+
+void SimpleChemicalThresholdCellCycleFromFile::SetCellCycleFilename(std::string filename)
+{
+    mCellCycleFilename = filename;
+}
+
+std::string SimpleChemicalThresholdCellCycleFromFile::GetCellCycleFilename()
+{
+    return mCellCycleFilename;
 }
 
 

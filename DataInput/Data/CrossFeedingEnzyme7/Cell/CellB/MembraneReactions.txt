@@ -1,0 +1,2 @@
+# Reaction at membrane, Bulk <-> Bulk | Cell <-> Cell
+MassActionCoupledMembraneReaction : Oxygen <-> Oxygen | Oxygen <-> Oxygen ;  kf = 0.0 kr = 0.0

@@ -410,6 +410,10 @@ c_vector<double, PROBLEM_DIM*(ELEMENT_DIM+1)> InhomogenousCoupledPdeOdeCoupledCe
                     }
                     // else not this cell
                 }
+
+
+
+                
                 
                 if(isContributed)
                 {
@@ -427,9 +431,13 @@ c_vector<double, PROBLEM_DIM*(ELEMENT_DIM+1)> InhomogenousCoupledPdeOdeCoupledCe
         c_vector<double, ELEMENT_DIM+1> this_vector_term;
         
         this_vector_term = (this_source_term + this_constant_source_term + timestep_inverse*this_dudt_coefficient*rU(pde_index))* rPhi;
-        
+
         for (unsigned i=0; i<ELEMENT_DIM+1; i++)
         {
+            if(this_vector_term(i)<0)
+            {
+                this_vector_term(i)=0.0;
+            }
             vector_term(i*PROBLEM_DIM + pde_index) = this_vector_term(i);
         }
     }
@@ -483,7 +491,7 @@ void InhomogenousCoupledPdeOdeCoupledCellSolver<ELEMENT_DIM, SPACE_DIM, PROBLEM_
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM, unsigned PROBLEM_DIM>
 void InhomogenousCoupledPdeOdeCoupledCellSolver<ELEMENT_DIM, SPACE_DIM, PROBLEM_DIM>::IncrementInterpolatedQuantities(double phiI, const Node<SPACE_DIM>* pNode)
-{  // std::cout<<"InhomogenousCoupledPdeOdeCoupledCellSolver - IncrementInterpolatedQuantities"<<std::endl;
+{   //std::cout<<"InhomogenousCoupledPdeOdeCoupledCellSolver - IncrementInterpolatedQuantities"<<std::endl;
     // interploates a quantity from a node location to point x through the basis function phi associated with the node 
     if (mOdeSystemsPresent)
     {
@@ -530,6 +538,16 @@ void InhomogenousCoupledPdeOdeCoupledCellSolver<ELEMENT_DIM, SPACE_DIM, PROBLEM_
      //   std::cout<<"mInterpolationCount = "<<mInterpolationCount<<std::endl;
         if(mInterpolationCount==2)
         {
+            // check for -ve concentrations
+            for(unsigned prob_dim=0; prob_dim<PROBLEM_DIM; prob_dim++)
+            {
+                if(mU(prob_dim)<0.0)
+                {
+                    mU(prob_dim) = 0.0;
+                }
+            }
+
+
             // the mX and mU are fully interpolated
      //       std::cout<<"hit interpolation"<<std::endl;
             // check whether point mX is associated with a cell
@@ -625,6 +643,36 @@ void InhomogenousCoupledPdeOdeCoupledCellSolver<ELEMENT_DIM, SPACE_DIM, PROBLEM_
                         this_point_found = true; // as have found the cell associated with the point interpolated
                     } 
                 }
+
+                // update the cell data based on any environment properties
+                if (cell_iter-> rGetCellPropertyCollection().HasProperty<EnvironmentCellProperty>())
+                {
+                    boost::shared_ptr<EnvironmentCellProperty> environment_cell_property = boost::static_pointer_cast<EnvironmentCellProperty>(cell_iter-> rGetCellPropertyCollection(). GetPropertiesType<EnvironmentCellProperty>().GetProperty());
+
+                    StateVariableRegister* pEnvironmentRegister = environment_cell_property -> GetEnvironmentStateVariableRegister();
+
+                    const ChastePoint<SPACE_DIM>& cellCentrePoint = mrCellPopulation.GetLocationOfCellCentre(*cell_iter);
+
+
+                    if(CheckChastePointsForEquality(cellCentrePoint,mX))
+                    {
+                        std::string name_of_pde_index ="";
+                        for(unsigned pde_index=0; pde_index<PROBLEM_DIM;pde_index++)
+                        {
+                            name_of_pde_index = mpPdeSystem->GetStateVariableRegister()->RetrieveStateVariableName(pde_index);
+                            if(pEnvironmentRegister->IsStateVariablePresent(name_of_pde_index))
+                            {
+                                std::cout<<"Environment: "<<name_of_pde_index<<" : "<<mU[pde_index]<<std::endl;
+                                std::cout<<"Preferred: "<<name_of_pde_index<<" : "<<environment_cell_property->GetPreferredEnvironmentValueByName(name_of_pde_index)<<std::endl;
+                                environment_cell_property->SetEnvironmentValueByIndex(pEnvironmentRegister->RetrieveStateVariableIndex(name_of_pde_index),mU[pde_index]);
+                            }
+                            
+                        }
+                        this_point_found = true; // as have found the cell associated with the point interpolated
+                    }
+
+
+                }
                 if(this_point_found)
                 {
                     break;
@@ -639,7 +687,7 @@ void InhomogenousCoupledPdeOdeCoupledCellSolver<ELEMENT_DIM, SPACE_DIM, PROBLEM_
             mInterpolationCount +=1;
         }
     }
-  //  std::cout<<"InhomogenousCoupledPdeOdeCoupledCellSolver - IncrementInterpolatedQuantities - end"<<std::endl;
+    //std::cout<<"InhomogenousCoupledPdeOdeCoupledCellSolver - IncrementInterpolatedQuantities - end"<<std::endl;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM, unsigned PROBLEM_DIM>

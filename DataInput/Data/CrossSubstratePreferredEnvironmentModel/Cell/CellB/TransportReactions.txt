@@ -1,0 +1,2 @@
+# Transport across membrane, Bulk <-> Cell
+MassActionTransportReaction : pH -> pH ;  kf = 0.0

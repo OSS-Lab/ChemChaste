@@ -410,22 +410,27 @@ unsigned Cell::GetCellId() const
 
 bool Cell::ReadyToDivide()
 {
+    std::cout<<"virtual cell"<<std::endl;
     assert(!IsDead());
+    std::cout<<"not dead"<<std::endl;
     if (mUndergoingApoptosis || HasCellProperty<ApoptoticCellProperty>())
     {
         return false;
     }
-
+    std::cout<<"Srn simualte to current time"<<std::endl;
     // NOTE - we run the SRN model here first before the CCM
     mpSrnModel->SimulateToCurrentTime();
+    std::cout<<"cellCycle -> REady to Divide"<<std::endl;
     // This in turn runs any simulations within the CCM through ReadyToDivide();
     mCanDivide = mpCellCycleModel->ReadyToDivide();
-
+    std::cout<<"mCanDivide: "<<mCanDivide<<std::endl;
+    std::cout<<"CEll::ReadyToDivide - end"<<std::endl;
     return mCanDivide;
 }
 
 CellPtr Cell::Divide()
 {
+    std::cout<<"cell_virtual Cell::Divide"<<std::endl;
     // Check we're allowed to divide
     assert(!IsDead());
     assert(mCanDivide);

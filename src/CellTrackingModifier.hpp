@@ -98,6 +98,16 @@ void CellTrackingModifier<ELEMENT_DIM,SPACE_DIM>::UpdateCellData(AbstractCellPop
                 // subtract transport out
                 tempCell = -transportOut[species]*cellVal + transportIn[species]*nodeVal;
                 tempNode = transportOut[species]*cellVal - transportIn[species]*nodeVal;
+
+                if(tempCell<0)
+                {
+                    tempCell=0.0
+                }
+
+                if(tempCell<0)
+                {
+                    tempCell=0.0
+                }
         
                 // update
                 cell_iter->GetCellData()->SetItem("var_cell_"+speciesNameVector[species], tempCell);

@@ -10,6 +10,7 @@
 // reaction includes
 #include "AbstractMembraneReaction.hpp"
 #include "AbstractChemistry.hpp"
+#include "Cell.hpp"
 
 // class to hold a set of membrane reactions and handle the parsing and reforming of the different chemical concentration (state variable)
 // vectors. These vectors being the concentrations external and internal to the infinitesimal thickness membrane. 
@@ -30,6 +31,8 @@ protected:
 
     unsigned mNumberOfCellStates=0;
 
+    CellPtr mpCell;
+
 public:
     AbstractMembraneReactionSystem( AbstractChemistry* bulkChemistry = new AbstractChemistry(), 
                                     AbstractChemistry* cellChemistry = new AbstractChemistry(), 
@@ -46,6 +49,8 @@ public:
     virtual void ReactSystem(const std::vector<double>&, const std::vector<double>&, std::vector<double>&, std::vector<double>&);
 
     virtual void UpdateReactionSystem(const std::vector<double>&, const std::vector<double>&);
+
+    void DistributeCellPtr();
 
     // set methods
 
@@ -75,6 +80,10 @@ public:
     unsigned GetNumberOfBulkStates();
 
     unsigned GetNumberOfCellStates();
+
+    CellPtr GetCell();
+
+    void SetCell(CellPtr);
 
 };
 
@@ -144,6 +153,23 @@ void AbstractMembraneReactionSystem::UpdateReactionSystem(const std::vector<doub
     // virtual
     return;
 }
+
+void AbstractMembraneReactionSystem::DistributeCellPtr()
+{
+    assert(mpCell != nullptr);
+    // distribute the cell ptr to the individual reactions
+    for(std::vector<AbstractMembraneReaction*>::iterator reaction_iter = mpReactionVector.begin();
+            reaction_iter != mpReactionVector.end();
+            ++reaction_iter)
+    {
+        AbstractMembraneReaction *p_system_reaction = static_cast<AbstractMembraneReaction*>(*reaction_iter);
+        
+        p_system_reaction -> GiveCell(mpCell); // some reactions may need the cell to extract properties 
+
+    }
+
+}
+
 
 
 // set methods
@@ -219,6 +245,17 @@ unsigned AbstractMembraneReactionSystem::GetNumberOfBulkStates()
 unsigned AbstractMembraneReactionSystem::GetNumberOfCellStates()
 {
     return mNumberOfCellStates;
+}
+
+void AbstractMembraneReactionSystem::SetCell(CellPtr pCell)
+{
+    mpCell = pCell;
+}
+
+CellPtr AbstractMembraneReactionSystem::GetCell()
+{
+    assert(mpCell != nullptr);
+    return mpCell;
 }
 
 #endif

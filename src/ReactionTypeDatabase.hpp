@@ -14,6 +14,8 @@
 #include "MassActionReaction.hpp"
 #include "SpectatorDependentReaction.hpp"
 #include "MichaelisMentenReaction.hpp"
+#include "EnvironmentDependentReaction.hpp"
+#include "PreferredEnvironmentMassActionReaction.hpp"
 
 //======================================================//
 //             TRANSPORT REACTION HEADERS               //   
@@ -86,7 +88,18 @@ void ReactionTablet(AbstractReaction*& p_reaction,  std::string reactionType = "
         p_reaction = new MichaelisMentenReaction(substrates, products, stoichSubstrates, stoichProducts, p_systemChemistry);
         p_reaction -> ParseReactionInformation(reactionInformation, IsReversible);
     }
-
+    else if(reactionType == "EnvironmentDependentReaction")
+    {
+        delete p_reaction;
+        p_reaction = new EnvironmentDependentReaction(substrates, products, stoichSubstrates, stoichProducts);
+        p_reaction -> ParseReactionInformation(reactionInformation, IsReversible);
+    }
+    else if(reactionType == "PreferredEnvironmentMassActionReaction")
+    {
+        delete p_reaction;
+        p_reaction = new PreferredEnvironmentMassActionReaction(substrates, products, stoichSubstrates, stoichProducts);
+        p_reaction -> ParseReactionInformation(reactionInformation, IsReversible);
+    }
 
     // add more else if (reactionType == "...")
 

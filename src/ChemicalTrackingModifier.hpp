@@ -123,14 +123,14 @@ void ChemicalTrackingModifier<ELEMENT_DIM,SPACE_DIM>::UpdateCellData(AbstractCel
     std::cout<<"ChemicalTrackingModifier<ELEMENT_DIM,SPACE_DIM>::UpdateCellData( - start"<<std::endl;
     // Make sure the cell population is updated, i.e cell cycle, cell state
     rCellPopulation.Update();
-    std::cout<<"post update"<<std::endl;
+
     unsigned count=0;
     /// run through each cell in the population and update the internal chemical concentrations in cellData
     for (typename AbstractCellPopulation<SPACE_DIM>::Iterator cell_iter = rCellPopulation.Begin();
          cell_iter != rCellPopulation.End();
          ++cell_iter)
     {   
-std::cout<<"for cell"<<std::endl;
+
         ChemicalSrnModel* p_model = static_cast<ChemicalSrnModel*>(cell_iter->GetSrnModel());
         AbstractChemistry* this_cell_srn_chemistry = p_model->GetCellChemistry();
         unsigned numberOfSrnChemicals = this_cell_srn_chemistry->GetNumberChemicals();
@@ -147,7 +147,7 @@ std::cout<<"for cell"<<std::endl;
             CheckConcentration(this_concentration);
             cell_iter->GetCellData()->SetItem(this_name, this_concentration);
         }
-        std::cout<<"ehre"<<std::endl;
+        
 
         // update the cell data based on any transport properties
         if (cell_iter-> rGetCellPropertyCollection(). template HasProperty<TransportCellProperty>())
@@ -171,6 +171,8 @@ std::cout<<"for cell"<<std::endl;
             }
 
         }
+
+        
 
         // update the cell data based on any membrane properties
         if (cell_iter-> rGetCellPropertyCollection(). template HasProperty<MembraneCellProperty>())

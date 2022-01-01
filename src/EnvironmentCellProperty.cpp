@@ -14,6 +14,7 @@ EnvironmentCellProperty::EnvironmentCellProperty(const EnvironmentCellProperty& 
 {
     mpEnvironmentStateVariableRegister = existingProperty.mpEnvironmentStateVariableRegister;
     mEnvironmentVector = existingProperty.mEnvironmentVector;
+    mPreferredEnvironmentVector = existingProperty.mPreferredEnvironmentVector;
 }
 
 // virtual methods
@@ -26,7 +27,7 @@ void EnvironmentCellProperty::SetUp(CellPtr this_cellPtr, std::vector<std::strin
 
     SetEnvironmentStateVariableRegister(p_stateRegister);
 
-    SetUpEnvironmentVector(p_stateRegister -> GetNumberOfStateVariables());
+    SetUpEnvironmentVectors(p_stateRegister -> GetNumberOfStateVariables());
 
 }
 
@@ -34,6 +35,12 @@ void EnvironmentCellProperty::UpdateEnvironmentVector(std::vector<double> enviro
 {
     mEnvironmentVector = environmentVector;
 }
+
+void EnvironmentCellProperty::UpdatePreferredEnvironmentVector(std::vector<double> environmentVector)
+{
+    mPreferredEnvironmentVector = environmentVector;
+}
+
 
 void EnvironmentCellProperty::PreparePostDivisionParent(double splitRatio)
 {
@@ -45,10 +52,11 @@ void  EnvironmentCellProperty::PreparePostDivisionDaughter(const EnvironmentCell
     // split any properties that are shared
 }
 
-void EnvironmentCellProperty::SetUpEnvironmentVector(unsigned numberOfStateVariables)
+void EnvironmentCellProperty::SetUpEnvironmentVectors(unsigned numberOfStateVariables)
 {
     std::vector<double> reset(numberOfStateVariables,0.0);
     mEnvironmentVector = reset;
+    mPreferredEnvironmentVector = reset;
 }
 
 // set methods
@@ -61,6 +69,33 @@ void EnvironmentCellProperty::SetEnvironmentStateVariableRegister(StateVariableR
 void EnvironmentCellProperty::SetEnvironmentVector(std::vector<double> valueVector)
 {
     mEnvironmentVector = valueVector;
+}
+
+void EnvironmentCellProperty::SetEnvironmentValueByIndex(unsigned name_index,double value)
+{
+    mEnvironmentVector[name_index] = value;
+}
+
+void EnvironmentCellProperty::SetEnvironmentValueByName(std::string name, double value)
+{
+
+    if(mpEnvironmentStateVariableRegister -> IsStateVariablePresent(name))
+    {
+        mEnvironmentVector[mpEnvironmentStateVariableRegister -> RetrieveStateVariableIndex(name)] = value;
+    }
+    else
+    {
+        std::cout<<"Error: EnvironmentCellProperty::SetEnvironmentValueByName - name not found"<<std::endl;
+    }
+
+    return;
+}
+
+
+
+void EnvironmentCellProperty::SetPreferredEnvironmentVector(std::vector<double> valueVector)
+{
+    mPreferredEnvironmentVector = valueVector;
 }
 
 void EnvironmentCellProperty::SetCellPtr(CellPtr this_cellPtr)
@@ -81,11 +116,26 @@ std::vector<double> EnvironmentCellProperty::GetEnvironmentVector()
     return mEnvironmentVector;
 }
 
+std::vector<double> EnvironmentCellProperty::GetPreferredEnvironmentVector()
+{
+    return mPreferredEnvironmentVector;
+}
+
 double EnvironmentCellProperty::GetEnvironmentValueByIndex(unsigned index)
 {
     if(index<mpEnvironmentStateVariableRegister -> GetNumberOfStateVariables())
     {
         return mEnvironmentVector[index];
+    }
+
+    return 0.0; 
+}
+
+double EnvironmentCellProperty::GetPreferredEnvironmentValueByIndex(unsigned index)
+{
+    if(index<mpEnvironmentStateVariableRegister -> GetNumberOfStateVariables())
+    {
+        return mPreferredEnvironmentVector[index];
     }
 
     return 0.0; 
@@ -103,6 +153,17 @@ double EnvironmentCellProperty::GetEnvironmentValueByName(std::string stateName)
     return 0.0; 
 }
 
+double EnvironmentCellProperty::GetPreferredEnvironmentValueByName(std::string stateName)
+{
+    unsigned index = mpEnvironmentStateVariableRegister->RetrieveStateVariableIndex(stateName);
+
+    if(index<mpEnvironmentStateVariableRegister -> GetNumberOfStateVariables())
+    {
+        return mPreferredEnvironmentVector[index];
+    }
+
+    return 0.0; 
+}
 
 
 CellPtr EnvironmentCellProperty::GetCellPtr()

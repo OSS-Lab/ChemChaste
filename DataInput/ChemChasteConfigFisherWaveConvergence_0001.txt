@@ -1,6 +1,6 @@
 # simulation
 output_filename = ChemChaste/FisherWaveConvergence/dx_0001
-simulation_end_time = 20.0
+simulation_end_time = 60.0
 number_of_reaction_pdes = 1
 spatial_dimensions = 2
 FE_element_dimension = 2

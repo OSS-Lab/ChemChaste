@@ -87,6 +87,7 @@ public:
 
     virtual void ParseReactionInformation(std::string, bool);
 
+    virtual void GiveCell(CellPtr);
 
     // Chemical handeling functions
     std::vector<AbstractChemical*> GetBulkSpecies();
@@ -285,6 +286,11 @@ void AbstractTransportReaction::ParseReactionInformation(std::string reaction_in
     //std::cout<<"AbstractTransportReaction::ParseReactionInformation - end"<<std::endl;
 }
 
+void AbstractTransportReaction::GiveCell(CellPtr p_cell)
+{
+    // In general do nothing 
+    return;
+}
 
 // member functions
 std::vector<AbstractChemical*> AbstractTransportReaction::GetBulkSpecies()

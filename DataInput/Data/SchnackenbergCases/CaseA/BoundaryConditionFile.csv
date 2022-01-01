@@ -1,3 +1,4 @@
-# Boundry conditions on the edge of the domain: state,type,value 
+# Boundary conditions on the full domain edge:
+# Variable, Type, Value 
 U,Neumann,0.0
 V,Neumann,0.0

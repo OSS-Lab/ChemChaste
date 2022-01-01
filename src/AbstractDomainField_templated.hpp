@@ -26,6 +26,9 @@ protected:
     std::vector<double> mLabelOrigin;
 
     // file names containing the system information
+
+    unsigned mNumberOfSlices=0;
+
     std::string mDomainLabelFilename;
 
     std::string mDomainKeyFilename;
@@ -40,30 +43,30 @@ protected:
     // domain information input
     unsigned mNumberOfDomains;
 
-    std::vector<std::vector<std::string>> mDomainLabels;
+    std::vector<std::vector<std::vector<std::string>>> mDomainLabels;
 
     std::vector<std::string> mDomainLabelVector;
 
     std::vector<std::vector<std::string>> mDomainKeys;
 
-    std::vector<unsigned> mCartesianCellDimensions; // (x, y) of the input csv file grid
+    std::vector<unsigned> mCartesianCellDimensions; // (x, y, z) of the input csv file grid
 
-    std::vector<double> mCartesianCellScaleXY; // (Sx, Sy) scale factor of the input csv grid, default (1,1)
+    std::vector<double> mCartesianCellScaleXY; // (Sx, Sy, Sz) scale factor of the input csv grid, default (1,1)
 
 
 
     // ode system information input
     unsigned mNumberOfOdeSystems;
 
-    std::vector<std::vector<std::string>> mOdeLabels;
+    std::vector<std::vector<std::vector<std::string>>> mOdeLabels;
 
     std::vector<std::string> mOdeLabelVector;
 
     std::vector<std::vector<std::string>> mOdeKeys;
 
-    std::vector<double> mCartesianOdeScaleXY; // (Sx, Sy) scale factor of the input csv grid, default (1,1)
+    std::vector<double> mCartesianOdeScaleXY; // (Sx, Sy, Sz) scale factor of the input csv grid, default (1,1)
 
-    std::vector<unsigned> mCartesianOdeDimensions; // (x, y) of the input csv file grid
+    std::vector<unsigned> mCartesianOdeDimensions; // (x, y, z) of the input csv file grid
 
 
 
@@ -81,11 +84,11 @@ protected:
     // mapped cartesian domain 
     std::vector<unsigned> mCartesianChasteDimensions;
 
-    std::vector<double> mCartesianChasteScaleXY; // (Sx, Sy) scale factor of the Chaste grid
+    std::vector<double> mCartesianChasteScaleXY; // (Sx, Sy, Sz) scale factor of the Chaste grid
 
-    std::vector<std::vector<std::string>> mCartesianChasteDomain;
+    std::vector<std::vector<std::vector<std::string>>> mCartesianChasteDomain;
 
-    std::vector<std::vector<std::string>> mCartesianOdeDomain;
+    std::vector<std::vector<std::vector<std::string>>> mCartesianOdeDomain;
 
 
     // mapped mesh domain
@@ -178,13 +181,13 @@ public:
 
 
     // return methods
-    std::string ReturnNodeOdeLabelAtPosition(const c_vector<double,2>&);
+    std::string ReturnNodeOdeLabelAtPosition(const c_vector<double,SPACE_DIM>&);
 
-    std::string ReturnDomainLabelAtPosition(const c_vector<double,2>&);
+    std::string ReturnDomainLabelAtPosition(const c_vector<double,SPACE_DIM>&);
 
-    std::string ReturnMappedDomainLabel(unsigned, unsigned, std::vector<double>);
+    std::string ReturnMappedDomainLabel(std::vector<double>, unsigned xindex=0, unsigned yindex=0, unsigned zindex=0);
 
-    std::string ReturnMappedOdeLabel(unsigned, unsigned,std::vector<double>);
+    std::string ReturnMappedOdeLabel(std::vector<double>, unsigned xindex=0, unsigned yindex=0, unsigned zindex=0);
 
     std::string ReturnKeyValueFromNodeLabel(std::string);
 
@@ -212,6 +215,10 @@ public:
 
     std::vector<std::string> ReturnUnique(std::vector<std::vector<std::string>>);
 
+    std::vector<std::string> ReturnUnique(std::vector<std::vector<std::vector<std::string>>>);
+
+    void printMatrix(std::vector<std::vector<std::vector<std::string>>>);
+
     void printMatrix(std::vector<std::vector<std::string>>);
 
     void printVector(std::vector<std::string>);
@@ -237,7 +244,7 @@ public:
     // set methods
     void SetNumberOfDomains(unsigned);
 
-    void SetDomainLabels(std::vector<std::vector<std::string>>);
+    void SetDomainLabels(std::vector<std::vector<std::vector<std::string>>> );
 
     void SetDomainLabelVector(std::vector<std::string>);
 
@@ -245,7 +252,7 @@ public:
 
     void SetNumberOfOdeSystems(unsigned);
 
-    void SetOdeLabels(std::vector<std::vector<std::string>>);
+    void SetOdeLabels(std::vector<std::vector<std::vector<std::string>>> );
 
     void SetOdeLabelVector(std::vector<std::string>);    
 
@@ -265,9 +272,9 @@ public:
     
     void SetCartesianChasteScale(std::vector<double>);
 
-    void SetCartesianChasteDomain(std::vector<std::vector<std::string>>);
+    void SetCartesianChasteDomain(std::vector<std::vector<std::vector<std::string>>> );
 
-    void SetCartesianOdeDomain(std::vector<std::vector<std::string>>);
+    void SetCartesianOdeDomain(std::vector<std::vector<std::vector<std::string>>> );
 
     void SetCartesianChasteDimensions(std::vector<unsigned>);
 
@@ -296,7 +303,7 @@ public:
     // get methods
     unsigned GetNumberOfDomains();
 
-    std::vector<std::vector<std::string>> GetDomainLabels();
+    std::vector<std::vector<std::vector<std::string>>> GetDomainLabels();
 
     std::vector<std::string> GetDomainLabelVector();
 
@@ -306,7 +313,7 @@ public:
 
     unsigned GetNumberOfOdeSystems();
 
-    std::vector<std::vector<std::string>> GetOdeLabels();
+    std::vector<std::vector<std::vector<std::string>>>  GetOdeLabels();
 
     std::vector<std::string> GetOdeLabelVector();
 
@@ -324,11 +331,11 @@ public:
 
     std::vector<double> GetCartesianOdeScale();
 
-    std::vector<std::vector<std::string>> GetCartesianChasteDomain();
+    std::vector<std::vector<std::vector<std::string>>>  GetCartesianChasteDomain();
 
     std::vector<double> GetCartesianChasteScale();
 
-    std::vector<std::vector<std::string>> GetCartesianOdeDomain();
+    std::vector<std::vector<std::vector<std::string>>>  GetCartesianOdeDomain();
 
     std::vector<unsigned> GetCartesianChasteDimensions();
 
@@ -468,11 +475,13 @@ template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
 void AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::SetupAndInitialiseLabelDomain()
 {
     // read in and store the domain grid labels for mapping to mesh nodes and chaste rectilinear grid
-    ReadDomainLabels();
-    ReadDomainKey();
     
     std::vector<unsigned> cartesianCellDimensions;
 
+    ReadDomainLabels();
+    ReadDomainKey();
+
+    cartesianCellDimensions.push_back(mDomainLabels[0][0].size());
     cartesianCellDimensions.push_back(mDomainLabels[0].size());
     cartesianCellDimensions.push_back(mDomainLabels.size());
 
@@ -489,6 +498,7 @@ void AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::SetupAndIn
 
     std::vector<unsigned> cartesianOdeDimensions;
 
+    cartesianOdeDimensions.push_back(mOdeLabels[0][0].size());
     cartesianOdeDimensions.push_back(mOdeLabels[0].size());
     cartesianOdeDimensions.push_back(mOdeLabels.size());
 
@@ -531,9 +541,7 @@ void AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::SetupDomai
 
     std::vector<unsigned> meshDimensions(SPACE_DIM,0);
     std::vector<double> meshSegment(SPACE_DIM,0.0);
-    double meshElementX = 0.0;
-    double meshElementY = 0.0;
-    
+
     // determine the mesh dimensions up to the maximum allowed through the scaling
     // cover the whole domain with the mesh
 
@@ -742,6 +750,9 @@ void AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ParseIniti
                     init_conds[numberOfStateVariables*node_index + pdeDim] =fabs(RandomNumberGenerator::Instance()->ranf());
                 }
             }
+
+
+            std::cout<<"Initial condition: State: "<<stateName<<" "<<init_conds[numberOfStateVariables*node_index + pdeDim]<<std::endl;
         }
         // each node pde is set
     }
@@ -885,6 +896,8 @@ void AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ParseBound
             }
         }
         // if state isn't found, leave as default, 0.0 Dirichlet
+        std::cout<<"Boundary condition: State: "<<stateName<<" "<<boundaryConditionValues[pdeDim]<<std::endl;
+
     }
 
     SetBoundaryConditionTypes(boundaryConditionTypes);
@@ -896,7 +909,7 @@ void AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ParseBound
 
 
 template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
-std::string AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ReturnNodeOdeLabelAtPosition(const c_vector<double,2>& position)
+std::string AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ReturnNodeOdeLabelAtPosition(const c_vector<double,SPACE_DIM>& position)
 {
     // search through the node labels to provide the specific label at the given position
 
@@ -922,11 +935,11 @@ std::string AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::Ret
     }
 
     // return the ode label for the grid element at the X,Y index containing the node
-    return mOdeLabels[labelIndex[1]][labelIndex[0]];
+    return mOdeLabels[labelIndex[2]][labelIndex[1]][labelIndex[0]];
 }
 
 template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
-std::string AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ReturnDomainLabelAtPosition(const c_vector<double,2>& position)
+std::string AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ReturnDomainLabelAtPosition(const c_vector<double,SPACE_DIM>& position)
 {
     // search through the domain labels to provide the specific label at the given position
     std::vector<unsigned> labelIndex(SPACE_DIM,0);
@@ -948,9 +961,21 @@ std::string AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::Ret
             }
         }
     }
+
+    switch(SPACE_DIM)
+    {
+        case 2:
+            return mCartesianChasteDomain[0][labelIndex[1]][labelIndex[0]];
+            break;
+
+        case 3:
+            return mCartesianChasteDomain[labelIndex[2]][labelIndex[1]][labelIndex[0]];
+            break;
+        
+    }
     
-    // return the domain label for the grid element at the Y,X index containing the position
-    return mCartesianChasteDomain[labelIndex[1]][labelIndex[0]];
+    // return the domain label for the grid element at the Z,Y,X index containing the position
+    return "";
 }
 
 template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
@@ -963,39 +988,77 @@ void AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::MapToChast
         // is a a honeycomb mesh
         cartesianChasteScaleXY.push_back(0.25);
         cartesianChasteScaleXY.push_back(0.144338);
+        cartesianChasteScaleXY.push_back(0.144338);
+
     }
     else
     {
         // else tetrahedral mesh
-        cartesianChasteScaleXY.push_back(0.166666);
-        cartesianChasteScaleXY.push_back(0.166666);
+        cartesianChasteScaleXY.push_back(0.1);
+        cartesianChasteScaleXY.push_back(0.1);
+        cartesianChasteScaleXY.push_back(0.1);
     }
     SetCartesianChasteScale(cartesianChasteScaleXY);
 
     unsigned numberOfXSteps = std::round((mCartesianCellDimensions[0]*mCartesianCellScaleXY[0])/cartesianChasteScaleXY[0]); 
     unsigned numberOfYSteps = std::round((mCartesianCellDimensions[1]*mCartesianCellScaleXY[1])/cartesianChasteScaleXY[1]); 
- 
-    std::vector<std::vector<std::string>> cartesianChasteDomain;
+    unsigned numberOfZSteps = std::round((mCartesianCellDimensions[2]*mCartesianCellScaleXY[2])/cartesianChasteScaleXY[2]); 
     std::vector<unsigned> cartesianChasteDimensions;
     cartesianChasteDimensions.push_back(numberOfXSteps);
     cartesianChasteDimensions.push_back(numberOfYSteps);
+    cartesianChasteDimensions.push_back(numberOfZSteps);
 
-    // define the boundary with the edge steps included for easier comparisons of (double) spatial values
-    for(unsigned yindex=0; yindex<numberOfYSteps; yindex++)
+
+    std::vector<std::vector<std::vector<std::string>>> cartesianChasteDomain;
+    std::vector<std::vector<std::string>> tempCartesianChasteDomain;
+    
+    switch(SPACE_DIM)
     {
-        std::vector<std::string> rowVector;
-        for(unsigned xindex=0; xindex<numberOfXSteps; xindex++)
-        {
-            // push back the domain label of the file domain onto the mapped domain, here everything is in terms of std::string label
-            rowVector.push_back(ReturnMappedDomainLabel(xindex,yindex,mCartesianChasteScaleXY));
+        case 2:
 
-        }
+            // define the boundary with the edge steps included for easier comparisons of (double) spatial values
+            for(unsigned yindex=0; yindex<numberOfYSteps; yindex++)
+            {
+                std::vector<std::string> rowVector;
+                for(unsigned xindex=0; xindex<numberOfXSteps; xindex++)
+                {
+                    // push back the domain label of the file domain onto the mapped domain, here everything is in terms of std::string label
+                    rowVector.push_back(ReturnMappedDomainLabel(mCartesianChasteScaleXY,xindex,yindex,0));
 
-        cartesianChasteDomain.push_back(rowVector);
+                }
+
+                tempCartesianChasteDomain.push_back(rowVector);
+            }
+
+            cartesianChasteDomain.push_back(tempCartesianChasteDomain);
+            break;
+
+        case 3:
+
+            // define the boundary with the edge steps included for easier comparisons of (double) spatial values
+            for(unsigned zindex=0; zindex<numberOfZSteps; zindex++)
+            {
+                for(unsigned yindex=0; yindex<numberOfYSteps; yindex++)
+                {
+                    std::vector<std::string> rowVector;
+                    for(unsigned xindex=0; xindex<numberOfXSteps; xindex++)
+                    {
+                        // push back the domain label of the file domain onto the mapped domain, here everything is in terms of std::string label
+                        rowVector.push_back(ReturnMappedDomainLabel(mCartesianChasteScaleXY,xindex,yindex,zindex));
+
+                    }
+
+                    tempCartesianChasteDomain.push_back(rowVector);
+                }
+
+                cartesianChasteDomain.push_back(tempCartesianChasteDomain);
+            }
+            break;
+
+        case 1:
+            std::cout<<"Error: Abstract Domain 1D not supported"<<std::endl;
+            break;
     }
-
-    //printMatrix(mDomainLabels);
-    //printMatrix(cartesianChasteDomain);
 
     SetCartesianChasteDomain(cartesianChasteDomain);
     SetCartesianChasteDimensions(cartesianChasteDimensions);
@@ -1013,24 +1076,58 @@ void AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::MapOdeLabe
     // ration of scaling parameters, round to the nearest integer value.
     unsigned numberOfXSteps = std::round((mCartesianOdeDimensions[0]*mCartesianOdeScaleXY[0])/cartesianChasteScaleXY[0]); 
     unsigned numberOfYSteps = std::round((mCartesianOdeDimensions[1]*mCartesianOdeScaleXY[1])/cartesianChasteScaleXY[1]); 
+    unsigned numberOfZSteps = std::round((mCartesianOdeDimensions[2]*mCartesianOdeScaleXY[2])/cartesianChasteScaleXY[2]);
 
-    std::vector<std::vector<std::string>> cartesianOdeDomain;
+    std::vector<std::vector<std::string>> tempCartesianOdeDomain;
+    std::vector<std::vector<std::vector<std::string>>> cartesianOdeDomain;
 
-    // define the boundary with the edge steps included for easier comparisons of (double) spatial values
-    for(unsigned yindex=0; yindex<numberOfYSteps; yindex++)
+    switch(SPACE_DIM)
     {
-        std::vector<std::string> rowVector;
-        for(unsigned xindex=0; xindex<numberOfXSteps; xindex++)
-        {
-            // push back the ode label of the file domain onto the mapped domain, here everything is in terms of std::string label
-            rowVector.push_back(ReturnMappedOdeLabel(xindex,yindex,mCartesianChasteScaleXY));
+        case 2:
 
-        }
-        cartesianOdeDomain.push_back(rowVector);
+            // define the boundary with the edge steps included for easier comparisons of (double) spatial values
+            for(unsigned yindex=0; yindex<numberOfYSteps; yindex++)
+            {
+                std::vector<std::string> rowVector;
+                for(unsigned xindex=0; xindex<numberOfXSteps; xindex++)
+                {
+                    // push back the ode label of the file domain onto the mapped domain, here everything is in terms of std::string label
+                    rowVector.push_back(ReturnMappedOdeLabel(mCartesianChasteScaleXY,xindex,yindex,0));
+
+                }
+
+                tempCartesianOdeDomain.push_back(rowVector);
+            }
+
+            cartesianOdeDomain.push_back(tempCartesianOdeDomain);
+            break;
+
+        case 3:
+
+            // define the boundary with the edge steps included for easier comparisons of (double) spatial values
+            for(unsigned zindex=0; zindex<numberOfZSteps; zindex++)
+            {
+                for(unsigned yindex=0; yindex<numberOfYSteps; yindex++)
+                {
+                    std::vector<std::string> rowVector;
+                    for(unsigned xindex=0; xindex<numberOfXSteps; xindex++)
+                    {
+                        // push back the ode label of the file domain onto the mapped domain, here everything is in terms of std::string label
+                        rowVector.push_back(ReturnMappedOdeLabel(mCartesianChasteScaleXY,xindex,yindex,zindex));
+
+                    }
+
+                    tempCartesianOdeDomain.push_back(rowVector);
+                }
+
+                cartesianOdeDomain.push_back(tempCartesianOdeDomain);
+            }
+            break;
+
+        case 1:
+            std::cout<<"Error: Abstract Domain 1D not supported"<<std::endl;
+            break;
     }
-
-    //printMatrix(mOdeLabels);
-    //printMatrix(cartesianOdeDomain);
 
     SetCartesianOdeDomain(cartesianOdeDomain);
 }
@@ -1119,78 +1216,180 @@ double AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ReturnDi
 }
 
 template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
-std::string AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ReturnMappedDomainLabel(unsigned xindex, unsigned yindex, std::vector<double> scaleFactor)
+std::string AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ReturnMappedDomainLabel(std::vector<double> scaleFactor, unsigned xindex , unsigned yindex, unsigned zindex)
 {
     // compare the xindex and yindex of the new chaste domain to the label domain
     // return the label of the chaste domain, work from the top left to bottom right
 
     unsigned labelXIndex =0;
     unsigned labelYIndex =0;
+    unsigned labelZIndex =0;
 
     double positionX = xindex*scaleFactor[0];
     double positionY = yindex*scaleFactor[1];
-    
-    // for the y position
+    double positionZ = zindex*scaleFactor[2];
 
-    for(unsigned i=1; i<(mCartesianCellDimensions[1]+1); i++) // top to bottom
+    switch(SPACE_DIM)
     {
-        if(positionY <= i*mCartesianCellScaleXY[1])
-        {
-            labelYIndex = i-1;
+        case 2:
+
+            // for the y position
+
+            for(unsigned i=1; i<(mCartesianCellDimensions[1]+1); i++) // top to bottom
+            {
+                if(positionY <= i*mCartesianCellScaleXY[1])
+                {
+                    labelYIndex = i-1;
+                    break;
+                }
+            }
+
+            // for the x position
+
+            for(unsigned i=1; i<(mCartesianCellDimensions[0]+1); i++)
+            {
+                if(positionX <= i*mCartesianCellScaleXY[0])
+                {
+                    labelXIndex = i-1;
+                    break;
+                }
+            }
+
+            break; 
+
+        case 3:
+            // for the z position
+
+            for(unsigned i=1; i<(mCartesianCellDimensions[2]+1); i++) // top to bottom
+            {
+                if(positionZ <= i*mCartesianCellScaleXY[2])
+                {
+                    labelZIndex = i-1;
+                    break;
+                }
+            }
+            
+            // for the y position
+
+            for(unsigned i=1; i<(mCartesianCellDimensions[1]+1); i++) // top to bottom
+            {
+                if(positionY <= i*mCartesianCellScaleXY[1])
+                {
+                    labelYIndex = i-1;
+                    break;
+                }
+            }
+
+            // for the x position
+
+            for(unsigned i=1; i<(mCartesianCellDimensions[0]+1); i++)
+            {
+                if(positionX <= i*mCartesianCellScaleXY[0])
+                {
+                    labelXIndex = i-1;
+                    break;
+                }
+            }
+
             break;
-        }
+
+        case 1:
+            std::cout<<"Error: Abstract Domain 1D not supported"<<std::endl;
+            break;
     }
 
-    // for the x position
-
-    for(unsigned i=1; i<(mCartesianCellDimensions[0]+1); i++)
-    {
-        if(positionX <= i*mCartesianCellScaleXY[0])
-        {
-            labelXIndex = i-1;
-            break;
-        }
-    }
-
-    return mDomainLabels[labelYIndex][labelXIndex];
+    return mDomainLabels[labelZIndex][labelYIndex][labelXIndex];
 }
 
 template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
-std::string AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ReturnMappedOdeLabel(unsigned xindex, unsigned yindex,std::vector<double> scaleFactor)
+std::string AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ReturnMappedOdeLabel(std::vector<double> scaleFactor, unsigned xindex, unsigned yindex, unsigned zindex)
 {
     // compare the xindex and yindex of the new chaste domain to the label ode
     // return the label of the chaste domain, work from the top left to bottom right
 
     unsigned labelXIndex =0;
     unsigned labelYIndex =0;
+    unsigned labelZIndex =0;
 
     std::string label;
     double positionX = xindex*scaleFactor[0];
     double positionY = yindex*scaleFactor[1];
+    double positionZ = zindex*scaleFactor[2];
+
+    switch(SPACE_DIM)
+    {
+        case 2:
+
+            // for the z position
+
+            for(unsigned i=1; i<(mCartesianOdeDimensions[2]+1); i++) // top to bottom
+            {
+                if(positionZ <= i*mCartesianOdeScaleXY[2])
+                {
+                    labelZIndex = i-1;
+                    break;
+                }
+            }
+            
+            // for the y position
+
+            for(unsigned i=1; i<(mCartesianOdeDimensions[1]+1); i++) // top to bottom
+            {
+                if(positionY <= i*mCartesianOdeScaleXY[1])
+                {
+                    labelYIndex = i-1;
+                    break;
+                }
+            }
+
+            // for the x position
+
+            for(unsigned i=1; i<(mCartesianOdeDimensions[0]+1); i++)
+            {
+                if(positionX <= i*mCartesianOdeScaleXY[0])
+                {
+                    labelXIndex = i-1;
+                    break;
+                }
+            }
+
+            break;
+
+        case 3:
+
+            // for the y position
+
+            for(unsigned i=1; i<(mCartesianOdeDimensions[1]+1); i++) // top to bottom
+            {
+                if(positionY <= i*mCartesianOdeScaleXY[1])
+                {
+                    labelYIndex = i-1;
+                    break;
+                }
+            }
+
+            // for the x position
+
+            for(unsigned i=1; i<(mCartesianOdeDimensions[0]+1); i++)
+            {
+                if(positionX <= i*mCartesianOdeScaleXY[0])
+                {
+                    labelXIndex = i-1;
+                    break;
+                }
+            }
+
+            break;
+
+        case 1:
+            std::cout<<"Error: Abstract Domain 1D not supported"<<std::endl;
+            break;
+
+    }
+
     
-    // for the y position
 
-    for(unsigned i=1; i<(mCartesianOdeDimensions[1]+1); i++) // top to bottomw
-    {
-        if(positionY <= i*mCartesianOdeScaleXY[1])
-        {
-            labelYIndex = i-1;
-            break;
-        }
-    }
-
-    // for the x position
-
-    for(unsigned i=1; i<(mCartesianOdeDimensions[0]+1); i++)
-    {
-        if(positionX <= i*mCartesianOdeScaleXY[0])
-        {
-            labelXIndex = i-1;
-            break;
-        }
-    }
-
-    return mOdeLabels[labelYIndex][labelXIndex];
+    return mOdeLabels[labelZIndex][labelYIndex][labelXIndex];
 }
 
 template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
@@ -1272,10 +1471,34 @@ std::vector<std::string> AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROB
 template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
 void AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ReadDomainLabels()
 {
-    // read and store the information contained within the domain labels file
-    SetDomainLabels(ReadMatrix(mDomainLabelFilename));
+    // read and store the information contained within the domain labels files
+    std::vector<std::vector<std::vector<std::string>>> tempDomainLabels;
 
-    SetDomainLabelVector(ReturnUnique(GetDomainLabels()));
+    // mDomainLabelFilename will eb a .csv if 2D or a directory containg .csv files if 3D
+    std::string filename = mDomainLabelFilename;
+    switch(SPACE_DIM)
+    {
+        case 2:
+            tempDomainLabels.push_back(ReadMatrix(filename));
+            break;
+
+        case 3: 
+            for(unsigned i=0; i<mNumberOfSlices;i++)
+            {
+                filename = mDomainLabelFilename + "/" + std::to_string(i) + ".csv";
+                tempDomainLabels.push_back(ReadMatrix(filename));
+            }
+            break;
+
+        case 1:
+            std::cout<<"Error: Abstract Domain 1D not supported"<<std::endl;
+            break;
+
+    }
+
+    SetDomainLabels(tempDomainLabels);
+
+    SetDomainLabelVector(ReturnUnique(tempDomainLabels));
 }
 
 template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
@@ -1292,19 +1515,37 @@ void AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ReadDomain
 template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
 void AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ReadOdeLabels()
 {
-    // read and store the ode labels, form a vector of the unique labels to store as a reference vector
-    std::vector<std::vector<std::string>> odeLabels;
-    
+    // read and store the ode labels, form a vector of the unique labels to store as a reference vector    
     std::vector<std::string> odeLabelVector;
 
-    odeLabels = ReadMatrix(mOdeLabelFilename);
+    std::vector<std::vector<std::vector<std::string>>> tempOdeLabels;
 
-    //printMatrix(odeLabels);
+    // mOdeLabelFilename will eb a .csv if 2D or a directory containg .csv files if 3D
+    std::string filename = mOdeLabelFilename;
+    switch(SPACE_DIM)
+    {
+        case 2:
+            tempOdeLabels.push_back(ReadMatrix(filename));
+            break;
 
-    odeLabelVector = ReturnUnique(odeLabels);
+        case 3: 
+            for(unsigned i=0; i<mNumberOfSlices;i++)
+            {
+                filename = mOdeLabelFilename + "/" + std::to_string(i) + ".csv";
+                tempOdeLabels.push_back(ReadMatrix(filename));
+            }
+            break;
 
-    SetOdeLabelVector(mOdeLabelVector);
-    SetOdeLabels(odeLabels);
+        case 1:
+            std::cout<<"Error: Abstract Domain 1D not supported"<<std::endl;
+            break;
+
+    }
+
+    odeLabelVector = ReturnUnique(tempOdeLabels);
+
+    SetOdeLabelVector(odeLabelVector);
+    SetOdeLabels(tempOdeLabels);
 }
 
 template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
@@ -1423,6 +1664,60 @@ std::vector<std::string> AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROB
 }
 
 template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
+std::vector<std::string> AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ReturnUnique(std::vector<std::vector<std::vector<std::string>>> candidateMatrix)
+{
+    // serach through a matrix of strings and store the first occurance of each unique string
+    std::vector<std::string> resultUnique = std::vector<std::string>();
+    resultUnique.push_back(candidateMatrix[0][0][0]);
+    unsigned uniqueCount =1;
+    bool IsFound = false;
+
+    for(unsigned j=0; j<candidateMatrix.size(); j++)
+    {
+        for(unsigned i=0; i<candidateMatrix[j].size(); i++)
+        {
+            for(unsigned k=0; k<candidateMatrix[j][i].size();k++)
+            {
+                IsFound = false;
+                for(unsigned l=0; l<uniqueCount; l++)
+                {
+                    if(candidateMatrix[j][i][k] == resultUnique[l])
+                    {
+                        IsFound =true;
+                        break;
+                    }
+                }
+                if(!IsFound)
+                {
+                    resultUnique.push_back(candidateMatrix[j][i][k]);
+                    uniqueCount++;
+                }
+            }
+            
+        }
+    }
+    return resultUnique;
+}
+
+template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
+void AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::printMatrix(std::vector<std::vector<std::vector<std::string>>> matrix)
+{
+    for (unsigned int k = 0; k < matrix.size(); k++)
+    {
+        for (unsigned int i = 0; i < matrix.size(); i++)
+        {
+            for (unsigned int j = 0; j < matrix[i].size(); j++)
+            {
+            std::cout << matrix[i][j][k]<< ' ';
+            }
+            std::cout<<std::endl;
+        }
+        std::cout<<std::endl;
+    }
+    return;
+};
+
+template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
 void AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::printMatrix(std::vector<std::vector<std::string>> matrix)
 {
   for (unsigned int i = 0; i < matrix.size(); i++)
@@ -1514,7 +1809,7 @@ unsigned AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::GetNum
 }
 
 template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
-void AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::SetDomainLabels(std::vector<std::vector<std::string>> domainLabels)
+void AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::SetDomainLabels(std::vector<std::vector<std::vector<std::string>>> domainLabels)
 {
     mDomainLabels = domainLabels;
 }
@@ -1538,7 +1833,7 @@ void AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::SetNumberO
 }
 
 template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
-void AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::SetOdeLabels(std::vector<std::vector<std::string>> odeLabels)
+void AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::SetOdeLabels(std::vector<std::vector<std::vector<std::string>>>  odeLabels)
 {
     mOdeLabels = odeLabels;
 }
@@ -1598,13 +1893,13 @@ void AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::SetCartesi
 }
 
 template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
-void AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::SetCartesianChasteDomain(std::vector<std::vector<std::string>> cartesianChasteDomain)
+void AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::SetCartesianChasteDomain(std::vector<std::vector<std::vector<std::string>>> cartesianChasteDomain)
 {
     mCartesianChasteDomain = cartesianChasteDomain;
 }
 
 template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
-void AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::SetCartesianOdeDomain(std::vector<std::vector<std::string>> cartesianOdeDomain)
+void AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::SetCartesianOdeDomain(std::vector<std::vector<std::vector<std::string>>> cartesianOdeDomain)
 {
     mCartesianOdeDomain = cartesianOdeDomain;
 }
@@ -1684,7 +1979,7 @@ void AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::SetLabelOr
 // get methods
 
 template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
-std::vector<std::vector<std::string>> AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::GetDomainLabels()
+std::vector<std::vector<std::vector<std::string>>> AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::GetDomainLabels()
 {
     return mDomainLabels;
 }
@@ -1723,7 +2018,7 @@ unsigned AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::GetNum
 }
 
 template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
-std::vector<std::vector<std::string>> AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::GetOdeLabels()
+std::vector<std::vector<std::vector<std::string>>>  AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::GetOdeLabels()
 {
     return mOdeLabels;
 }
@@ -1783,13 +2078,13 @@ std::vector<double> AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_D
 }
 
 template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
-std::vector<std::vector<std::string>> AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::GetCartesianChasteDomain()
+std::vector<std::vector<std::vector<std::string>>> AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::GetCartesianChasteDomain()
 {
     return mCartesianChasteDomain;
 }
 
 template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
-std::vector<std::vector<std::string>> AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::GetCartesianOdeDomain()
+std::vector<std::vector<std::vector<std::string>>> AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::GetCartesianOdeDomain()
 {
     return mCartesianOdeDomain;
 }

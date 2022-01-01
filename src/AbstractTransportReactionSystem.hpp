@@ -10,6 +10,7 @@
 // reaction includes
 #include "AbstractTransportReaction.hpp"
 #include "AbstractChemistry.hpp"
+#include "Cell.hpp"
 
 // class to contain and handle a system of transport reactions. Transport reactions are defined across 
 // a membrane where either side have their own concentration vectors
@@ -30,6 +31,8 @@ protected:
 
     unsigned mNumberOfCellStates=0;
 
+    CellPtr mpCell;
+
 public:
     AbstractTransportReactionSystem(AbstractChemistry* bulkChemistry = new AbstractChemistry(), 
                                     AbstractChemistry* cellChemistry = new AbstractChemistry(), 
@@ -46,6 +49,8 @@ public:
     virtual void ReactSystem(const std::vector<double>&, const std::vector<double>&, std::vector<double>&, std::vector<double>&);
 
     virtual void UpdateReactionSystem(const std::vector<double>&, const std::vector<double>&);
+
+    void DistributeCellPtr();
 
     // set methods
 
@@ -75,6 +80,10 @@ public:
     unsigned GetNumberOfBulkStates();
 
     unsigned GetNumberOfCellStates();
+
+    CellPtr GetCell();
+
+    void SetCell(CellPtr);
 
 };
 
@@ -145,6 +154,21 @@ void AbstractTransportReactionSystem::UpdateReactionSystem(const std::vector<dou
     return;
 }
 
+void AbstractTransportReactionSystem::DistributeCellPtr()
+{
+    assert(mpCell != nullptr);
+    // distribute the cell ptr to the individual reactions
+    for(std::vector<AbstractTransportReaction*>::iterator reaction_iter = mpReactionVector.begin();
+            reaction_iter != mpReactionVector.end();
+            ++reaction_iter)
+    {
+        AbstractTransportReaction *p_system_reaction = static_cast<AbstractTransportReaction*>(*reaction_iter);
+        
+        p_system_reaction -> GiveCell(mpCell); // some reactions may need the cell to extract properties 
+
+    }
+
+}
 
 // set methods
 
@@ -219,6 +243,17 @@ unsigned AbstractTransportReactionSystem::GetNumberOfBulkStates()
 unsigned AbstractTransportReactionSystem::GetNumberOfCellStates()
 {
     return mNumberOfCellStates;
+}
+
+void AbstractTransportReactionSystem::SetCell(CellPtr pCell)
+{
+    mpCell = pCell;
+}
+
+CellPtr AbstractTransportReactionSystem::GetCell()
+{
+    assert(mpCell != nullptr);
+    return mpCell;
 }
 
 #endif

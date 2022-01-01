@@ -1,0 +1,20 @@
+# simulation
+output_filename = ChemChaste/FisherWaveConvergence/dx_0006
+simulation_end_time = 60.0
+number_of_reaction_pdes = 1
+spatial_dimensions = 2
+FE_element_dimension = 2
+
+# bulk
+domain_file_root = /home/chaste/projects/ChemChaste/DataInput/Data/FisherWave/DomainField/
+domain_file = Domain.csv
+domain_key_file = DomainKey.csv
+ode_file = NodeSelector.csv
+ode_key_file = OdeReactionFileKey.csv
+diffusion_database = DiffusionDatabaseFile.csv
+initial_conditions = InitialConditionFile.csv
+boundary_conditions = BoundaryConditionFile.csv
+
+
+scale_domain_width = 0.006
+scale_domain_height = 0.006

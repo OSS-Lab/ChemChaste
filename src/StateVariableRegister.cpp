@@ -1,6 +1,12 @@
 #include "StateVariableRegister.hpp"
 
 // constructor
+StateVariableRegister::StateVariableRegister()
+        :   mStateVariableRegister(std::vector<std::string>()),
+            mNumberSystemStateVariables(0)
+{
+}
+
 StateVariableRegister::StateVariableRegister(std::vector<std::string> VariableNameVector)
         :   mStateVariableRegister(VariableNameVector)
 {

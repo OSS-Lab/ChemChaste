@@ -10,7 +10,7 @@
 #include "AbstractCellProperty.hpp"
 #include "StateVariableRegister.hpp"
 
-// cell porperty to handle the basic chemical property required for cell simulations
+// cell property to handle the basic chemical property required for cell simulations
 
 class ChemicalCellProperty : public AbstractCellProperty
 {

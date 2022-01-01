@@ -40,11 +40,21 @@ protected:
 
     double mTargetHeight;
 
+    double mTargetDepth;
+
     double mScaleWidth;
 
     double mScaleHeight;
 
+    double mScaleDepth;
 
+    std::string mInitialConditionsFilename;
+
+    std::string mBoundaryConditionsFilename;
+
+    boost::shared_ptr<BoundaryConditionsContainer<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM> > mpBoundaryConditionsContainer; 
+
+    std::vector<bool> mPiecewiseBCs;
 
 public:
 
@@ -56,6 +66,8 @@ public:
                         std::string odeLabelFilename="", 
                         std::string odeKeyFilename="",
                         std::string diffusionFilename="",
+                        std::string initialConditionsFilename = "",
+                        std::string boundaryConditionsFilename = "",
                         bool isHoneyCombMesh=false,
                         std::vector<double> labelOrigin = std::vector<double>(),
                         std::vector<double> cartesianCellScaleXY = std::vector<double>(),
@@ -70,6 +82,10 @@ public:
 
     virtual void SetUpDomainFromFiles();
 
+    virtual boost::shared_ptr<BoundaryConditionsContainer<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>> ProcessBoundaryConditions();
+
+    virtual void ParseBoundaryConditionsFromFile(std::string);
+
     void FormReactionSystemAtNodes();
 
     void DeriveSystemProperties();
@@ -78,8 +94,10 @@ public:
 
     void FeMeshScaling( double targetWidth = 0.0,
                         double targetHeight= 0.0,
+                        double targetDepth= 0.0,
                         double scaleWidth  = 1.0,
-                        double scaleHeight = 1.0
+                        double scaleHeight = 1.0,
+                        double scaleDepth = 1.0
     );
 
     void ScaleFeMesh();
@@ -95,6 +113,8 @@ public:
         return "ChemicalDomainFieldTemplated";
     };
 
+    boost::shared_ptr<BoundaryConditionsContainer<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM> > ReturnSharedPtrBoundaryConditionsContainer();
+
     // set methods
     void SetDomainStateVariableRegister(StateVariableRegister*);
 
@@ -102,12 +122,18 @@ public:
 
     void SetOdeSystem(std::vector<AbstractInhomogenousChemicalOdeSystemForCoupledPdeSystem*>);
 
+    void SetPiecewiseBCs(std::vector<bool>);
+
+    void SetBoundaryConditionsContainer(BoundaryConditionsContainer<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM> bcc);
+
     // get methods
     StateVariableRegister* GetDomainStateVariableRegister();
 
     AbstractDiffusiveChemistry* GetChemistry();
 
     std::vector<AbstractInhomogenousChemicalOdeSystemForCoupledPdeSystem*> GetOdeSystem();
+
+    std::vector<bool> GetPiecewiseBCs();
 
 };
 
@@ -121,6 +147,8 @@ ChemicalDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ChemicalDomainF
                                             std::string odeLabelFilename, 
                                             std::string odeKeyFilename, 
                                             std::string diffusionFilename,
+                                            std::string initialConditionsFilename,
+                                            std::string boundaryConditionsFilename,
                                             bool isHoneyCombMesh,
                                             std::vector<double> labelOrigin,
                                             std::vector<double> cartesianCellScale,
@@ -136,7 +164,10 @@ ChemicalDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ChemicalDomainF
                             labelOrigin,
                             cartesianCellScale,
                             cartesianOdeScale),
-        mReactionFileRoot(reactionFileRoot)
+        mReactionFileRoot(reactionFileRoot),
+        mInitialConditionsFilename(initialConditionsFilename),
+        mBoundaryConditionsFilename(boundaryConditionsFilename),
+        mpBoundaryConditionsContainer(boost::shared_ptr<BoundaryConditionsContainer<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>>())
 {
     // set up the ode system container
     std::vector<AbstractInhomogenousChemicalOdeSystemForCoupledPdeSystem*> mOdeSystem = std::vector<AbstractInhomogenousChemicalOdeSystemForCoupledPdeSystem*>();
@@ -153,12 +184,627 @@ void ChemicalDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::SetUpDomai
         AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::GenerateFeMesh();
     }
     
+    if(mInitialConditionsFilename != "")
+    {
+        // process initial conditions
+        this -> ParseInitialConditionsFromFile(mInitialConditionsFilename);
+    }
+    
+
+    if(mBoundaryConditionsFilename != "")
+    {
+        // process boundary conditions
+        this -> ParseBoundaryConditionsFromFile(mBoundaryConditionsFilename);
+
+        mpBoundaryConditionsContainer = ProcessBoundaryConditions();
+    }
+
     // populate abstract domain with a chemistry
     // map odes systems to nodes 
     FormReactionSystemAtNodes();
     // update properties of the domain field
     //DeriveSystemProperties();
     DeriveExtendedSystemProperties();
+}
+
+
+template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
+void ChemicalDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ParseBoundaryConditionsFromFile(std::string boundaryConditionsFilename)
+{
+    // read the input boundary conditions file as a matrix of strings, first column state name, 
+    // 2nd column boundary condition type, 3rd column value.
+    std::vector<std::vector<std::string>> fullBoundaryConditionsAsStrings = this->ReadMatrix(boundaryConditionsFilename);
+    std::vector<std::vector<std::string>> boundaryConditionsAsStrings = this->ReturnStateDataWithinRegister(fullBoundaryConditionsAsStrings);
+    // use state name against stateVariableRegister to remove any state value not in the system
+    // replace any state in register but not in boundary conditions with value of 0.0, type Derichlet
+
+    unsigned numberOfStateVariables = this -> GetStateVariableVector() ->GetNumberOfStateVariables();
+
+    std::vector<std::string> boundaryConditionTypes;
+    std::vector<bool> piecewiseBCs(numberOfStateVariables,false);
+    std::vector<double> boundaryConditionValues;
+    std::string BCtype ="";
+    for(unsigned pdeDim=0; pdeDim<numberOfStateVariables; pdeDim++)
+    {   
+        // determine which state the pde dimension refers to and then retrieve the condition if present
+        std::string stateName = this -> mpStateVariableVector -> RetrieveStateVariableName(pdeDim);
+
+        for(unsigned inputState=0; inputState<boundaryConditionsAsStrings.size();inputState++)
+        {
+            std::cout<<"input: "<<boundaryConditionsAsStrings[inputState][0]<<std::endl;
+            // test whether the state variable is specified within the input data
+            if(stateName==boundaryConditionsAsStrings[inputState][0])
+            {
+                // state found, read data
+                if(boundaryConditionsAsStrings[inputState].size()>2)
+                {
+                    unsigned numberOfVariables = static_cast<unsigned>((boundaryConditionsAsStrings[inputState].size()-1)/2);
+                    std::cout<<"numberOfVariables: "<<numberOfVariables<<std::endl;
+                    if(numberOfVariables>1)
+                    {
+                        piecewiseBCs[pdeDim]= true;
+                    }
+                    for(unsigned i=0; i<numberOfVariables;i++)
+                    {
+                        // type value is specified also
+                        BCtype = boundaryConditionsAsStrings[inputState][1+2*i];
+                        std::cout<<"BC type: "<<BCtype<<" BCValue: "<<boundaryConditionsAsStrings[inputState][2+2*i]<<std::endl;
+                        // standardise the input
+                        if((BCtype=="Dirichlet"||BCtype=="dirichlet"||BCtype=="D"||BCtype=="d"))
+                        {
+                            BCtype="Dirichlet";
+                        }
+                        else if((BCtype=="Neumann"||BCtype=="neumann"||BCtype=="N"||BCtype=="n"))
+                        {
+                            BCtype="Neumann";
+                        }
+                        else
+                        {
+                            std::cout<<"Error: ChemicalDomainFieldForCellCoupling::ParseBoundaryConditionsFromFile BC value missing - "<<BCtype<<std::endl;
+                        }
+                        boundaryConditionTypes.push_back(BCtype);
+                        boundaryConditionValues.push_back(std::stod(boundaryConditionsAsStrings[inputState][2+2*i]));
+                    }
+                }
+                else
+                {
+                    // type value not specified, assume Dirichlet
+                    boundaryConditionValues.push_back(std::stod(boundaryConditionsAsStrings[inputState][1]));
+                    boundaryConditionTypes.push_back("Dirichlet");
+                    piecewiseBCs[pdeDim] = false;
+
+                }
+                break;
+            }
+        }
+        // if state isn't found, leave as default, 0.0 Dirichlet
+    }
+
+    this -> SetBoundaryConditionTypes(boundaryConditionTypes);
+
+    this -> SetBoundaryConditionValues(boundaryConditionValues);
+
+    SetPiecewiseBCs(piecewiseBCs);
+}
+
+template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
+boost::shared_ptr<BoundaryConditionsContainer<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>> ChemicalDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ProcessBoundaryConditions()
+{
+
+    // retrieive the boundary conditions information derived from the files inputs
+    std::vector<std::string> boundaryConditionTypes = this -> GetBoundaryConditionTypes();
+    std::vector<double> boundaryConditionValues = this -> GetBoundaryConditionValues();
+    std::vector<bool> piecewiseBCs = this -> GetPiecewiseBCs();
+
+
+
+    // create containeers to store the boundary conditions, assume each boundary condition is constant over the simulation
+    boost::shared_ptr<BoundaryConditionsContainer<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>> p_bcc(new BoundaryConditionsContainer<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>());
+    std::vector<ConstBoundaryCondition<SPACE_DIM>*> vectorConstBCs;
+
+    for(unsigned pdeDim=0; pdeDim<boundaryConditionValues.size(); pdeDim++){
+        vectorConstBCs.push_back(new ConstBoundaryCondition<SPACE_DIM>(boundaryConditionValues[pdeDim]));
+    }
+
+
+
+    for(unsigned pdeDim=0; pdeDim<PROBLEM_DIM; pdeDim++)
+    {
+        if(piecewiseBCs[pdeDim])
+        {
+            double maxNodeX=0.0;
+            double maxNodeY=0.0;
+            double maxNodeZ=0.0;
+            double maxElementNodeX=0.0;
+            double maxElementNodeY=0.0;
+            double maxElementNodeZ=0.0;
+
+            double prevNodeX=0.0;
+            double prevNodeY=0.0;
+
+            double distanceBetweenNodesX=10.0;
+            double distanceBetweenNodesY=10.0;
+
+            switch (SPACE_DIM)
+            {
+                case 2:
+
+               
+
+                    // run through Boundary nodes
+                    for (typename TetrahedralMesh<ELEMENT_DIM,SPACE_DIM>::BoundaryNodeIterator node_iter = this->mpFeMesh->GetBoundaryNodeIteratorBegin();
+                    node_iter != this->mpFeMesh->GetBoundaryNodeIteratorEnd();
+                    ++node_iter)
+                    {
+                        double x = (*node_iter)->GetPoint()[0];
+                        double y = (*node_iter)->GetPoint()[1];
+                        if(x>maxNodeX)
+                        {
+                            maxNodeX = x;
+                        }
+                        if(y>maxNodeY)
+                        {
+                            maxNodeY = y;
+                        }
+
+                        if(fabs(prevNodeX-x)<distanceBetweenNodesX)
+                        {
+                            distanceBetweenNodesX=fabs(prevNodeX-x);
+                        }
+
+                        if(fabs(prevNodeY-y)<distanceBetweenNodesY)
+                        {
+                            distanceBetweenNodesY=fabs(prevNodeY-y);
+                        }
+
+                        prevNodeX=x;
+                        prevNodeY=y;
+                    }
+
+                    // run through Neumann BCs
+                    for (typename TetrahedralMesh<ELEMENT_DIM,SPACE_DIM>::BoundaryElementIterator boundary_iter = this->mpFeMesh->GetBoundaryElementIteratorBegin();
+                    boundary_iter != this->mpFeMesh->GetBoundaryElementIteratorEnd();
+                    boundary_iter++)
+                    {
+                        unsigned node_index = (*boundary_iter)->GetNodeGlobalIndex(0);
+                        double x = this->mpFeMesh->GetNode(node_index)->GetPoint()[0];
+                        double y = this->mpFeMesh->GetNode(node_index)->GetPoint()[1];
+                        if(x>maxElementNodeX)
+                        {
+                            maxElementNodeX = x;
+                        }
+                        if(y>maxElementNodeY)
+                        {
+                            maxElementNodeY = y;
+                        }
+
+
+                    }
+                    // run through Dirichlet BCs
+                    for (typename TetrahedralMesh<ELEMENT_DIM,SPACE_DIM>::BoundaryNodeIterator node_iter = this->mpFeMesh->GetBoundaryNodeIteratorBegin();
+                    node_iter != this->mpFeMesh->GetBoundaryNodeIteratorEnd();
+                    ++node_iter)
+                    {
+
+                        double x = (*node_iter)->GetPoint()[0];
+                        double y = (*node_iter)->GetPoint()[1];
+                        if (x==0)
+                        {
+                            if(boundaryConditionTypes[pdeDim+0]=="Dirichlet")
+                            {
+                                p_bcc->AddDirichletBoundaryCondition(*node_iter, vectorConstBCs[pdeDim+0], pdeDim);
+                            }
+                        }
+                        else if(y==0)
+                        {
+                            if(boundaryConditionTypes[pdeDim+1]=="Dirichlet")
+                            {
+                                p_bcc->AddDirichletBoundaryCondition(*node_iter, vectorConstBCs[pdeDim+1], pdeDim);
+                            }
+                        }
+                        //else if(fabs(x-this -> mMeshDimensions[0])<1e-6)
+                        else if(fabs(x-maxNodeX-distanceBetweenNodesX)<1e-6)
+                        {
+                            if(boundaryConditionTypes[pdeDim+2]=="Dirichlet")
+                            {
+                                p_bcc->AddDirichletBoundaryCondition(*node_iter, vectorConstBCs[pdeDim+2], pdeDim);
+                            }
+                        }
+                        //else if(fabs(y-this -> mMeshDimensions[1])<1e-6)
+                        else if(fabs(y-maxNodeY-distanceBetweenNodesY)<1e-6)
+                        {
+                            if(boundaryConditionTypes[pdeDim+3]=="Dirichlet")
+                            {
+                                p_bcc->AddDirichletBoundaryCondition(*node_iter, vectorConstBCs[pdeDim+3], pdeDim);
+                            }
+                        }
+                        else
+                        {
+                            std::cout<<"Error: ChemicalDomainFieldForCellCoupling::ProcessBoundaryConditions() Dirichlet node not on boundary"<<std::endl;
+                        }
+                
+                        node_iter++;
+                    } 
+                    // run through Neumann BCs
+                    for (typename TetrahedralMesh<ELEMENT_DIM,SPACE_DIM>::BoundaryElementIterator boundary_iter = this->mpFeMesh->GetBoundaryElementIteratorBegin();
+                    boundary_iter != this->mpFeMesh->GetBoundaryElementIteratorEnd();
+                    boundary_iter++)
+                    {
+                        unsigned node_index = (*boundary_iter)->GetNodeGlobalIndex(0);
+                        double x = this->mpFeMesh->GetNode(node_index)->GetPoint()[0];
+                        double y = this->mpFeMesh->GetNode(node_index)->GetPoint()[1];
+    
+                        if (x==0)
+                        {
+                            if(boundaryConditionTypes[pdeDim+0]=="Neumann")
+                            {
+                                p_bcc->AddNeumannBoundaryCondition(*boundary_iter, vectorConstBCs[pdeDim+0], pdeDim);
+                            }
+                        }
+                        else if(y==0)
+                        {
+                            if(boundaryConditionTypes[pdeDim+1]=="Neumann")
+                            {
+                                p_bcc->AddNeumannBoundaryCondition(*boundary_iter, vectorConstBCs[pdeDim+1], pdeDim);
+                            }
+                        }
+                        //else if(fabs(x-this -> mMeshDimensions[0])<1e-6)
+                        else if(fabs(x-maxElementNodeX)<1e-6)
+                        {
+                            if(boundaryConditionTypes[pdeDim+2]=="Neumann")
+                            {
+                                p_bcc->AddNeumannBoundaryCondition(*boundary_iter, vectorConstBCs[pdeDim+2], pdeDim);
+                            }
+                        }
+                        //else if(fabs(y-this -> mMeshDimensions[1])<1e-6)
+                        else if(fabs(y-maxElementNodeY)<1e-6)
+                        {
+                            if(boundaryConditionTypes[pdeDim+3]=="Neumann")
+                            {
+                                p_bcc->AddNeumannBoundaryCondition(*boundary_iter, vectorConstBCs[pdeDim+3], pdeDim);
+                            }
+                        }
+                        else
+                        {
+                            std::cout<<"Error: ChemicalDomainFieldForCellCoupling::ProcessBoundaryConditions() Neumann node not on boundary"<<std::endl;
+                        }
+                
+                        boundary_iter++;
+                    } 
+
+                    break;
+
+                case 3:
+
+                    
+
+                    // run through Boundary nodes
+                    for (typename TetrahedralMesh<ELEMENT_DIM,SPACE_DIM>::BoundaryNodeIterator node_iter = this->mpFeMesh->GetBoundaryNodeIteratorBegin();
+                    node_iter != this->mpFeMesh->GetBoundaryNodeIteratorEnd();
+                    ++node_iter)
+                    {
+                        double x = (*node_iter)->GetPoint()[0];
+                        double y = (*node_iter)->GetPoint()[1];
+                        double z = (*node_iter)->GetPoint()[2];
+                        if(x>maxNodeX)
+                        {
+                            maxNodeX = x;
+                        }
+                        if(y>maxNodeY)
+                        {
+                            maxNodeY = y;
+                        }
+                        if(z>maxNodeZ)
+                        {
+                            maxNodeZ = z;
+                        }
+                    }
+
+                    // run through Neumann BCs
+                    for (typename TetrahedralMesh<ELEMENT_DIM,SPACE_DIM>::BoundaryElementIterator boundary_iter = this->mpFeMesh->GetBoundaryElementIteratorBegin();
+                    boundary_iter != this->mpFeMesh->GetBoundaryElementIteratorEnd();
+                    boundary_iter++)
+                    {
+                        unsigned node_index = (*boundary_iter)->GetNodeGlobalIndex(0);
+                        double x = this->mpFeMesh->GetNode(node_index)->GetPoint()[0];
+                        double y = this->mpFeMesh->GetNode(node_index)->GetPoint()[1];
+                        double z = this->mpFeMesh->GetNode(node_index)->GetPoint()[2];
+
+                        if(x>maxElementNodeX)
+                        {
+                            maxElementNodeX = x;
+                        }
+                        if(y>maxElementNodeY)
+                        {
+                            maxElementNodeY = y;
+                        }
+                        if(z>maxElementNodeZ)
+                        {
+                            maxElementNodeZ = z;
+                        }
+
+                    }
+
+
+
+                    // run through Dirichlet BCs
+                    for (typename TetrahedralMesh<ELEMENT_DIM,SPACE_DIM>::BoundaryNodeIterator node_iter = this->mpFeMesh->GetBoundaryNodeIteratorBegin();
+                    node_iter != this->mpFeMesh->GetBoundaryNodeIteratorEnd();
+                    ++node_iter)
+                    {
+
+                        double x = (*node_iter)->GetPoint()[0];
+                        double y = (*node_iter)->GetPoint()[1];
+                        double z = (*node_iter)->GetPoint()[2];
+                        if ((x==0) && (z==0))
+                        {
+                            if(boundaryConditionTypes[pdeDim+0]=="Dirichlet")
+                            {
+                                p_bcc->AddDirichletBoundaryCondition(*node_iter, vectorConstBCs[pdeDim+0], pdeDim);
+                            }
+                        }
+                        else if((y==0) && (z==0))
+                        {
+                            if(boundaryConditionTypes[pdeDim+1]=="Dirichlet")
+                            {
+                                p_bcc->AddDirichletBoundaryCondition(*node_iter, vectorConstBCs[pdeDim+1], pdeDim);
+                            }
+                        }
+                        //else if((fabs(x-this -> mMeshDimensions[0])<1e-6) && (z==0))
+                        else if((fabs(x-maxNodeX)<1e-6) && (z==0))
+                        {
+                            if(boundaryConditionTypes[pdeDim+2]=="Dirichlet")
+                            {
+                                p_bcc->AddDirichletBoundaryCondition(*node_iter, vectorConstBCs[pdeDim+2], pdeDim);
+                            }
+                        }
+                        //else if((fabs(y-this -> mMeshDimensions[1])<1e-6) && (z==0))
+                        else if((fabs(y-maxNodeY)<1e-6) && (z==0))
+                        {
+                            if(boundaryConditionTypes[pdeDim+3]=="Dirichlet")
+                            {
+                                p_bcc->AddDirichletBoundaryCondition(*node_iter, vectorConstBCs[pdeDim+3], pdeDim);
+                            }
+                        }
+
+                        else if ((x==0) && (y==0))
+                        {
+                            if(boundaryConditionTypes[pdeDim+4]=="Dirichlet")
+                            {
+                                p_bcc->AddDirichletBoundaryCondition(*node_iter, vectorConstBCs[pdeDim+4], pdeDim);
+                            }
+                        }
+                        //else if((fabs(x-this -> mMeshDimensions[0])<1e-6) && (y==0))
+                        else if((fabs(x-maxNodeX)<1e-6) && (y==0))
+                        {
+                            if(boundaryConditionTypes[pdeDim+5]=="Dirichlet")
+                            {
+                                p_bcc->AddDirichletBoundaryCondition(*node_iter, vectorConstBCs[pdeDim+5], pdeDim);
+                            }
+                        }
+                        //else if((fabs(x-this -> mMeshDimensions[0])<1e-6) && (fabs(y-this -> mMeshDimensions[1])<1e-6))
+                        else if((fabs(x-maxNodeX)<1e-6) && (fabs(y-maxNodeY)<1e-6))
+                        {
+                            if(boundaryConditionTypes[pdeDim+6]=="Dirichlet")
+                            {
+                                p_bcc->AddDirichletBoundaryCondition(*node_iter, vectorConstBCs[pdeDim+6], pdeDim);
+                            }
+                        }
+                        //else if((x==0) && (fabs(y-this -> mMeshDimensions[1])<1e-6))
+                        else if((x==0) && (fabs(y-maxNodeY)<1e-6))
+                        {
+                            if(boundaryConditionTypes[pdeDim+7]=="Dirichlet")
+                            {
+                                p_bcc->AddDirichletBoundaryCondition(*node_iter, vectorConstBCs[pdeDim+7], pdeDim);
+                            }
+                        }
+
+                        //else if ((x==0) && (fabs(z-this -> mMeshDimensions[2])<1e-6))
+                        else if ((x==0) && (fabs(z-maxNodeZ)<1e-6))
+                        {
+                            if(boundaryConditionTypes[pdeDim+8]=="Dirichlet")
+                            {
+                                p_bcc->AddDirichletBoundaryCondition(*node_iter, vectorConstBCs[pdeDim+8], pdeDim);
+                            }
+                        }
+                        //else if((y==0) && (fabs(z-this -> mMeshDimensions[2])<1e-6))
+                        else if((y==0) && (fabs(z-maxNodeZ)<1e-6))
+                        {
+                            if(boundaryConditionTypes[pdeDim+9]=="Dirichlet")
+                            {
+                                p_bcc->AddDirichletBoundaryCondition(*node_iter, vectorConstBCs[pdeDim+9], pdeDim);
+                            }
+                        }
+                        //else if((fabs(x-this -> mMeshDimensions[0])<1e-6) && (fabs(z-this -> mMeshDimensions[2])<1e-6))
+                        else if((fabs(x-maxNodeX)<1e-6) && (fabs(z-maxNodeZ)<1e-6))
+                        {
+                            if(boundaryConditionTypes[pdeDim+10]=="Dirichlet")
+                            {
+                                p_bcc->AddDirichletBoundaryCondition(*node_iter, vectorConstBCs[pdeDim+10], pdeDim);
+                            }
+                        }
+                        //else if((fabs(y-this -> mMeshDimensions[1])<1e-6) && (fabs(z-this -> mMeshDimensions[2])<1e-6))
+                        else if((fabs(y-maxNodeY)<1e-6) && (fabs(z-maxNodeZ)<1e-6))
+                        {
+                            if(boundaryConditionTypes[pdeDim+11]=="Dirichlet")
+                            {
+                                p_bcc->AddDirichletBoundaryCondition(*node_iter, vectorConstBCs[pdeDim+11], pdeDim);
+                            }
+                        }
+
+
+                        else
+                        {
+                            std::cout<<"Error: ChemicalDomainFieldForCellCoupling::ProcessBoundaryConditions() Dirichlet node not on boundary"<<std::endl;
+                        }
+                
+                        node_iter++;
+                    } 
+
+                    // run through Neumann BCs
+                    for (typename TetrahedralMesh<ELEMENT_DIM,SPACE_DIM>::BoundaryElementIterator boundary_iter = this->mpFeMesh->GetBoundaryElementIteratorBegin();
+                    boundary_iter != this->mpFeMesh->GetBoundaryElementIteratorEnd();
+                    boundary_iter++)
+                    {
+                        unsigned node_index = (*boundary_iter)->GetNodeGlobalIndex(0);
+                        double x = this->mpFeMesh->GetNode(node_index)->GetPoint()[0];
+                        double y = this->mpFeMesh->GetNode(node_index)->GetPoint()[1];
+                        double z = this->mpFeMesh->GetNode(node_index)->GetPoint()[2];
+                
+                        if ((x==0) && (z==0))
+                        {
+                            if(boundaryConditionTypes[pdeDim+0]=="Neumann")
+                            {
+                                p_bcc->AddNeumannBoundaryCondition(*boundary_iter, vectorConstBCs[pdeDim+0], pdeDim);
+                            }
+                        }
+                        else if((y==0) && (z==0))
+                        {
+                            if(boundaryConditionTypes[pdeDim+1]=="Neumann")
+                            {
+                                p_bcc->AddNeumannBoundaryCondition(*boundary_iter, vectorConstBCs[pdeDim+1], pdeDim);
+                            }
+                        }
+                        //else if((fabs(x-this -> mMeshDimensions[0])<1e-6) && (z==0))
+                        else if((fabs(x-maxElementNodeX)<1e-6) && (z==0))
+                        {
+                            if(boundaryConditionTypes[pdeDim+2]=="Neumann")
+                            {
+                                p_bcc->AddNeumannBoundaryCondition(*boundary_iter, vectorConstBCs[pdeDim+2], pdeDim);
+                            }
+                        }
+                        //else if((fabs(y-this -> mMeshDimensions[1])<1e-6) && (z==0))
+                        else if((fabs(y-maxElementNodeY)<1e-6) && (z==0))
+                        {
+                            if(boundaryConditionTypes[pdeDim+3]=="Neumann")
+                            {
+                                p_bcc->AddNeumannBoundaryCondition(*boundary_iter, vectorConstBCs[pdeDim+3], pdeDim);
+                            }
+                        }
+
+                        else if ((x==0) && (y==0))
+                        {
+                            if(boundaryConditionTypes[pdeDim+4]=="Neumann")
+                            {
+                                p_bcc->AddNeumannBoundaryCondition(*boundary_iter, vectorConstBCs[pdeDim+4], pdeDim);
+                            }
+                        }
+                        //else if((fabs(x-this -> mMeshDimensions[0])<1e-6) && (y==0))
+                        else if((fabs(x-maxElementNodeX)<1e-6) && (y==0))
+                        {
+                            if(boundaryConditionTypes[pdeDim+5]=="Neumann")
+                            {
+                                p_bcc->AddNeumannBoundaryCondition(*boundary_iter, vectorConstBCs[pdeDim+5], pdeDim);
+                            }
+                        }
+                        //else if((fabs(x-this -> mMeshDimensions[0])<1e-6) && (fabs(y-this -> mMeshDimensions[1])<1e-6))
+                        else if((fabs(x-maxElementNodeX)<1e-6) && (fabs(y-maxElementNodeY)<1e-6))
+                        {
+                            if(boundaryConditionTypes[pdeDim+6]=="Neumann")
+                            {
+                                p_bcc->AddNeumannBoundaryCondition(*boundary_iter, vectorConstBCs[pdeDim+6], pdeDim);
+                            }
+                        }
+                        //else if((x==0) && (fabs(y-this -> mMeshDimensions[1])<1e-6))
+                        else if((x==0) && (fabs(y-maxElementNodeY)<1e-6))
+                        {
+                            if(boundaryConditionTypes[pdeDim+7]=="Neumann")
+                            {
+                                p_bcc->AddNeumannBoundaryCondition(*boundary_iter, vectorConstBCs[pdeDim+7], pdeDim);
+                            }
+                        }
+
+                        //else if ((x==0) && (fabs(z-this -> mMeshDimensions[2])<1e-6))
+                        else if ((x==0) && (fabs(z-maxElementNodeZ)<1e-6))
+                        {
+                            if(boundaryConditionTypes[pdeDim+8]=="Neumann")
+                            {
+                                p_bcc->AddNeumannBoundaryCondition(*boundary_iter, vectorConstBCs[pdeDim+8], pdeDim);
+                            }
+                        }
+                        //else if((y==0) && (fabs(z-this -> mMeshDimensions[2])<1e-6))
+                        else if((y==0) && (fabs(z-maxElementNodeZ)<1e-6))
+                        {
+                            if(boundaryConditionTypes[pdeDim+9]=="Neumann")
+                            {
+                                p_bcc->AddNeumannBoundaryCondition(*boundary_iter, vectorConstBCs[pdeDim+9], pdeDim);
+                            }
+                        }
+                        //else if((fabs(x-this -> mMeshDimensions[0])<1e-6) && (fabs(z-this -> mMeshDimensions[2])<1e-6))
+                        else if((fabs(x-maxElementNodeX)<1e-6) && (fabs(z-maxElementNodeZ)<1e-6))
+                        {
+                            if(boundaryConditionTypes[pdeDim+10]=="Neumann")
+                            {
+                                p_bcc->AddNeumannBoundaryCondition(*boundary_iter, vectorConstBCs[pdeDim+10], pdeDim);
+                            }
+                        }
+                        //else if((fabs(y-this -> mMeshDimensions[1])<1e-6) && (fabs(z-this -> mMeshDimensions[2])<1e-6))
+                        else if((fabs(y-maxElementNodeY)<1e-6) && (fabs(z-maxElementNodeZ)<1e-6))
+                        {
+                            if(boundaryConditionTypes[pdeDim+11]=="Neumann")
+                            {
+                                p_bcc->AddNeumannBoundaryCondition(*boundary_iter, vectorConstBCs[pdeDim+11], pdeDim);
+                            }
+                        }
+
+
+                        else
+                        {
+                            std::cout<<"Error: ChemicalDomainFieldForCellCoupling::ProcessBoundaryConditions() Neumann node not on boundary"<<std::endl;
+                        }
+                
+                        boundary_iter++;
+                    } 
+
+                    break;
+
+                case 1:
+
+                    break;
+
+                default:
+                    // error
+                    std::cout<<"Error: ChemicalDomainFieldForCellCoupling::ProcessBoundaryConditions() default boundary condition dimension reached"<<std::endl;
+
+            }
+
+
+        }else
+        {
+            
+            // the whole boundary perimeter is of the same BC type
+            if(boundaryConditionTypes[pdeDim]=="Dirichlet"||boundaryConditionTypes[pdeDim]=="dirichlet"||boundaryConditionTypes[pdeDim]=="D"||boundaryConditionTypes[pdeDim]=="d")
+            {
+                // standardise
+                boundaryConditionTypes[pdeDim] = "Dirichlet";
+
+                // run though each bondary node and set boundary condition
+                for (typename TetrahedralMesh<ELEMENT_DIM,SPACE_DIM>::BoundaryNodeIterator node_iter = this->mpFeMesh->GetBoundaryNodeIteratorBegin();
+                node_iter != this->mpFeMesh->GetBoundaryNodeIteratorEnd();
+                ++node_iter)
+                {
+                    p_bcc->AddDirichletBoundaryCondition(*node_iter, vectorConstBCs[pdeDim], pdeDim);
+                }
+            }else if(boundaryConditionTypes[pdeDim]=="Neumann"||boundaryConditionTypes[pdeDim]=="neumann"||boundaryConditionTypes[pdeDim]=="N"||boundaryConditionTypes[pdeDim]=="n")
+            {
+                // standardise
+                boundaryConditionTypes[pdeDim] = "Neumann";
+
+                // run though each bondary node and set boundary condition
+                for (typename TetrahedralMesh<ELEMENT_DIM,SPACE_DIM>::BoundaryElementIterator boundary_iter = this->mpFeMesh->GetBoundaryElementIteratorBegin();
+                boundary_iter != this->mpFeMesh->GetBoundaryElementIteratorEnd();
+                boundary_iter++)
+                {
+                    p_bcc->AddNeumannBoundaryCondition(*boundary_iter, vectorConstBCs[pdeDim], pdeDim);
+                }
+            }
+
+        }
+    }
+    // update boundary condition types
+    this -> SetBoundaryConditionTypes(boundaryConditionTypes);
+
+    return p_bcc;
 }
 
 template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
@@ -213,7 +859,7 @@ void ChemicalDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::FormReacti
 
     }
 
-    SetDomainStateVariableRegister(p_domain_register);
+    SetDomainStateVariableRegister(this->GetStateVariableVector());//p_domain_register);
     
     // run through the nodes and set the complete domain state variable register so that
     // each ode has knowledge of the system size
@@ -335,15 +981,19 @@ void ChemicalDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::DeriveExte
 
 template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
 void ChemicalDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::FeMeshScaling( double targetWidth,
-                        double targetHeight,
                         double scaleWidth,
-                        double scaleHeight)
+                        double targetHeight,
+                        double scaleHeight,
+                        double targetDepth,
+                        double scaleDepth)
 {
 
     this->mTargetWidth = targetWidth;
     this->mTargetHeight = targetHeight;
+    this->mTargetDepth = targetDepth;
     this->mScaleWidth = scaleWidth;
     this->mScaleHeight = scaleHeight;
+    this->mScaleHeight = scaleDepth;
 
     double tol =1e-10;
     if(std::abs(targetWidth)>tol)
@@ -356,23 +1006,59 @@ template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
 void ChemicalDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ScaleFeMesh()
 {
 
-    std::cout<<"pre-scaled width: "<<this->mpFeMesh->GetWidth(0)<<" pre-scaled height: "<<this->mpFeMesh->GetWidth(1)<<std::endl;
-
-    if(mIsScaleBy)
+    switch(SPACE_DIM)
     {
-        std::cout<<"mIsScaleBy"<<std::endl;
-        // apply constant factor to the scale in x and y
-        //this->mpFeMesh->Scale(mScaleWidth,mScaleHeight);
-    }
-    else
-    {
-        std::cout<<"scale to"<<std::endl;
-        // scale to a given target width/height
-        this->mpFeMesh->Scale(mTargetWidth/this->mpFeMesh->GetWidth(0),mTargetHeight/this->mpFeMesh ->GetWidth(1));
-    }
+        case 2:
+
+            std::cout<<"2D: pre-scaled width: "<<this->mpFeMesh->GetWidth(0)<<" pre-scaled height: "<<this->mpFeMesh->GetWidth(1)<<std::endl;
+            /*
+            if(mIsScaleBy)
+            {
+                std::cout<<"mIsScaleBy"<<std::endl;
+                // apply constant factor to the scale in x and y
+                this->mpFeMesh->Scale(mScaleWidth,mScaleHeight);
+            }
+            else
+            {
+                std::cout<<"scale to"<<std::endl;
+                // scale to a given target width/height
+                this->mpFeMesh->Scale(mTargetWidth/this->mpFeMesh->GetWidth(0),mTargetHeight/this->mpFeMesh ->GetWidth(1));
+            }
+            */
+
+            std::cout<<"2D: Scaled width: "<<this->mpFeMesh->GetWidth(0)<<" Scaled height: "<<this->mpFeMesh->GetWidth(1)<<std::endl;
+
+            break;
+
+        case 3:
+
+            std::cout<<"3D: pre-scaled width: "<<this->mpFeMesh->GetWidth(0)<<" pre-scaled height: "<<this->mpFeMesh->GetWidth(1)<<" pre-scaled depth: "<<this->mpFeMesh->GetWidth(2)<<std::endl;
+
+            if(mIsScaleBy)
+            {
+                std::cout<<"mIsScaleBy"<<std::endl;
+                // apply constant factor to the scale in x and y
+                this->mpFeMesh->Scale(mScaleWidth,mScaleHeight,mScaleDepth);
+            }
+            else
+            {
+                std::cout<<"scale to"<<std::endl;
+                // scale to a given target width/height
+                this->mpFeMesh->Scale(mTargetWidth/this->mpFeMesh->GetWidth(0),mTargetHeight/this->mpFeMesh ->GetWidth(1),mTargetDepth/this->mpFeMesh ->GetWidth(2));
+            }
 
 
-    std::cout<<"Scaled width: "<<this->mpFeMesh->GetWidth(0)<<" Scaled height: "<<this->mpFeMesh->GetWidth(1)<<std::endl;
+            std::cout<<"3D: Scaled width: "<<this->mpFeMesh->GetWidth(0)<<" Scaled height: "<<this->mpFeMesh->GetWidth(1)<<" Scaled depth: "<<this->mpFeMesh->GetWidth(2)<<std::endl;
+
+            break;
+
+
+        case 1:
+
+            std::cout<<"Error ChemicalDomainField: 1D domain not supported"<<std::endl;
+            break;
+
+    }
 
 }
 
@@ -442,6 +1128,12 @@ void ChemicalDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::SetOdeSyst
     mOdeSystem = odeSystem;
 }
 
+template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
+void ChemicalDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::SetPiecewiseBCs(std::vector<bool> piecewiseBCs)
+{
+    mPiecewiseBCs = piecewiseBCs;
+}
+
 // get methods
 
 template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
@@ -462,5 +1154,15 @@ std::vector<AbstractInhomogenousChemicalOdeSystemForCoupledPdeSystem*> ChemicalD
     return mOdeSystem;
 }
 
+template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
+std::vector<bool> ChemicalDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::GetPiecewiseBCs()
+{
+    return mPiecewiseBCs;
+}
 
+template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
+boost::shared_ptr<BoundaryConditionsContainer<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM> > ChemicalDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ReturnSharedPtrBoundaryConditionsContainer()
+{
+    return mpBoundaryConditionsContainer;
+}
 #endif

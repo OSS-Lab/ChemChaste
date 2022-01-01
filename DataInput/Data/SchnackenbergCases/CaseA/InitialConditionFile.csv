@@ -1,4 +1,5 @@
-# initial conditions for the states: state,subdomain,value,perturb?
+# initial conditions for the states:
+# Variable, Domain, Value, Perturb?
 U,Bulk,2.5,true
 U,Film,2.5,true
 V,Bulk,1.0,true
