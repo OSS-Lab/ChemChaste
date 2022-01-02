@@ -8,6 +8,7 @@
 #include "DefaultCellProliferativeType.hpp"
 #include "NullSrnModel.hpp"
 #include "SmartPointers.hpp"
+#include <iostream>
 
 Cell::Cell(boost::shared_ptr<AbstractCellProperty> pMutationState,
            AbstractCellCycleModel* pCellCycleModel,
