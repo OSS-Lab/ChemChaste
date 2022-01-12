@@ -170,7 +170,8 @@ def EditCppVirtual():
             if(placeNextLine):
                 newLine = mCanDivide_str
                 placeNextLine = False
-            newLine = line
+            else:
+                newLine = line
 
         temp_file_content += newLine +"\n"
 
