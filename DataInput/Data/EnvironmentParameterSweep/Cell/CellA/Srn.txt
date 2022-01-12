@@ -1,2 +1,2 @@
 Domain : membrane
-PreferredEnvironmentMassActionReaction : 0 -> &C ; kf = &P Environment = pH
+PreferredEnvironmentMassActionReaction : 0 -> Biomass ; kf = 1.0 Environment = pH
