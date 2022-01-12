@@ -1,0 +1,5 @@
+# Boundry conditions on the edge of the domain: state,type,value 
+E,Dirichlet,0
+ES,Dirichlet,0
+Substrate,Dirichlet,1
+Oxygen,Dirichlet,1

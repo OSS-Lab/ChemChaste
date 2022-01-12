@@ -1,0 +1,12 @@
+# species, rule (share/duplicate)
+E,share
+S,share
+ES,share
+Oxygen,share
+NAD,duplicate
+NADH,duplicate
+ADP,duplicate
+ATP,duplicate
+H2O,share
+Precursor,share
+Biomass,share

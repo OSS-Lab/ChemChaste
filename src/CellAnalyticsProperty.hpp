@@ -3,6 +3,7 @@
 
 //general includes
 #include <vector>
+#include <string>
 #include <boost/shared_ptr.hpp>
 
 // chaste includes
@@ -21,6 +22,11 @@ protected:
 
     unsigned mCellID;
 
+    std::string mCellTypeName = "";
+
+    std::vector<unsigned> mNeighbourTypes;
+
+    std::vector<std::string> mPopulationCellTypeNames;
 
 public:
 
@@ -33,7 +39,7 @@ public:
 
     // virtual methods
 
-    virtual void SetUp(CellPtr,unsigned);
+    virtual void SetUp(CellPtr,unsigned, std::string);
 
     virtual void PreparePostDivisionParent(double);
     
@@ -43,11 +49,21 @@ public:
 
     void SetCellID(unsigned);
 
+    void SetCellTypeName(std::string);
+
+    void SetNeighbourTypes(std::vector<unsigned>);
+
+    void SetPopulationCellTypeNames(std::vector<std::string>);
 
     CellPtr GetCellPtr();
 
     unsigned GetCellID();
 
+    std::string GetCellTypeName();
+
+    std::vector<unsigned> GetNeighbourTypes();
+
+    std::vector<std::string> GetPopulationCellTypeNames();
 };
 
 

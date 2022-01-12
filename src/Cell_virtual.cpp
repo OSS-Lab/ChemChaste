@@ -25,7 +25,7 @@ Cell::Cell(boost::shared_ptr<AbstractCellProperty> pMutationState,
       mIsDead(false),
       mIsLogged(false)
 {
-    std::cout<<"Cell_virtual::Constructor"<<std::endl;
+    //std::cout<<"Cell_virtual::Constructor"<<std::endl;
     if (SimulationTime::Instance()->IsStartTimeSetUp()==false)
     {
         EXCEPTION("Cell is setting up a cell-cycle model but SimulationTime has not been set up");
@@ -410,27 +410,27 @@ unsigned Cell::GetCellId() const
 
 bool Cell::ReadyToDivide()
 {
-    std::cout<<"virtual cell"<<std::endl;
+    //std::cout<<"virtual cell"<<std::endl;
     assert(!IsDead());
-    std::cout<<"not dead"<<std::endl;
+    //std::cout<<"not dead"<<std::endl;
     if (mUndergoingApoptosis || HasCellProperty<ApoptoticCellProperty>())
     {
         return false;
     }
-    std::cout<<"Srn simualte to current time"<<std::endl;
+    //std::cout<<"Srn simualte to current time"<<std::endl;
     // NOTE - we run the SRN model here first before the CCM
     mpSrnModel->SimulateToCurrentTime();
-    std::cout<<"cellCycle -> REady to Divide"<<std::endl;
+    //std::cout<<"cellCycle -> REady to Divide"<<std::endl;
     // This in turn runs any simulations within the CCM through ReadyToDivide();
     mCanDivide = mpCellCycleModel->ReadyToDivide();
-    std::cout<<"mCanDivide: "<<mCanDivide<<std::endl;
-    std::cout<<"CEll::ReadyToDivide - end"<<std::endl;
+    //std::cout<<"mCanDivide: "<<mCanDivide<<std::endl;
+    //std::cout<<"CEll::ReadyToDivide - end"<<std::endl;
     return mCanDivide;
 }
 
 CellPtr Cell::Divide()
 {
-    std::cout<<"cell_virtual Cell::Divide"<<std::endl;
+    //std::cout<<"cell_virtual Cell::Divide"<<std::endl;
     // Check we're allowed to divide
     assert(!IsDead());
     assert(mCanDivide);

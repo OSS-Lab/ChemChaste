@@ -1,6 +1,7 @@
 # simulation
-output_filename = ChemChaste/CrossFeedingEnzymeLongIrrLong6_6
-simulation_end_time = 1
+output_filename = ChemChaste/CrossFeedingEnzymeLongIrrLong6ParameterSweep
+parameter_filename = /home/chaste/projects/ChemChaste/DataInput/Data/CrossFeedingEnzyme6/Parameters.csv
+simulation_end_time = 20
 number_of_reaction_pdes = 4
 spatial_dimensions = 2
 FE_element_dimension = 2

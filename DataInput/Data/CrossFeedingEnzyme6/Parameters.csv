@@ -1,0 +1,4 @@
+# parameter, values (use : to provide a range)
+&Chem, Biomass, 2Biomass, 3Biomass
+&Growth, 1.0:1.0:3.0
+&kine, 1.0:1.0:3.0

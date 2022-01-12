@@ -23,7 +23,7 @@ private:
 
 public:
 
-    PlaneBoundaryCondition(AbstractCellPopulation<ELEMENT_DIM, SPACE_DIM>* pCellPopulation,
+    FixedCellBoundaryCondition(AbstractCellPopulation<ELEMENT_DIM, SPACE_DIM>* pCellPopulation,
                            std::vector<double> boundaryMax,
                            std::vector<double> boundaryMin);
 

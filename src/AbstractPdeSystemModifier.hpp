@@ -295,7 +295,7 @@ TetrahedralMesh<ELEMENT_DIM,SPACE_DIM>* AbstractPdeSystemModifier<ELEMENT_DIM,SP
 template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
 void AbstractPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::SetupSolve(AbstractCellPopulation<ELEMENT_DIM,SPACE_DIM>& rCellPopulation, std::string outputDirectory)
 {
-    std::cout<<"AbstractPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::SetupSolve - start"<<std::endl;
+    //std::cout<<"AbstractPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::SetupSolve - start"<<std::endl;
     // Cache the output directory
     this->mOutputDirectory = outputDirectory; 
 
@@ -311,13 +311,13 @@ void AbstractPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::SetupSolve(Ab
    
         }
     }
-    std::cout<<"AbstractPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::SetupSolve - end"<<std::endl;
+    //std::cout<<"AbstractPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::SetupSolve - end"<<std::endl;
 }
 
 template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
 void AbstractPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::UpdateAtEndOfOutputTimeStep(AbstractCellPopulation<ELEMENT_DIM,SPACE_DIM>& rCellPopulation)
 {
-    std::cout<<"AbstractPdeSystemModifier - UpdateAtEndOfOutputTimeStep - start"<<std::endl;
+    //std::cout<<"AbstractPdeSystemModifier - UpdateAtEndOfOutputTimeStep - start"<<std::endl;
     if (mOutputSolutionAtPdeNodes)
     {
         if (PetscTools::AmMaster())
@@ -363,11 +363,11 @@ void AbstractPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::UpdateAtEndOf
             std::string results_file = "pde_results_" + mpCoupledDomainField->GetDomainStateVariableRegister()->RetrieveStateVariableName(pdeDim) + "_" + time_string.str();
             VtkMeshWriter<ELEMENT_DIM,SPACE_DIM>* p_vtk_mesh_writer = new VtkMeshWriter<ELEMENT_DIM,SPACE_DIM>(mOutputDirectory, results_file, false);
             std::vector<double> pde_solution;
-            std::cout<<results_file<<" : "<<std::endl;
+            //std::cout<<results_file<<" : "<<std::endl;
             for (unsigned i=0; i<mpFeMesh->GetNumNodes(); i++)
             {
                 pde_solution.push_back(solution_repl[i*PROBLEM_DIM+pdeDim]); 
-                std::cout<<solution_repl[i*PROBLEM_DIM+pdeDim]<<std::endl;
+                //std::cout<<solution_repl[i*PROBLEM_DIM+pdeDim]<<std::endl;
             }
             p_vtk_mesh_writer->AddPointData(mpCoupledDomainField->GetDomainStateVariableRegister()->RetrieveStateVariableName(pdeDim), pde_solution);
 
@@ -378,7 +378,7 @@ void AbstractPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::UpdateAtEndOf
         
     }
 #endif //CHASTE_VTK
-    std::cout<<"AbstractPdeSystemModifier - UpdateAtEndOfOutputTimeStep - end"<<std::endl;
+    //std::cout<<"AbstractPdeSystemModifier - UpdateAtEndOfOutputTimeStep - end"<<std::endl;
 }
 
 template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>

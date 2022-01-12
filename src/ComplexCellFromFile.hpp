@@ -66,6 +66,8 @@ protected:
 
     bool mIsCellIDSet = false;
 
+    std::string mCellTypeName="";
+
     StateVariableRegister* mpFullChemicalStateRegister; 
 
     SimpleChemicalThresholdCellCycleModel*  mpSimpleChemicalThresholdCellCycleModel;
@@ -203,6 +205,8 @@ public:
     void SetEnvironmentPropertyFilename(std::string);
 
     void SetFullChemicalStateRegister(StateVariableRegister*);
+
+    void SetCellTypeName(std::string);
 
 };
 
@@ -426,7 +430,7 @@ void ComplexCellFromFile::SetUpCellProperties()
     if(mIsCellIDSet)
     {
         std::cout<<"CellID: "<<mCellID<<std::endl;
-        CellAnalyticsPropertyFromCellID* p_cell_analytics_property_from_cellID = new CellAnalyticsPropertyFromCellID(mCellID);
+        CellAnalyticsPropertyFromCellID* p_cell_analytics_property_from_cellID = new CellAnalyticsPropertyFromCellID(mCellID,mCellTypeName);
 
         p_cell_analytics_property_from_cellID -> SetUpCellAnalyticsProperty(mpCell);
 
@@ -444,6 +448,7 @@ void ComplexCellFromFile::SetUpSRNandCellCycle()
     {
         if(mSrnFilename != "")
         {
+            std::cout<<"mSrnFileName: "<<mSrnFilename<<std::endl;
             ChemicalSRNFromFile* p_srn_reaction_system_from_file = new ChemicalSRNFromFile(mSrnFilename);
             SetChemicalSrnModel(p_srn_reaction_system_from_file -> GetChemicalSrnModel());
         }
@@ -890,6 +895,12 @@ void ComplexCellFromFile::SetFullChemicalStateRegister(StateVariableRegister* p_
 {
     mpFullChemicalStateRegister = p_register;
 }
+
+void ComplexCellFromFile::SetCellTypeName(std::string typeName)
+{
+    mCellTypeName = typeName;
+}
+
 
 
 #endif

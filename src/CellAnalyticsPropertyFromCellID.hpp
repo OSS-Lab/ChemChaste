@@ -16,12 +16,14 @@ protected:
 
     unsigned mCellID;
 
+    std::string mCellTypeName = "";
+
     boost::shared_ptr<CellAnalyticsProperty> mpCellAnalyticsProperty;
 
 
 public:
 
-    CellAnalyticsPropertyFromCellID(unsigned);
+    CellAnalyticsPropertyFromCellID(unsigned, std::string);
 
     ~CellAnalyticsPropertyFromCellID()
     {
@@ -42,8 +44,9 @@ public:
 
 };
 
-    CellAnalyticsPropertyFromCellID::CellAnalyticsPropertyFromCellID(unsigned cellID)
-        : mCellID(cellID)
+    CellAnalyticsPropertyFromCellID::CellAnalyticsPropertyFromCellID(unsigned cellID, std::string cellTypeName)
+        : mCellID(cellID),
+        mCellTypeName(cellTypeName)
     {
 
         SetCellID(cellID);
@@ -54,7 +57,7 @@ public:
     {
         boost::shared_ptr<CellAnalyticsProperty> p_analytics = boost::static_pointer_cast<CellAnalyticsProperty>(p_cell->rGetCellPropertyCollection().GetPropertiesType<CellAnalyticsProperty>().GetProperty());
        
-        p_analytics -> SetUp(p_cell,mCellID);
+        p_analytics -> SetUp(p_cell,mCellID,mCellTypeName);
 
         SetCellAnalyticsProperty(p_analytics);
     }

@@ -53,7 +53,7 @@ protected:
 
     bool mIsCellIDSet = false;
 
-
+    std::string mCellTypeName="";
 
     StateVariableRegister* mpFullChemicalStateRegister; 
 
@@ -164,6 +164,7 @@ public:
 
     void SetFullChemicalStateRegister(StateVariableRegister*);
 
+    void SetCellTypeName(std::string);
 
 };
 
@@ -330,7 +331,7 @@ void ChemicalCellFromFile::SetUpCellProperties()
 
     if(mIsCellIDSet)
     {
-        CellAnalyticsPropertyFromCellID* p_cell_analytics_property_from_cellID = new CellAnalyticsPropertyFromCellID(mCellID);
+        CellAnalyticsPropertyFromCellID* p_cell_analytics_property_from_cellID = new CellAnalyticsPropertyFromCellID(mCellID,mCellTypeName);
 
         p_cell_analytics_property_from_cellID -> SetUpCellAnalyticsProperty(mpCell);
 
@@ -630,5 +631,9 @@ void ChemicalCellFromFile::SetFullChemicalStateRegister(StateVariableRegister* p
     mpFullChemicalStateRegister = p_register;
 }
 
+void ChemicalCellFromFile::SetCellTypeName(std::string typeName)
+{
+    mCellTypeName = typeName;
+}
 
 #endif

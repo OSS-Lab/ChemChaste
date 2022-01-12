@@ -1,0 +1,2 @@
+# Reaction at membrane, Bulk <-> Bulk | Cell <-> Cell
+MassActionCoupledMembraneReaction : Biomass <-> Biomass | Biomass <-> Biomass ;  kf = 0.0 kr = 0.0

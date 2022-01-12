@@ -44,6 +44,8 @@
 #include "CellAncestorWriter.hpp"
 #include "CellAppliedForceWriter.hpp"
 #include "CellAnalyticsWriter.hpp"
+#include "CellNeighbourDiversityWriter.hpp"
+#include "PopulationDiversityWriter.hpp"
 //#include "CellStateWriter.hpp"
 
 
@@ -85,6 +87,7 @@
 
 // tracking includes
 #include "ChemicalTrackingModifier.hpp"
+#include "CellNeighbourTrackingModifier.hpp"
 
 #include "ChemicalCell.hpp"
 #include "ComplexCell.hpp"
@@ -164,5 +167,5 @@
 #include "ChemicalDomainFieldForCellCoupling.hpp"
 #include "ChemicalDomainField_templated.hpp"
 
-//#include "FixedCellBoundaryConditions.hpp"
+#include "FixedCellBoundaryConditions.hpp"
 

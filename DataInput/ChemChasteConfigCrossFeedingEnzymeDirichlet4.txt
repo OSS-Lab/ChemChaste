@@ -1,0 +1,28 @@
+# simulation
+output_filename = ChemChaste/CrossFeedingEnzymeLongIrrLong4_2Dirichlet
+simulation_end_time = 50
+number_of_reaction_pdes = 4
+spatial_dimensions = 2
+FE_element_dimension = 2
+
+# bulk
+domain_file_root = /home/chaste/projects/ChemChaste/DataInput/Data/CrossFeedingEnzymeDirichlet4/DomainField/
+domain_file = Domain.csv
+domain_key_file = DomainKey.csv
+ode_file = NodeSelector.csv
+ode_key_file = OdeReactionFileKey.csv
+diffusion_database = DiffusionDatabaseFile.csv
+initial_conditions = InitialConditionFile.csv
+boundary_conditions = BoundaryConditionFile.csv
+
+# cell
+cell_file_root = /home/chaste/projects/ChemChaste/DataInput/Data/CrossFeedingEnzymeDirichlet4/Cell/
+cell_file = CellLayerTopology.csv
+cell_key_file = CellLayerKey.csv
+
+# mesh
+number_cells_across = 1
+number_cells_high = 1
+node_cutoff_length = 1.5 
+cell_mesh_origin = -9.0
+linear_force_cutoff = 1.5

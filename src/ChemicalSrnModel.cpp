@@ -52,13 +52,13 @@ void ChemicalSrnModel::Initialise()
 
 void ChemicalSrnModel::SimulateToCurrentTime()
 {
-    std::cout<<"ChemicalSrnModel::SimulateToCurrentTime() - start"<<std::endl;
+    //std::cout<<"ChemicalSrnModel::SimulateToCurrentTime() - start"<<std::endl;
     // Custom behaviour
     UpdateOdeParameters();
-    std::cout<<"RunODE"<<std::endl;
+    //std::cout<<"RunODE"<<std::endl;
     // Run the ODE simulation as needed
     AbstractOdeSrnModel::SimulateToCurrentTime();
-    std::cout<<"ChemicalSrnModel::SimulateToCurrentTime() - end"<<std::endl;
+    //std::cout<<"ChemicalSrnModel::SimulateToCurrentTime() - end"<<std::endl;
 }
 
 void ChemicalSrnModel::SetReactionSystem(AbstractReactionSystem* reactionSystem)

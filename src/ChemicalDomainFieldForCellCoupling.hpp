@@ -612,7 +612,7 @@ ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ChemicalD
 
         std::vector<std::vector<std::vector<std::string>>> tempCellLabels;
 
-        // mCellLabelFilename will eb a .csv if 2D or a directory containg .csv files if 3D
+        // mCellLabelFilename will be a .csv if 2D or a directory containg .csv files if 3D
         std::string filename = mCellLabelFilename;
         switch(SPACE_DIM)
         {
@@ -651,8 +651,20 @@ ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ChemicalD
         cellKeys = AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ReadMatrix(mCellKeyFilename);
 
         // set the cell key vector for identifying the cell/strain type
+        std::vector<std::string> cellKeysUnique = AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ReturnUnique(cellKeys);
+        std::vector<std::string> cellKeyNames;
 
-        SetCellKeyVector(AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ReturnUnique(cellKeys));
+        for(unsigned i=0; i<cellKeysUnique.size(); i++)
+        {
+            // take every other value to grab the names of the cell types
+            if(i%2 ==1)
+            {
+                cellKeyNames.push_back(cellKeysUnique[i]);
+            }
+
+        }
+
+        SetCellKeyVector(cellKeyNames);
 
         SetCellKeys(cellKeys);
     }

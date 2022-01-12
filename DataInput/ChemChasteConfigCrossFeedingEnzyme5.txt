@@ -1,6 +1,6 @@
 # simulation
 output_filename = ChemChaste/CrossFeedingEnzymeLongIrrLong5_2
-simulation_end_time = 100
+simulation_end_time = 50
 number_of_reaction_pdes = 4
 spatial_dimensions = 2
 FE_element_dimension = 2

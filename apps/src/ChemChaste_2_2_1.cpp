@@ -1,4 +1,4 @@
-#include "Cell_virtual.hpp"
+//#include "Cell_virtual.hpp"
 //#include "AbstractCellBasedTestSuite.hpp"
 #include "BoundaryConditionsContainer_extended.hpp"
 #include "ChemChasteFeAssemblerCommon.hpp"
@@ -36,6 +36,7 @@
 void SetupSingletons();
 void DestroySingletons();
 void SetupAndRunSimulation(unsigned simulation_id,boost::program_options::variables_map& variables_map);
+void WriteSimulationToChemChasteLog(std::string,unsigned);
 
 int main(int argc, char *argv[])
 {
@@ -107,6 +108,7 @@ config.add_options()
 ("node_cutoff_length",boost::program_options::value<double>()->default_value(1.5),"Connectivity length of nodes only mesh (default: 1.5)")
 ("cell_mesh_origin",boost::program_options::value<double>()->default_value(-4.0),"Mesh overlapping point (default: -4.0)")
 ("linear_force_cutoff",boost::program_options::value<double>()->default_value(1.5),"Cut off length of linear spring force between cells (default: 1.5)")
+("parameter_filename",boost::program_options::value<std::string>()->default_value(""),"Absolute root of the parameter file (default: "")")
 ;
 
 boost::program_options::options_description cmdline_options;
@@ -153,6 +155,10 @@ DestroySingletons();
 
 auto finish = std::chrono::high_resolution_clock::now();
 std::chrono::duration<double> elapsed = finish - start;
+
+
+WriteSimulationToChemChasteLog(variables_map["config"].as<std::string>(),variables_map["ID"].as<unsigned>());
+
 
 std::cout<<"Simulation end: "<<variables_map["config"].as<std::string>()<<" for run: "<<variables_map["ID"].as<unsigned>()<<std::endl;
 std::cout << "Elapsed time: " << elapsed.count() << " s\n";
@@ -247,7 +253,7 @@ given_cell_root+"MembraneReactions.txt",
 numericalCellID,
 true
 );
-
+p_cell_reader->SetCellTypeName(cell_key);
 cells.push_back(p_cell_reader -> GetCellPtr());
 }
 
@@ -440,10 +446,11 @@ given_cell_root,
 "InitialCellConcentrations.csv",
 "TransportReactions.txt",
 "MembraneReactions.txt",
-"Environment.csv",
+"",
 numericalCellID,
 true
 );
+p_cell_reader->SetCellTypeName(cell_key);
 p_cell_reader->SetUp();
 
 
@@ -506,7 +513,7 @@ domainMax.push_back(domainDimensions[dim]);
 domainMin.push_back(0.0);
 }
 
-//boost::shared_ptr<FixedCellBoundaryConditions<elementDim,spaceDim>> p_cell_BC(new FixedCellBoundaryConditions<elementDim,spaceDim>(&cell_population, domainMax, domainMin));
+//boost::shared_ptr<FixedCellBoundaryCondition<elementDim,spaceDim>> p_cell_BC(new FixedCellBoundaryCondition<elementDim,spaceDim>(&cell_population, domainMax, domainMin));
 
 //simulator.AddCellPopulationBoundaryCondition(p_cell_BC);
 
@@ -625,7 +632,249 @@ domainMax.push_back(domainDimensions[dim]);
 domainMin.push_back(0.0);
 }
 
-//boost::shared_ptr<FixedCellBoundaryConditions<elementDim,spaceDim>> p_cell_BC(new FixedCellBoundaryConditions<elementDim,spaceDim>(&cell_population, domainMax, domainMin));
+//boost::shared_ptr<FixedCellBoundaryCondition<elementDim,spaceDim>> p_cell_BC(new FixedCellBoundaryCondition<elementDim,spaceDim>(&cell_population, domainMax, domainMin));
+
+//simulator.AddCellPopulationBoundaryCondition(p_cell_BC);
+
+//simulator.Solve();
+}
+
+}
+else if(variables_map["simulation_type"].as<std::string>()=="environment_cell")
+{
+
+if(variables_map["cell_file"].as<std::string>()!="")
+{
+// cell population topology is defined so read cell layer from files
+std::cout<<"---------------------------here"<<std::endl;
+// run the domain field set up and parse files
+ChemicalDomainFieldForCellCoupling<elementDim,spaceDim,probDim>* p_Pde_field = new ChemicalDomainFieldForCellCoupling<elementDim,spaceDim,probDim>
+(   variables_map["domain_file_root"].as<std::string>(),
+variables_map["cell_file_root"].as<std::string>()+variables_map["cell_file"].as<std::string>(),
+variables_map["cell_file_root"].as<std::string>()+variables_map["cell_key_file"].as<std::string>(),
+variables_map["domain_file_root"].as<std::string>()+variables_map["domain_file"].as<std::string>(),
+variables_map["domain_file_root"].as<std::string>()+variables_map["domain_key_file"].as<std::string>(),
+variables_map["domain_file_root"].as<std::string>()+variables_map["ode_file"].as<std::string>(),
+variables_map["domain_file_root"].as<std::string>()+variables_map["ode_key_file"].as<std::string>(),
+variables_map["domain_file_root"].as<std::string>()+variables_map["diffusion_database"].as<std::string>(),
+variables_map["domain_file_root"].as<std::string>()+variables_map["initial_conditions"].as<std::string>(),
+variables_map["domain_file_root"].as<std::string>()+variables_map["boundary_conditions"].as<std::string>());
+
+TetrahedralMesh<elementDim,spaceDim>* p_cell_mesh = p_Pde_field->rGetCellMesh();
+
+NodesOnlyMesh<spaceDim> mesh;
+mesh.ConstructNodesWithoutMesh(*p_cell_mesh, variables_map["node_cutoff_length"].as<double>());
+
+std::vector<CellPtr> cells;
+// assume cell at each node in cell layer mesh
+std::string cell_label;
+unsigned numericalCellID;
+std::string cell_key;
+std::string given_cell_root;
+for (unsigned i=0; i<p_cell_mesh->GetNumNodes(); i++)
+{
+cell_label = p_Pde_field->GetCellLabelByIndex(i);
+cell_key = p_Pde_field->ReturnCellKeyFromCellLabel(cell_label);
+numericalCellID = p_Pde_field->ReturnUnsignedIDFromCellKeyString(cell_key);
+given_cell_root = variables_map["cell_file_root"].as<std::string>()+cell_key+"/";
+
+ComplexCellFromFile* p_cell_reader = new ComplexCellFromFile(
+given_cell_root,
+"SpeciesThreshold.csv",
+"SpeciesDivisionRules.csv",
+"Srn.txt",
+"InitialCellConcentrations.csv",
+"TransportReactions.txt",
+"MembraneReactions.txt",
+"Environment.csv",
+numericalCellID,
+true
+);
+p_cell_reader->SetCellTypeName(cell_key);
+p_cell_reader->SetUp();
+
+
+std::cout<<"Division file root: "<<given_cell_root+"SpeciesDivisionRules.csv"<<std::endl;
+std::cout<<"test for cell properties"<<std::endl;
+std::cout<<"has membrane: "<<p_cell_reader -> GetCellPtr() -> rGetCellPropertyCollection().HasProperty<MembraneCellProperty>()<<std::endl;
+std::cout<<"has transport: "<<p_cell_reader -> GetCellPtr() -> rGetCellPropertyCollection().HasProperty<TransportCellProperty>()<<std::endl;
+cells.push_back(p_cell_reader -> GetCellPtr());
+}
+
+
+NodeBasedCellPopulation<spaceDim> cell_population(mesh, cells);
+
+// Create a ChasteCuboid on which to base the finite element mesh used to solve the PDE
+ChastePoint<spaceDim> lower(variables_map["cell_mesh_origin"].as<double>(),variables_map["cell_mesh_origin"].as<double>());
+ChastePoint<spaceDim> upper(10.0, 10.0);
+MAKE_PTR_ARGS(ChasteCuboid<spaceDim>, p_cuboid, (lower, upper));
+
+
+
+double feMeshStepSize = variables_map["FE_mesh_step_size"].as<double>();
+
+bool isCenterMesh = false;
+if(variables_map["mesh_location"].as<std::string>()=="Center")
+{
+isCenterMesh = true;
+}
+
+boost::shared_ptr<ParabolicBoxDomainPdeSystemModifier<elementDim,spaceDim,probDim>> p_pde_modifier(new ParabolicBoxDomainPdeSystemModifier<elementDim,spaceDim,probDim>(p_Pde_field, p_cuboid, feMeshStepSize, isCenterMesh));
+
+boost::shared_ptr<ChemicalTrackingModifier<spaceDim,elementDim>> p_chemical_tracking_modifier(new ChemicalTrackingModifier<spaceDim,elementDim>()); //= chemical_structure -> rGetPtrChemicalTrackingModifier();
+
+cell_population.AddCellWriter<CellIdWriter>();
+cell_population.AddCellWriter<CellAgesWriter>();
+cell_population.AddCellWriter<CellLocationIndexWriter>();
+cell_population.AddCellWriter<CellAnalyticsWriter>();
+
+cell_population.AddCellWriter<CellNeighbourDiversityWriter>();
+cell_population.AddCellPopulationCountWriter<PopulationDiversityWriter>();
+
+
+OffLatticeSimulation<spaceDim> simulator(cell_population);
+
+simulator.AddSimulationModifier(p_pde_modifier);
+
+simulator.AddSimulationModifier(p_chemical_tracking_modifier);
+
+simulator.SetOutputDirectory(variables_map["output_filename"].as<std::string>()+"/"+boost::lexical_cast<std::string>(simulation_id));
+simulator.SetEndTime(variables_map["simulation_end_time"].as<double>());
+simulator.SetDt(variables_map["simulation_timestep"].as<double>());
+
+MAKE_PTR(GeneralisedLinearSpringForce<spaceDim>, p_linear_force);
+p_linear_force->SetCutOffLength(variables_map["linear_force_cutoff"].as<double>());
+simulator.AddForce(p_linear_force);
+
+std::vector<unsigned>  domainDimensions = p_Pde_field->GetMeshDimensions();
+std::vector<double> domainMax;
+std::vector<double> domainMin;
+
+for(unsigned dim=0; dim<domainDimensions.size(); dim++)
+{
+domainMax.push_back(domainDimensions[dim]);
+domainMin.push_back(0.0);
+}
+
+boost::shared_ptr<FixedCellBoundaryCondition<elementDim,spaceDim>> p_cell_BC(new FixedCellBoundaryCondition<elementDim,spaceDim>(&cell_population, domainMax, domainMin));
+
+simulator.AddCellPopulationBoundaryCondition(p_cell_BC);
+
+simulator.Solve();
+
+}
+else
+{
+
+// set up chemical domain field
+ChemicalDomainFieldForCellCoupling<elementDim,spaceDim,probDim>* p_Pde_field = new ChemicalDomainFieldForCellCoupling<elementDim,spaceDim,probDim>
+(   variables_map["domain_file_root"].as<std::string>(),
+variables_map["domain_file_root"].as<std::string>()+"",
+variables_map["domain_file_root"].as<std::string>()+"",
+variables_map["domain_file_root"].as<std::string>()+variables_map["domain_file"].as<std::string>(),
+variables_map["domain_file_root"].as<std::string>()+variables_map["domain_key_file"].as<std::string>(),
+variables_map["domain_file_root"].as<std::string>()+variables_map["ode_file"].as<std::string>(),
+variables_map["domain_file_root"].as<std::string>()+variables_map["ode_key_file"].as<std::string>(),
+variables_map["domain_file_root"].as<std::string>()+variables_map["diffusion_database"].as<std::string>(),
+variables_map["domain_file_root"].as<std::string>()+variables_map["initial_conditions"].as<std::string>(),
+variables_map["domain_file_root"].as<std::string>()+variables_map["boundary_conditions"].as<std::string>());
+
+
+
+// make mesh of cell with associated mesh based cell population
+HoneycombMeshGenerator generator(variables_map["number_cells_across"].as<unsigned>(),variables_map["number_cells_high"].as<unsigned>());    // Parameters are: cells across, cells up
+MutableMesh<elementDim,spaceDim>* p_mesh = generator.GetMesh();
+
+
+std::vector<unsigned> location_indices = generator.GetCellLocationIndices();
+
+std::vector<CellPtr> cells;
+
+std::vector<std::string> chemicalCellSpeciesNames;
+
+// assume cell at each node in cell layer mesh
+bool IsFirstCell = true;
+for (unsigned i=0; i<p_mesh->GetNumNodes(); i++)
+{
+// provide each cell with a transport cell property and membrane property, cell cycle, wild type states
+
+ComplexCellFromFile* p_cell_reader = new ComplexCellFromFile(
+variables_map["cell_file_root"].as<std::string>(),
+variables_map["cell_cycle_file"].as<std::string>(),
+variables_map["cell_division_rules"].as<std::string>(),
+variables_map["srn_file"].as<std::string>(),
+variables_map["cell_initial_conditions"].as<std::string>(),
+variables_map["transport_property"].as<std::string>(),
+variables_map["membrane_property"].as<std::string>(),
+variables_map["environment_property"].as<std::string>()
+);
+p_cell_reader->SetUp();
+
+if(IsFirstCell)
+{
+chemicalCellSpeciesNames =  p_cell_reader->GetFullChemicalNamesVector();
+IsFirstCell = false;
+}
+cells.push_back(p_cell_reader -> GetCellPtr());
+}
+
+// Create a ChasteCuboid on which to base the finite element mesh used to solve the PDE
+ChastePoint<spaceDim> lower(variables_map["cell_mesh_origin"].as<double>(),variables_map["cell_mesh_origin"].as<double>());
+ChastePoint<spaceDim> upper(10.0, 10.0);
+MAKE_PTR_ARGS(ChasteCuboid<spaceDim>, p_cuboid, (lower, upper));
+
+
+
+double feMeshStepSize = variables_map["FE_mesh_step_size"].as<double>();
+
+bool isCenterMesh = false;
+if(variables_map["mesh_location"].as<std::string>()=="Center")
+{
+isCenterMesh = true;
+}
+
+boost::shared_ptr<ParabolicBoxDomainPdeSystemModifier<elementDim,spaceDim,probDim>> p_pde_modifier(new ParabolicBoxDomainPdeSystemModifier<elementDim,spaceDim,probDim>(p_Pde_field, p_cuboid, feMeshStepSize, isCenterMesh));
+
+
+boost::shared_ptr<ChemicalTrackingModifier<elementDim,spaceDim>> p_chemical_tracking_modifier(new ChemicalTrackingModifier<elementDim,spaceDim>());
+
+
+NodesOnlyMesh<spaceDim> mesh;
+
+mesh.ConstructNodesWithoutMesh(*p_mesh, variables_map["node_cutoff_length"].as<double>());
+
+NodeBasedCellPopulation<spaceDim> cell_population(mesh, cells);
+
+// writers
+
+cell_population.AddCellWriter<CellIdWriter>();
+cell_population.AddCellWriter<CellAgesWriter>();
+cell_population.AddCellWriter<CellLocationIndexWriter>();
+
+OffLatticeSimulation<spaceDim> simulator(cell_population);
+
+simulator.AddSimulationModifier(p_pde_modifier);
+
+simulator.AddSimulationModifier(p_chemical_tracking_modifier);
+simulator.SetOutputDirectory(variables_map["output_filename"].as<std::string>()+"/"+boost::lexical_cast<std::string>(simulation_id));
+simulator.SetEndTime(variables_map["simulation_end_time"].as<double>());
+simulator.SetDt(variables_map["simulation_timestep"].as<double>());
+
+MAKE_PTR(GeneralisedLinearSpringForce<spaceDim>, p_linear_force);
+p_linear_force->SetCutOffLength(variables_map["linear_force_cutoff"].as<double>());
+simulator.AddForce(p_linear_force);
+
+std::vector<unsigned>  domainDimensions = p_Pde_field->GetMeshDimensions();
+std::vector<double> domainMax;
+std::vector<double> domainMin;
+
+for(unsigned dim=0; dim<domainDimensions.size(); dim++)
+{
+domainMax.push_back(domainDimensions[dim]);
+domainMin.push_back(0.0);
+}
+
+//boost::shared_ptr<FixedCellBoundaryCondition<elementDim,spaceDim>> p_cell_BC(new FixedCellBoundaryCondition<elementDim,spaceDim>(&cell_population, domainMax, domainMin));
 
 //simulator.AddCellPopulationBoundaryCondition(p_cell_BC);
 
@@ -686,7 +935,7 @@ given_cell_root,
 numericalCellID,
 true
 );
-
+p_cell_reader->SetCellTypeName(cell_key);
 p_cell_reader->SetUp();
 
 cells.push_back(p_cell_reader -> GetCellPtr());
@@ -765,7 +1014,7 @@ domainMax.push_back(domainDimensions[dim]);
 domainMin.push_back(0.0);
 }
 
-boost::shared_ptr<FixedCellBoundaryConditions<elementDim,spaceDim>> p_cell_BC(new FixedCellBoundaryConditions<elementDim,spaceDim>(&cell_population, domainMax, domainMin));
+boost::shared_ptr<FixedCellBoundaryCondition<elementDim,spaceDim>> p_cell_BC(new FixedCellBoundaryCondition<elementDim,spaceDim>(&cell_population, domainMax, domainMin));
 
 simulator.AddCellPopulationBoundaryCondition(p_cell_BC);
 
@@ -893,7 +1142,7 @@ domainMax.push_back(domainDimensions[dim]);
 domainMin.push_back(0.0);
 }
 
-boost::shared_ptr<FixedCellBoundaryConditions<elementDim,spaceDim>> p_cell_BC(new FixedCellBoundaryConditions<elementDim,spaceDim>(&cell_population, domainMax, domainMin));
+boost::shared_ptr<FixedCellBoundaryCondition<elementDim,spaceDim>> p_cell_BC(new FixedCellBoundaryCondition<elementDim,spaceDim>(&cell_population, domainMax, domainMin));
 
 simulator.AddCellPopulationBoundaryCondition(p_cell_BC);
 
@@ -3602,4 +3851,12 @@ std::cout<<"Simulation type ("<<variables_map["simulation_type"].as<std::string>
 
 }
 
+void WriteSimulationToChemChasteLog(std::string config_filename,unsigned run_id)
+{
 
+std::ofstream outfile;
+
+outfile.open("ChemChaste_log.txt", std::ios_base::app); // append instead of overwrite
+outfile << config_filename << ", " << run_id <<"\n";
+return;
+}

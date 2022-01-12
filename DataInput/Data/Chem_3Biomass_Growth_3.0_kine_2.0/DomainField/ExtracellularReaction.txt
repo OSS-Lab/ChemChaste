@@ -1,0 +1,4 @@
+Domain : Bulk
+MassActionReaction : E + S <-> ES ; kf = 1.0 kr = 0.0
+MassActionReaction : Oxygen -> Oxygen ; kf = 0.0
+MassActionReaction : E -> 0 ; kf = 3.6

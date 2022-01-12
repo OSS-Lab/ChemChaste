@@ -1,0 +1,2 @@
+# Boundry conditions on the edge of the domain: state,type,value
+pH,Neumann,0.0,Dirichlet,10.0,Neumann,0.0,Dirichlet,0.0

@@ -6,6 +6,6 @@ ChemChaste_cpp_location = /home/chaste/projects/ChemChaste/apps/src/ChemChaste.c
 
 debug_mode = 0
 
-domain_problem_dimensions = 0,1
+domain_problem_dimensions = 0,4
 domain_space_dimensions = 2
 domain_FE_element_dimensions = 2

@@ -15,14 +15,16 @@ CellAnalyticsProperty::~CellAnalyticsProperty()
 CellAnalyticsProperty::CellAnalyticsProperty(const CellAnalyticsProperty& existingProperty)
 {
     mCellID = existingProperty.mCellID;
+    mCellTypeName = existingProperty.mCellTypeName;
 }
 
 // virtual methods
 
-void CellAnalyticsProperty::SetUp(CellPtr this_cellPtr,unsigned cellID)
+void CellAnalyticsProperty::SetUp(CellPtr this_cellPtr,unsigned cellID, std::string cellTypeName)
 {
     SetCellID(cellID);
     SetCellPtr(this_cellPtr);
+    SetCellTypeName(cellTypeName);
 
 }
 
@@ -47,6 +49,20 @@ void CellAnalyticsProperty::SetCellID(unsigned cellID)
     mCellID = cellID;
 }
 
+void CellAnalyticsProperty::SetCellTypeName(std::string cellTypeName)
+{
+    mCellTypeName = cellTypeName;
+}
+
+void CellAnalyticsProperty::SetNeighbourTypes(std::vector<unsigned> neighbourTypes)
+{
+    mNeighbourTypes = neighbourTypes;
+}
+
+void CellAnalyticsProperty::SetPopulationCellTypeNames(std::vector<std::string> cellTypeNames)
+{
+    mPopulationCellTypeNames = cellTypeNames;
+}
 
 CellPtr CellAnalyticsProperty::GetCellPtr()
 {
@@ -56,4 +72,19 @@ CellPtr CellAnalyticsProperty::GetCellPtr()
 unsigned CellAnalyticsProperty::GetCellID()
 {
     return mCellID;
+}
+
+std::string CellAnalyticsProperty::GetCellTypeName()
+{
+    return mCellTypeName;
+}
+
+std::vector<unsigned> CellAnalyticsProperty::GetNeighbourTypes()
+{
+    return mNeighbourTypes;
+}
+
+std::vector<std::string> CellAnalyticsProperty::GetPopulationCellTypeNames()
+{
+    return mPopulationCellTypeNames;
 }

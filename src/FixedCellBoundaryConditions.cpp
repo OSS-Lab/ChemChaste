@@ -1,5 +1,3 @@
-/*
-
 #include "FixedCellBoundaryConditions.hpp"
 #include "AbstractCentreBasedCellPopulation.hpp"
 
@@ -28,11 +26,11 @@ void FixedCellBoundaryCondition<ELEMENT_DIM,SPACE_DIM>::ImposeBoundaryCondition(
 
         for(unsigned dim=0; dim<SPACE_DIM; dim++)
         {
-            if(cell_location[dim]>mBoundaryMax[dim])
+            if(node_location[dim]>mBoundaryMax[dim])
             {
                 p_node->rGetModifiableLocation()[dim] = mBoundaryMax[dim];
             }
-            else if(cell_location[dim]<mBoundaryMin[dim])
+            else if(node_location[dim]<mBoundaryMin[dim])
             {
                 p_node->rGetModifiableLocation()[dim] = mBoundaryMin[dim];
             }
@@ -44,20 +42,24 @@ void FixedCellBoundaryCondition<ELEMENT_DIM,SPACE_DIM>::ImposeBoundaryCondition(
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 bool FixedCellBoundaryCondition<ELEMENT_DIM,SPACE_DIM>::VerifyBoundaryCondition()
 {
+    //std::cout<<"FixedCellBoundaryCondition<ELEMENT_DIM,SPACE_DIM>::VerifyBoundaryCondition() - start"<<std::endl;
     bool condition_satisfied = true;
-
+    //std::cout<<"mBoundaryMax: x= "<<mBoundaryMax[0]<<" y= "<<mBoundaryMax[1]<<std::endl;
+    //std::cout<<"mBoundaryMin: x= "<<mBoundaryMin[0]<<" y= "<<mBoundaryMin[1]<<std::endl;
     if (SPACE_DIM == 1)
     {
         EXCEPTION("FixedCellBoundaryCondition is not implemented in 1D");
     }
     else
     {
+        unsigned count=0;
         for (typename AbstractCellPopulation<ELEMENT_DIM, SPACE_DIM>::Iterator cell_iter = this->mpCellPopulation->Begin();
              cell_iter != this->mpCellPopulation->End();
              ++cell_iter)
         {
             c_vector<double, SPACE_DIM> cell_location = this->mpCellPopulation->GetLocationOfCellCentre(*cell_iter);
-
+            //std::cout<<"Cell number: "<<count<<" location: x= "<<cell_location[0]<<" y= "<<cell_location[1]<<std::endl;
+            count +=1;
             for(unsigned dim=0; dim<SPACE_DIM; dim++)
             {
                 if(cell_location[dim]>mBoundaryMax[dim])
@@ -65,7 +67,7 @@ bool FixedCellBoundaryCondition<ELEMENT_DIM,SPACE_DIM>::VerifyBoundaryCondition(
                     condition_satisfied = false;
                     break;
                 }
-                else if(cell_location[dim]<mBoundaryMax[dim])
+                else if(cell_location[dim]<mBoundaryMin[dim])
                 {
                     condition_satisfied = false;
                     break;
@@ -73,7 +75,8 @@ bool FixedCellBoundaryCondition<ELEMENT_DIM,SPACE_DIM>::VerifyBoundaryCondition(
             }
         }
     }
-
+    //std::cout<<"condition_satisfied = "<<condition_satisfied<<std::endl;
+    //std::cout<<"FixedCellBoundaryCondition<ELEMENT_DIM,SPACE_DIM>::VerifyBoundaryCondition() - end"<<std::endl;
     return condition_satisfied;
 }
 
@@ -116,5 +119,3 @@ template class FixedCellBoundaryCondition<2,2>;
 template class FixedCellBoundaryCondition<1,3>;
 template class FixedCellBoundaryCondition<2,3>;
 template class FixedCellBoundaryCondition<3,3>;
-
-*/

@@ -1,0 +1,2 @@
+Domain : membrane
+PreferredEnvironmentMassActionReaction : 0 -> &C ; kf = &P Environment = pH
