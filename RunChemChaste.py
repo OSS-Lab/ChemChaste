@@ -40,7 +40,7 @@ configCrossfeedingPaper = "/home/chaste/projects/ChemChaste/DataInput/ChemChaste
 # timesteps for time parameter sweeping, Figure 2
 timesteps = [1,0.1,0.01,0.001,0.0001,0.08,0.06,0.04,0.02,0.008,0.006,0.004,0.002,0.0008,0.0006,0.0004,0.0002]
 
-sweepConfigList = ParameterSweeping(configCrossfeedingPaper)
+sweepConfigList = ParameterSweeping(configEnvironmentParameterSweep)
 
 for paramSimConfig in sweepConfigList:
     simulationExecutable = str(determineExecutable(paramSimConfig))
@@ -48,7 +48,7 @@ for paramSimConfig in sweepConfigList:
     # add config
     command +=  " --config="+paramSimConfig
     # add simulation type (default "coupled_cell")
-    command += " --simulation_type=complex_cell"
+    command += " --simulation_type=environment_cell"
     # add additional commands to override config
     command += " --simulation_timestep=1e-2"
     command += " --sampling_timestep=1e-1"
