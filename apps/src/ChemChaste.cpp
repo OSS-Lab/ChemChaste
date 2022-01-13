@@ -850,9 +850,13 @@ std::cout<<"has transport: "<<p_cell_reader -> GetCellPtr() -> rGetCellPropertyC
             ChastePoint<spaceDim> upper(10.0, 10.0);
             MAKE_PTR_ARGS(ChasteCuboid<spaceDim>, p_cuboid, (lower, upper));
 
+            NodesOnlyMesh<spaceDim> mesh;
             
+            mesh.ConstructNodesWithoutMesh(*p_mesh, variables_map["node_cutoff_length"].as<double>());
             
             double feMeshStepSize = variables_map["FE_mesh_step_size"].as<double>();
+            
+            NodeBasedCellPopulation<spaceDim> cell_population(mesh,cells);
             
             bool isCenterMesh = false;
             //if(variables_map["mesh_location"].as<std::string>()=="Center")
