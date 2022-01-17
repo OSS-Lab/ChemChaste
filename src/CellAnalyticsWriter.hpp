@@ -38,13 +38,6 @@ double CellAnalyticsWriter<ELEMENT_DIM, SPACE_DIM>::GetCellDataForVtkOutput(Cell
 
         boost::shared_ptr<CellAnalyticsProperty> cellAnalyticsProperty = boost::static_pointer_cast<CellAnalyticsProperty>(pCell->rGetCellPropertyCollection().GetPropertiesType<CellAnalyticsProperty>().GetProperty());
 
-       // CellPropertyCollection& prop_collection = pCell->rGetCellPropertyCollection();
-       // CellPropertyCollection prop_2 = prop_collection.GetPropertiesType<CellAnalyticsProperty>();
-
-      //  boost::shared_ptr<CellAnalyticsProperty> cellAnalyticsProperty = 
-       // boost::static_pointer_cast<CellAnalyticsProperty>(prop_2.GetProperty());
-
-
         unsigned typeID = cellAnalyticsProperty -> GetCellID();
 
         return typeID;
@@ -60,10 +53,7 @@ void CellAnalyticsWriter<ELEMENT_DIM, SPACE_DIM>::VisitCell(CellPtr pCell, Abstr
 
     if(pCell->rGetCellPropertyCollection().HasProperty<CellAnalyticsProperty>())
     {
-
-        //boost::shared_ptr<CellAnalyticsProperty> cellAnalyticsProperty = boost::static_pointer_cast<CellAnalyticsProperty>(pCell->rGetCellPropertyCollection().GetPropertiesType<CellAnalyticsProperty>().GetProperty());
         boost::shared_ptr<CellAnalyticsProperty> cellAnalyticsProperty = boost::static_pointer_cast<CellAnalyticsProperty>(pCell->rGetCellPropertyCollection().GetPropertiesType<CellAnalyticsProperty>().GetProperty());
-
 
         unsigned typeID = cellAnalyticsProperty -> GetCellID();
 
