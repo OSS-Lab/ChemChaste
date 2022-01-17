@@ -1,4 +1,4 @@
-"""Copyright (c) 2005-2017, University of Oxford.
+"""Copyright (c) 2005-2021, University of Oxford.
 All rights reserved.
 
 University of Oxford means the Chancellor, Masters and Scholars of the
@@ -56,7 +56,7 @@ def ask_for_response(question):
     no = {'no', 'n'}
 
     # Take the lower case raw input
-    choice = raw_input().lower()
+    choice = input().lower()
 
     # Decide on the choice
     if choice in yes:
