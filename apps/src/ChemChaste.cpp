@@ -717,6 +717,9 @@ std::cout<<"has transport: "<<p_cell_reader -> GetCellPtr() -> rGetCellPropertyC
                 std::cout<<"test for cell properties"<<std::endl;
                 std::cout<<"has membrane: "<<p_cell_reader -> GetCellPtr() -> rGetCellPropertyCollection().HasProperty<MembraneCellProperty>()<<std::endl;
 std::cout<<"has transport: "<<p_cell_reader -> GetCellPtr() -> rGetCellPropertyCollection().HasProperty<TransportCellProperty>()<<std::endl;
+
+                boost::static_pointer_cast<CellAnalyticsProperty>(p_cell_reader -> GetCellPtr() -> rGetCellPropertyCollection().GetPropertiesType<CellAnalyticsProperty>().GetProperty()) -> SetPopulationCellTypeNames(p_Pde_field -> GetCellKeyVector());
+
                 cells.push_back(p_cell_reader -> GetCellPtr());
             }   
 
