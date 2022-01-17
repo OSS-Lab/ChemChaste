@@ -425,6 +425,7 @@ TetrahedralMesh<elementDim,spaceDim>* p_cell_mesh = p_Pde_field->rGetCellMesh();
 NodesOnlyMesh<spaceDim> mesh;
 mesh.ConstructNodesWithoutMesh(*p_cell_mesh, variables_map["node_cutoff_length"].as<double>());
 
+
 std::vector<CellPtr> cells;
 // assume cell at each node in cell layer mesh
 std::string cell_label;
@@ -458,6 +459,9 @@ std::cout<<"Division file root: "<<given_cell_root+"SpeciesDivisionRules.csv"<<s
 std::cout<<"test for cell properties"<<std::endl;
 std::cout<<"has membrane: "<<p_cell_reader -> GetCellPtr() -> rGetCellPropertyCollection().HasProperty<MembraneCellProperty>()<<std::endl;
 std::cout<<"has transport: "<<p_cell_reader -> GetCellPtr() -> rGetCellPropertyCollection().HasProperty<TransportCellProperty>()<<std::endl;
+
+boost::static_pointer_cast<CellAnalyticsProperty>(p_cell_reader -> GetCellPtr() -> rGetCellPropertyCollection().GetPropertiesType<CellAnalyticsProperty>().GetProperty()) -> SetPopulationCellTypeNames(p_Pde_field -> GetCellKeyVector());
+
 cells.push_back(p_cell_reader -> GetCellPtr());
 }
 
@@ -474,26 +478,41 @@ MAKE_PTR_ARGS(ChasteCuboid<spaceDim>, p_cuboid, (lower, upper));
 double feMeshStepSize = variables_map["FE_mesh_step_size"].as<double>();
 
 bool isCenterMesh = false;
-if(variables_map["mesh_location"].as<std::string>()=="Center")
-{
+//if(variables_map["mesh_location"].as<std::string>()=="Center")
+//{
 isCenterMesh = true;
-}
+//}
 
 boost::shared_ptr<ParabolicBoxDomainPdeSystemModifier<elementDim,spaceDim,probDim>> p_pde_modifier(new ParabolicBoxDomainPdeSystemModifier<elementDim,spaceDim,probDim>(p_Pde_field, p_cuboid, feMeshStepSize, isCenterMesh));
 
 boost::shared_ptr<ChemicalTrackingModifier<spaceDim,elementDim>> p_chemical_tracking_modifier(new ChemicalTrackingModifier<spaceDim,elementDim>()); //= chemical_structure -> rGetPtrChemicalTrackingModifier();
+
+boost::shared_ptr<CellNeighbourTrackingModifier<spaceDim,elementDim>> p_neighbour_tracking_modifier(new CellNeighbourTrackingModifier<spaceDim,elementDim>(p_Pde_field -> GetCellKeyVector()));
+
+mesh.Translate(p_pde_modifier ->GetMeshOffset());
+
+for(unsigned i=0; i<p_Pde_field -> GetCellKeyVector().size(); i++)
+{
+std::cout<<"Key: "<<p_Pde_field -> GetCellKeyVector()[i]<<std::endl;
+}
 
 cell_population.AddCellWriter<CellIdWriter>();
 cell_population.AddCellWriter<CellAgesWriter>();
 cell_population.AddCellWriter<CellLocationIndexWriter>();
 cell_population.AddCellWriter<CellAnalyticsWriter>();
 
+cell_population.AddCellWriter<CellNeighbourDiversityWriter>();
+cell_population.AddCellWriter<CellNeighbourLocalMoranWriter>();
+cell_population.AddCellWriter<CellNeighbourGetisOrdWriter>();
+cell_population.AddCellPopulationCountWriter<PopulationDiversityWriter>();
 
 OffLatticeSimulation<spaceDim> simulator(cell_population);
 
 simulator.AddSimulationModifier(p_pde_modifier);
 
 simulator.AddSimulationModifier(p_chemical_tracking_modifier);
+
+simulator.AddSimulationModifier(p_neighbour_tracking_modifier);
 
 simulator.SetOutputDirectory(variables_map["output_filename"].as<std::string>()+"/"+boost::lexical_cast<std::string>(simulation_id));
 simulator.SetEndTime(variables_map["simulation_end_time"].as<double>());
@@ -513,9 +532,9 @@ domainMax.push_back(domainDimensions[dim]);
 domainMin.push_back(0.0);
 }
 
-//boost::shared_ptr<FixedCellBoundaryCondition<elementDim,spaceDim>> p_cell_BC(new FixedCellBoundaryCondition<elementDim,spaceDim>(&cell_population, domainMax, domainMin));
+boost::shared_ptr<FixedCellBoundaryCondition<elementDim,spaceDim>> p_cell_BC(new FixedCellBoundaryCondition<elementDim,spaceDim>(&cell_population, domainMax, domainMin));
 
-//simulator.AddCellPopulationBoundaryCondition(p_cell_BC);
+simulator.AddCellPopulationBoundaryCondition(p_cell_BC);
 
 
 simulator.Solve();
@@ -632,11 +651,11 @@ domainMax.push_back(domainDimensions[dim]);
 domainMin.push_back(0.0);
 }
 
-//boost::shared_ptr<FixedCellBoundaryCondition<elementDim,spaceDim>> p_cell_BC(new FixedCellBoundaryCondition<elementDim,spaceDim>(&cell_population, domainMax, domainMin));
+boost::shared_ptr<FixedCellBoundaryCondition<elementDim,spaceDim>> p_cell_BC(new FixedCellBoundaryCondition<elementDim,spaceDim>(&cell_population, domainMax, domainMin));
 
-//simulator.AddCellPopulationBoundaryCondition(p_cell_BC);
+simulator.AddCellPopulationBoundaryCondition(p_cell_BC);
 
-//simulator.Solve();
+simulator.Solve();
 }
 
 }
@@ -714,14 +733,23 @@ MAKE_PTR_ARGS(ChasteCuboid<spaceDim>, p_cuboid, (lower, upper));
 double feMeshStepSize = variables_map["FE_mesh_step_size"].as<double>();
 
 bool isCenterMesh = false;
-if(variables_map["mesh_location"].as<std::string>()=="Center")
-{
+//if(variables_map["mesh_location"].as<std::string>()=="Center")
+//{
 isCenterMesh = true;
-}
+//}
 
 boost::shared_ptr<ParabolicBoxDomainPdeSystemModifier<elementDim,spaceDim,probDim>> p_pde_modifier(new ParabolicBoxDomainPdeSystemModifier<elementDim,spaceDim,probDim>(p_Pde_field, p_cuboid, feMeshStepSize, isCenterMesh));
 
 boost::shared_ptr<ChemicalTrackingModifier<spaceDim,elementDim>> p_chemical_tracking_modifier(new ChemicalTrackingModifier<spaceDim,elementDim>()); //= chemical_structure -> rGetPtrChemicalTrackingModifier();
+
+boost::shared_ptr<CellNeighbourTrackingModifier<spaceDim,elementDim>> p_neighbour_tracking_modifier(new CellNeighbourTrackingModifier<spaceDim,elementDim>(p_Pde_field -> GetCellKeyVector()));
+
+mesh.Translate(p_pde_modifier ->GetMeshOffset());
+
+for(unsigned i=0; i<p_Pde_field -> GetCellKeyVector().size(); i++)
+{
+std::cout<<"Key: "<<p_Pde_field -> GetCellKeyVector()[i]<<std::endl;
+}
 
 cell_population.AddCellWriter<CellIdWriter>();
 cell_population.AddCellWriter<CellAgesWriter>();
@@ -729,14 +757,17 @@ cell_population.AddCellWriter<CellLocationIndexWriter>();
 cell_population.AddCellWriter<CellAnalyticsWriter>();
 
 cell_population.AddCellWriter<CellNeighbourDiversityWriter>();
+cell_population.AddCellWriter<CellNeighbourLocalMoranWriter>();
+cell_population.AddCellWriter<CellNeighbourGetisOrdWriter>();
 cell_population.AddCellPopulationCountWriter<PopulationDiversityWriter>();
-
 
 OffLatticeSimulation<spaceDim> simulator(cell_population);
 
 simulator.AddSimulationModifier(p_pde_modifier);
 
 simulator.AddSimulationModifier(p_chemical_tracking_modifier);
+
+simulator.AddSimulationModifier(p_neighbour_tracking_modifier);
 
 simulator.SetOutputDirectory(variables_map["output_filename"].as<std::string>()+"/"+boost::lexical_cast<std::string>(simulation_id));
 simulator.SetEndTime(variables_map["simulation_end_time"].as<double>());
@@ -818,6 +849,12 @@ IsFirstCell = false;
 cells.push_back(p_cell_reader -> GetCellPtr());
 }
 
+NodesOnlyMesh<spaceDim> mesh;
+
+mesh.ConstructNodesWithoutMesh(*p_mesh, variables_map["node_cutoff_length"].as<double>());
+
+NodeBasedCellPopulation<spaceDim> cell_population(mesh, cells);
+
 // Create a ChasteCuboid on which to base the finite element mesh used to solve the PDE
 ChastePoint<spaceDim> lower(variables_map["cell_mesh_origin"].as<double>(),variables_map["cell_mesh_origin"].as<double>());
 ChastePoint<spaceDim> upper(10.0, 10.0);
@@ -828,32 +865,42 @@ MAKE_PTR_ARGS(ChasteCuboid<spaceDim>, p_cuboid, (lower, upper));
 double feMeshStepSize = variables_map["FE_mesh_step_size"].as<double>();
 
 bool isCenterMesh = false;
-if(variables_map["mesh_location"].as<std::string>()=="Center")
-{
+//if(variables_map["mesh_location"].as<std::string>()=="Center")
+//{
 isCenterMesh = true;
-}
+//}
 
 boost::shared_ptr<ParabolicBoxDomainPdeSystemModifier<elementDim,spaceDim,probDim>> p_pde_modifier(new ParabolicBoxDomainPdeSystemModifier<elementDim,spaceDim,probDim>(p_Pde_field, p_cuboid, feMeshStepSize, isCenterMesh));
 
+boost::shared_ptr<ChemicalTrackingModifier<spaceDim,elementDim>> p_chemical_tracking_modifier(new ChemicalTrackingModifier<spaceDim,elementDim>()); //= chemical_structure -> rGetPtrChemicalTrackingModifier();
 
-boost::shared_ptr<ChemicalTrackingModifier<elementDim,spaceDim>> p_chemical_tracking_modifier(new ChemicalTrackingModifier<elementDim,spaceDim>());
+boost::shared_ptr<CellNeighbourTrackingModifier<spaceDim,elementDim>> p_neighbour_tracking_modifier(new CellNeighbourTrackingModifier<spaceDim,elementDim>(p_Pde_field -> GetCellKeyVector()));
 
+mesh.Translate(p_pde_modifier ->GetMeshOffset());
 
-NodesOnlyMesh<spaceDim> mesh;
-
-mesh.ConstructNodesWithoutMesh(*p_mesh, variables_map["node_cutoff_length"].as<double>());
-
-NodeBasedCellPopulation<spaceDim> cell_population(mesh, cells);
-
-// writers
+for(unsigned i=0; i<p_Pde_field -> GetCellKeyVector().size(); i++)
+{
+std::cout<<"Key: "<<p_Pde_field -> GetCellKeyVector()[i]<<std::endl;
+}
 
 cell_population.AddCellWriter<CellIdWriter>();
 cell_population.AddCellWriter<CellAgesWriter>();
 cell_population.AddCellWriter<CellLocationIndexWriter>();
+cell_population.AddCellWriter<CellAnalyticsWriter>();
+
+cell_population.AddCellWriter<CellNeighbourDiversityWriter>();
+cell_population.AddCellWriter<CellNeighbourLocalMoranWriter>();
+cell_population.AddCellWriter<CellNeighbourGetisOrdWriter>();
+cell_population.AddCellPopulationCountWriter<PopulationDiversityWriter>();
 
 OffLatticeSimulation<spaceDim> simulator(cell_population);
 
 simulator.AddSimulationModifier(p_pde_modifier);
+
+simulator.AddSimulationModifier(p_chemical_tracking_modifier);
+
+simulator.AddSimulationModifier(p_neighbour_tracking_modifier);
+
 
 simulator.AddSimulationModifier(p_chemical_tracking_modifier);
 simulator.SetOutputDirectory(variables_map["output_filename"].as<std::string>()+"/"+boost::lexical_cast<std::string>(simulation_id));
@@ -874,11 +921,11 @@ domainMax.push_back(domainDimensions[dim]);
 domainMin.push_back(0.0);
 }
 
-//boost::shared_ptr<FixedCellBoundaryCondition<elementDim,spaceDim>> p_cell_BC(new FixedCellBoundaryCondition<elementDim,spaceDim>(&cell_population, domainMax, domainMin));
+boost::shared_ptr<FixedCellBoundaryCondition<elementDim,spaceDim>> p_cell_BC(new FixedCellBoundaryCondition<elementDim,spaceDim>(&cell_population, domainMax, domainMin));
 
-//simulator.AddCellPopulationBoundaryCondition(p_cell_BC);
+simulator.AddCellPopulationBoundaryCondition(p_cell_BC);
 
-//simulator.Solve();
+simulator.Solve();
 }
 
 }

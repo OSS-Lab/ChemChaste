@@ -44,8 +44,14 @@
 #include "CellAncestorWriter.hpp"
 #include "CellAppliedForceWriter.hpp"
 #include "CellAnalyticsWriter.hpp"
+
 #include "CellNeighbourDiversityWriter.hpp"
+#include "CellNeighbourLocalMoranWriter.hpp"
+#include "CellNeighbourGetisOrdWriter.hpp"
+
 #include "PopulationDiversityWriter.hpp"
+
+
 //#include "CellStateWriter.hpp"
 
 

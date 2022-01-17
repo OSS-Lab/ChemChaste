@@ -502,6 +502,8 @@ std::cout<<"has transport: "<<p_cell_reader -> GetCellPtr() -> rGetCellPropertyC
             cell_population.AddCellWriter<CellAnalyticsWriter>();
 
             cell_population.AddCellWriter<CellNeighbourDiversityWriter>();
+            cell_population.AddCellWriter<CellNeighbourLocalMoranWriter>();
+            cell_population.AddCellWriter<CellNeighbourGetisOrdWriter>();
             cell_population.AddCellPopulationCountWriter<PopulationDiversityWriter>();
 
             OffLatticeSimulation<spaceDim> simulator(cell_population);
@@ -755,6 +757,8 @@ std::cout<<"has transport: "<<p_cell_reader -> GetCellPtr() -> rGetCellPropertyC
             cell_population.AddCellWriter<CellAnalyticsWriter>();
 
             cell_population.AddCellWriter<CellNeighbourDiversityWriter>();
+            cell_population.AddCellWriter<CellNeighbourLocalMoranWriter>();
+            cell_population.AddCellWriter<CellNeighbourGetisOrdWriter>();
             cell_population.AddCellPopulationCountWriter<PopulationDiversityWriter>();
 
             OffLatticeSimulation<spaceDim> simulator(cell_population);
@@ -845,6 +849,12 @@ std::cout<<"has transport: "<<p_cell_reader -> GetCellPtr() -> rGetCellPropertyC
                 cells.push_back(p_cell_reader -> GetCellPtr());
             }
 
+            NodesOnlyMesh<spaceDim> mesh;
+
+            mesh.ConstructNodesWithoutMesh(*p_mesh, variables_map["node_cutoff_length"].as<double>());
+
+            NodeBasedCellPopulation<spaceDim> cell_population(mesh, cells);
+
             // Create a ChasteCuboid on which to base the finite element mesh used to solve the PDE
             ChastePoint<spaceDim> lower(variables_map["cell_mesh_origin"].as<double>(),variables_map["cell_mesh_origin"].as<double>());
             ChastePoint<spaceDim> upper(10.0, 10.0);
@@ -879,6 +889,8 @@ std::cout<<"has transport: "<<p_cell_reader -> GetCellPtr() -> rGetCellPropertyC
             cell_population.AddCellWriter<CellAnalyticsWriter>();
 
             cell_population.AddCellWriter<CellNeighbourDiversityWriter>();
+            cell_population.AddCellWriter<CellNeighbourLocalMoranWriter>();
+            cell_population.AddCellWriter<CellNeighbourGetisOrdWriter>();
             cell_population.AddCellPopulationCountWriter<PopulationDiversityWriter>();
 
             OffLatticeSimulation<spaceDim> simulator(cell_population);

@@ -26,7 +26,13 @@ protected:
 
     std::vector<unsigned> mNeighbourTypes;
 
+    std::vector<double> mNeighbourTypeProbability;
+
     std::vector<std::string> mPopulationCellTypeNames;
+
+    double mCellDiversity=0.0;
+
+    double mMeanCellDiversity=0.0;
 
 public:
 
@@ -53,7 +59,13 @@ public:
 
     void SetNeighbourTypes(std::vector<unsigned>);
 
+    void SetNeighbourTypeProbability(std::vector<double>);
+
     void SetPopulationCellTypeNames(std::vector<std::string>);
+
+    void SetCellDiversity(double);
+
+    void SetMeanCellDiversity(double);
 
     CellPtr GetCellPtr();
 
@@ -63,7 +75,13 @@ public:
 
     std::vector<unsigned> GetNeighbourTypes();
 
+    std::vector<double> GetNeighbourTypeProbability();
+
     std::vector<std::string> GetPopulationCellTypeNames();
+
+    double GetCellDiversity();
+
+    double GetMeanCellDiversity();
 };
 
 

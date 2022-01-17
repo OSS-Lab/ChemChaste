@@ -59,9 +59,24 @@ void CellAnalyticsProperty::SetNeighbourTypes(std::vector<unsigned> neighbourTyp
     mNeighbourTypes = neighbourTypes;
 }
 
+void CellAnalyticsProperty::SetNeighbourTypeProbability(std::vector<double> neighbourProbability)
+{
+    mNeighbourTypeProbability = neighbourProbability;
+}
+
 void CellAnalyticsProperty::SetPopulationCellTypeNames(std::vector<std::string> cellTypeNames)
 {
     mPopulationCellTypeNames = cellTypeNames;
+}
+
+void CellAnalyticsProperty::SetCellDiversity(double cellDiversity)
+{
+    mCellDiversity = cellDiversity;
+}
+
+void CellAnalyticsProperty::SetMeanCellDiversity(double cellDiversity)
+{
+    mMeanCellDiversity = cellDiversity;
 }
 
 CellPtr CellAnalyticsProperty::GetCellPtr()
@@ -84,7 +99,22 @@ std::vector<unsigned> CellAnalyticsProperty::GetNeighbourTypes()
     return mNeighbourTypes;
 }
 
+std::vector<double> CellAnalyticsProperty::GetNeighbourTypeProbability()
+{
+    return mNeighbourTypeProbability;
+}
+
 std::vector<std::string> CellAnalyticsProperty::GetPopulationCellTypeNames()
 {
     return mPopulationCellTypeNames;
+}
+
+double CellAnalyticsProperty::GetCellDiversity()
+{
+    return mCellDiversity;
+}
+
+double CellAnalyticsProperty::GetMeanCellDiversity()
+{
+    return mMeanCellDiversity;
 }

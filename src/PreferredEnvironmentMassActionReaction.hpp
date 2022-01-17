@@ -81,7 +81,7 @@ PreferredEnvironmentMassActionReaction::PreferredEnvironmentMassActionReaction(
 void PreferredEnvironmentMassActionReaction::UpdateReactionRate(AbstractChemistry* systemChemistry, const std::vector<double>& currentSystemConc)
 {
     // multiply the reaction rate constant by the product of the species set concentrations
-    std::cout<<"PreferredEnvironmentMassActionReaction::UpdateReactionRate - start"<<std::endl;
+
     double environmentConcentration =1.0;
 
     double forwardFlux=1.0;
@@ -93,25 +93,20 @@ void PreferredEnvironmentMassActionReaction::UpdateReactionRate(AbstractChemistr
     
 
     boost::shared_ptr<EnvironmentCellProperty> environmentProp = boost::static_pointer_cast<EnvironmentCellProperty>(cPCollection.GetPropertiesType<EnvironmentCellProperty>().GetProperty());
-    //std::cout<<"here0"<<std::endl;
+
     StateVariableRegister* pEnvironmentStateVariableRegister = environmentProp -> GetEnvironmentStateVariableRegister();
-//std::cout<<"here1"<<std::endl;
+
     std::vector<double> environmentConcentrationVector = environmentProp -> GetEnvironmentVector();
-//std::cout<<"here2"<<std::endl;
+
     std::vector<double> preferredEnvironmentConcentrationVector = environmentProp -> GetPreferredEnvironmentVector();
-    std::cout<<"run through chemicals"<<std::endl;
     unsigned index = 0;
     for(unsigned chem=0; chem<this->mNumberOfEnvironmentChemicals; chem++)
     {
         index = pEnvironmentStateVariableRegister->RetrieveStateVariableIndex(this->mEnvironmentChemicalNames[chem]);
-        //std::cout<<"different of environmentes"<<std::endl;
         // calculate the product of environment concentrations
         environmentConcentration *=  abs(environmentConcentrationVector[index] - preferredEnvironmentConcentrationVector[index]);
-        std::cout<<"Actual environment Concentration: "<<environmentConcentrationVector[index]<<std::endl;
-        std::cout<<"Preferred environment Concentration: "<<preferredEnvironmentConcentrationVector[index]<<std::endl;
-        std::cout<<"Difference environment Concentration: "<<environmentConcentration<<std::endl;
     };
-    std::cout<<"Calculate mass action"<<std::endl;
+
     std::vector<AbstractChemical*> p_chemical_vector = systemChemistry -> rGetChemicalVector();
     index = 0;
     for(std::vector<AbstractChemical*>::iterator chem_iter = p_chemical_vector.begin();
@@ -130,9 +125,8 @@ void PreferredEnvironmentMassActionReaction::UpdateReactionRate(AbstractChemistr
         }
     }
 
-    std::cout<<"set reaction rate"<<std::endl;
     SetReactionRate(mReactionRateConstant*forwardFlux*exp(-environmentConcentration));
-    std::cout<<"PreferredEnvironmentMassActionReaction::UpdateReactionRate - end"<<std::endl;
+
 }
 
 

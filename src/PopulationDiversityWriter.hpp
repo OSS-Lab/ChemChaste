@@ -17,12 +17,27 @@ private:
 
     std::vector<unsigned> mNumberOfCellsOfType;
 
+    std::vector<double> mProbabilityOfType;
+
+    unsigned mNumberOfCells=0;
+
+
 
 public:
 
     PopulationDiversityWriter();
 
     double CalculateDiversityIndex(unsigned);
+
+    double CalculateShannonIndex();
+
+    double CalculateGiniSimpsonIndex();
+
+    double CalculateLeeOyburnIndex(NodeBasedCellPopulation<SPACE_DIM>* pCellPopulation);
+
+    double CalculateMoranIndex(NodeBasedCellPopulation<SPACE_DIM>* pCellPopulation);
+
+    double CalculateGearyIndex(NodeBasedCellPopulation<SPACE_DIM>* pCellPopulation);
 
     virtual void WriteHeader(AbstractCellPopulation<ELEMENT_DIM, SPACE_DIM>* pCellPopulation);
 
@@ -38,9 +53,13 @@ public:
 
     void SetNumberOfCellsOfType(std::vector<unsigned>);
 
+    void SetProbabilityOfType(std::vector<double>);
+
     void SetCellTypesString(std::vector<std::string>);
 
     std::vector<unsigned> GetNumberOfCellsOfType();
+
+    std::vector<double> GetProbabilityOfType();
 
 };
 
