@@ -18,7 +18,6 @@ double CellNeighbourLocalMoranWriter<ELEMENT_DIM, SPACE_DIM>::GetCellDataForVtkO
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 void CellNeighbourLocalMoranWriter<ELEMENT_DIM, SPACE_DIM>::VisitCell(CellPtr pCell, AbstractCellPopulation<ELEMENT_DIM, SPACE_DIM>* pCellPopulation)
 {
-    //std::cout<<"CellNeighbourLocalMoranWriter<ELEMENT_DIM, SPACE_DIM>::VisitCell - start"<<std::endl;
     // Write location index corresponding to cell
     *this->mpOutStream << pCellPopulation->GetLocationIndexUsingCell(pCell) << " ";
 
@@ -31,13 +30,11 @@ void CellNeighbourLocalMoranWriter<ELEMENT_DIM, SPACE_DIM>::VisitCell(CellPtr pC
 
     // Write cell age
     *this->mpOutStream << CalculateNeighbourLocalMoranIndex(pCell, pCellPopulation) << " ";
-    //std::cout<<"CellNeighbourLocalMoranWriter<ELEMENT_DIM, SPACE_DIM>::VisitCell - end"<<std::endl;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 double CellNeighbourLocalMoranWriter<ELEMENT_DIM, SPACE_DIM>::CalculateNeighbourLocalMoranIndex(CellPtr pCell, AbstractCellPopulation<ELEMENT_DIM, SPACE_DIM>* pCellPopulation)
 {
-    //std::cout<<"CellNeighbourLocalMoranWriter<ELEMENT_DIM, SPACE_DIM>::CalculateNeighbourDiversityIndex - start"<<std::endl;
     double localMoranIndex = 0.0;
     unsigned numberOfCells=0;
     double weightingFactor=1.0;
@@ -79,7 +76,6 @@ double CellNeighbourLocalMoranWriter<ELEMENT_DIM, SPACE_DIM>::CalculateNeighbour
         localMoranIndex = localMoranIndex*(analytics_cell_property -> GetCellDiversity() - meanCellDiversity);
     }
 
-    //std::cout<<"CellNeighbourLocalMoranWriter<ELEMENT_DIM, SPACE_DIM>::CalculateNeighbourDiversityIndex - start"<<std::endl;
     return localMoranIndex;
 }
 
