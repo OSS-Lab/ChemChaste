@@ -8,46 +8,47 @@ command_list = []
 
 # config files for each of the simulations
 
-# Figure 2
-configFisher1 = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigFisherWaveConvergence_1.txt"
-configFisher01 = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigFisherWaveConvergence_01.txt"
-configFisher001 = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigFisherWaveConvergence_001.txt"
-configFisher0001 = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigFisherWaveConvergence_0001.txt"
-configFisher00001 = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigFisherWaveConvergence_00001.txt"
-configFisher02 = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigFisherWaveConvergence_02.txt"
-configFisher002 = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigFisherWaveConvergence_002.txt"
-configFisher0002 = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigFisherWaveConvergence_0002.txt"
-configFisher00002 = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigFisherWaveConvergence_00002.txt"
-configFisher04 = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigFisherWaveConvergence_04.txt"
-configFisher004 = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigFisherWaveConvergence_004.txt"
-configFisher0004 = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigFisherWaveConvergence_0004.txt"
-configFisher00004 = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigFisherWaveConvergence_00004.txt"
-configFisher06 = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigFisherWaveConvergence_06.txt"
-configFisher006 = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigFisherWaveConvergence_006.txt"
-configFisher0006 = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigFisherWaveConvergence_0006.txt"
-configFisher00006 = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigFisherWaveConvergence_00006.txt"
-configFisher08 = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigFisherWaveConvergence_08.txt"
-configFisher008 = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigFisherWaveConvergence_008.txt"
-configFisher0008 = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigFisherWaveConvergence_0008.txt"
-configFisher00008 = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigFisherWaveConvergence_00008.txt"
+configCrossfeedingPaper = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigCrossFeedingEnzymePaper.txt"
+configCrossfeedingPaperDirichlet = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigCrossFeedingEnzymePaperDirichlet.txt"
 
-# Figure 3
-configPatterning = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigSchnackenbergCaseCCFL_domain100.txt"
+configCrossfeeding1 = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigCrossFeedingEnzyme1.txt"
+configCrossfeeding2 = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigCrossFeedingEnzyme2.txt"
+configCrossfeeding3 = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigCrossFeedingEnzyme3.txt"
+configCrossfeeding4 = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigCrossFeedingEnzyme4.txt"
+configCrossfeeding5 = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigCrossFeedingEnzyme5.txt"
+configCrossfeeding7 = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigCrossFeedingEnzyme7.txt"
 
-# Figure 4-5
+configCrossfeedingDirichlet1 = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigCrossFeedingEnzymeDirichlet1.txt"
+configCrossfeedingDirichlet2 = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigCrossFeedingEnzymeDirichlet2.txt"
+configCrossfeedingDirichlet3 = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigCrossFeedingEnzymeDirichlet3.txt"
+configCrossfeedingDirichlet4 = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigCrossFeedingEnzymeDirichlet4.txt"
+configCrossfeedingDirichlet5 = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigCrossFeedingEnzymeDirichlet5.txt"
+configCrossfeedingDirichlet7 = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigCrossFeedingEnzymeDirichlet7.txt"
+
+configEnvironmentProject = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigEnvironmentProject.txt"
+configEnvironmentProject2 = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigEnvironmentProject2.txt"
+configEnvironmentProject10 = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigEnvironmentProject10.txt"
+
+configEnvironmentProjectReverse = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigEnvironmentProjectReverse.txt"
+configEnvironmentProjectReverse2 = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigEnvironmentProject2Reverse.txt"
+configEnvironmentProjectReverse10 = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigEnvironmentProject10Reverse.txt"
+
+configEnvironmentParameterSweep = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigEnvironmentParameterSweep.txt"
+
 configCrossfeedingPaper = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigCrossFeedingEnzymePaper.txt"
 
 # timesteps for time parameter sweeping, Figure 2
 timesteps = [1,0.1,0.01,0.001,0.0001,0.08,0.06,0.04,0.02,0.008,0.006,0.004,0.002,0.0008,0.0006,0.0004,0.0002]
 
-# Figure 4-5
-for simulation_id in range(1):
-    simulationExecutable = str(determineExecutable(configCrossfeedingPaper))
-    command = simulationExecutable + str(simulation_id)
+sweepConfigList = ParameterSweeping(configEnvironmentParameterSweep)
+
+for paramSimConfig in sweepConfigList:
+    simulationExecutable = str(determineExecutable(paramSimConfig))
+    command = simulationExecutable + str(1)
     # add config
-    command +=  " --config="+configCrossfeedingPaper
+    command +=  " --config="+paramSimConfig
     # add simulation type (default "coupled_cell")
-    command += " --simulation_type=complex_cell"
+    command += " --simulation_type=environment_cell"
     # add additional commands to override config
     command += " --simulation_timestep=1e-2"
     command += " --sampling_timestep=1e-1"
@@ -57,7 +58,7 @@ for simulation_id in range(1):
 
 
 # use `count' no of processes 
-count = multiprocessing.cpu_count()
+count = 3 # use multiprocessing.cpu_count() for the number of cores on your machine
 
 # generate a pool of workers
 pool = multiprocessing.Pool(processes=count)
