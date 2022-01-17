@@ -37,7 +37,7 @@ void CellNeighbourGetisOrdWriter<ELEMENT_DIM, SPACE_DIM>::VisitCell(CellPtr pCel
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 double CellNeighbourGetisOrdWriter<ELEMENT_DIM, SPACE_DIM>::CalculateNeighbourGetisOrdIndex(CellPtr pCell, AbstractCellPopulation<ELEMENT_DIM, SPACE_DIM>* pCellPopulation)
 {
-    std::cout<<"CellNeighbourGetisOrdWriter<ELEMENT_DIM, SPACE_DIM>::CalculateNeighbourGetisOrdIndex - start"<<std::endl;
+
     double getisOrdIndex = 0.0;
     unsigned numberOfCells=0;
     double weightingFactor=1.0;
@@ -67,13 +67,19 @@ double CellNeighbourGetisOrdWriter<ELEMENT_DIM, SPACE_DIM>::CalculateNeighbourGe
             
                     getisOrdIndex += weightingFactor*neighbourCellDiversity;
 
-                    sumWeightingFactor +=weightingFactor;
+                    numberOfCells += 1; 
                 }
             }
         }
     }
 
-    std::cout<<"CellNeighbourGetisOrdWriter<ELEMENT_DIM, SPACE_DIM>::CalculateNeighbourGetisOrdIndex - start"<<std::endl;
+    sumWeightingFactor = numberOfCells*weightingFactor;
+
+    if(numberOfCells==0)
+    {
+        return 0.0;
+    }
+
     return getisOrdIndex/sumWeightingFactor;
 }
 
