@@ -131,17 +131,27 @@ void CellNeighbourTrackingModifier<ELEMENT_DIM,SPACE_DIM>::UpdateCellData(Abstra
                 }
             }
             
+            if(numberOfNeighbours==0)
+            {
+                for(unsigned i=0; i<mNumberOfCellTypes; i++)
+                {
+                    neighbourTypeProbability[i] = 0.0;
+                }
+            }
+            else
+            {
+                for(unsigned i=0; i<mNumberOfCellTypes; i++)
+                {
+                    neighbourTypeProbability[i] = (double) neighbourCellCount[i]/ (double) numberOfNeighbours;
+                }
+            }
+            
             for(unsigned i=0; i<mNumberOfCellTypes; i++)
             {
                 if(thisCellTypeName == mCellTypeNameDictionary[i])
                 {
                     cellDiversityValue = neighbourTypeProbability[i];
                 }
-            }
-
-            for(unsigned i=0; i<mNumberOfCellTypes; i++)
-            {
-                neighbourTypeProbability[i] = (double) neighbourCellCount[i]/numberOfNeighbours;
             }
 
             analytics_cell_property -> SetNeighbourTypes(neighbourCellCount);
@@ -160,8 +170,14 @@ void CellNeighbourTrackingModifier<ELEMENT_DIM,SPACE_DIM>::UpdateCellData(Abstra
         {
             boost::shared_ptr<CellAnalyticsProperty> analytics_cell_property = boost::static_pointer_cast<CellAnalyticsProperty>(cell_iter-> template rGetCellPropertyCollection(). template GetPropertiesType<CellAnalyticsProperty>().GetProperty());
 
-            analytics_cell_property -> SetMeanCellDiversity(meanCellDiversityValue/numberOfCells);
-
+            if(numberOfCells == 0)
+            {
+                analytics_cell_property -> SetMeanCellDiversity(0.0);
+            }
+            else
+            {
+            analytics_cell_property -> SetMeanCellDiversity(meanCellDiversityValue/ (double) numberOfCells);
+            }
         }
     }
     //std::cout<<"CellNeighbourTrackingModifier<ELEMENT_DIM,SPACE_DIM>::UpdateCellData - start"<<std::endl;
@@ -171,10 +187,8 @@ void CellNeighbourTrackingModifier<ELEMENT_DIM,SPACE_DIM>::UpdateCellData(Abstra
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 void CellNeighbourTrackingModifier<ELEMENT_DIM,SPACE_DIM>::OutputSimulationModifierParameters(out_stream& rParamsFile)
 {
-    std::cout<<"CellNeighbourTrackingModifier<ELEMENT_DIM,SPACE_DIM>::void CellNeighbourTrackingModifier<ELEMENT_DIM,SPACE_DIM>::OutputSimulationModifierParameters(out_stream& rParamsFile)- start"<<std::endl;
     // No parameters to output, so just call method on direct parent class
     AbstractCellBasedSimulationModifier<SPACE_DIM>::OutputSimulationModifierParameters(rParamsFile);
-    std::cout<<"CellNeighbourTrackingModifier<ELEMENT_DIM,SPACE_DIM>::void CellNeighbourTrackingModifier<ELEMENT_DIM,SPACE_DIM>::OutputSimulationModifierParameters(out_stream& rParamsFile)- end"<<std::endl;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
