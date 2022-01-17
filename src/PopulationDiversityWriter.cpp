@@ -162,7 +162,7 @@ double PopulationDiversityWriter<ELEMENT_DIM, SPACE_DIM>::CalculateMoranIndex(No
     double neighbourCellDiversity=0.0;
 
     double weightingFactor =1.0;
-
+    unsigned numberOfCells=0;
     double sumWeightingFactor=0.0;
 
     for (typename AbstractCellPopulation<SPACE_DIM>::Iterator cell_iter = pCellPopulation -> Begin();
@@ -180,7 +180,7 @@ double PopulationDiversityWriter<ELEMENT_DIM, SPACE_DIM>::CalculateMoranIndex(No
 
             if (!neighbour_indices.empty())
             {
-                //std::cout<<"here3"<<std::endl;
+
                 for (std::set<unsigned>::iterator iter = neighbour_indices.begin();
                     iter != neighbour_indices.end();
                     ++iter)
@@ -193,13 +193,9 @@ double PopulationDiversityWriter<ELEMENT_DIM, SPACE_DIM>::CalculateMoranIndex(No
 
                         neighbourCellDiversity = neighbour_analytics_cell_property -> GetCellDiversity();
 
-              
                         cellMoranIndex += weightingFactor*( thisCellDiversity - analytics_cell_property -> GetMeanCellDiversity())*( neighbourCellDiversity - analytics_cell_property -> GetMeanCellDiversity());
 
-                        sumWeightingFactor +=weightingFactor;
-
-
-
+                        numberOfCells +=1;
                     }
                 }
             }
@@ -207,8 +203,15 @@ double PopulationDiversityWriter<ELEMENT_DIM, SPACE_DIM>::CalculateMoranIndex(No
 
         }
     }
+
+    if(numberOfCells==0)
+    {
+        return 0.0;
+    }
+
+    sumWeightingFactor = (double) numberOfCells*weightingFactor;
     
-    return moranIndex * mNumberOfCells/sumWeightingFactor;
+    return moranIndex * (double) mNumberOfCells/sumWeightingFactor;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
@@ -221,7 +224,7 @@ double PopulationDiversityWriter<ELEMENT_DIM, SPACE_DIM>::CalculateGearyIndex(No
     double neighbourCellDiversity=0.0;
 
     double weightingFactor =1.0;
-
+    unsigned numberOfCells=0;
     double sumWeightingFactor=0.0;
 
     for (typename AbstractCellPopulation<SPACE_DIM>::Iterator cell_iter = pCellPopulation -> Begin();
@@ -255,14 +258,23 @@ double PopulationDiversityWriter<ELEMENT_DIM, SPACE_DIM>::CalculateGearyIndex(No
               
                         cellGearyIndex += weightingFactor*( thisCellDiversity - neighbourCellDiversity)*( thisCellDiversity - neighbourCellDiversity);
 
-                        sumWeightingFactor +=weightingFactor;
+                        numberOfCells +=1;
                     }
                 }
             }
+            
             gearyIndex += cellGearyIndex/(( thisCellDiversity - analytics_cell_property -> GetMeanCellDiversity())*( thisCellDiversity - analytics_cell_property -> GetMeanCellDiversity()));
 
         }
     }
+    
+
+    if(numberOfCells==0)
+    {
+        return 0.0;
+    }
+
+    sumWeightingFactor = (double) numberOfCells*weightingFactor;
     
     return gearyIndex * (mNumberOfCells-1)/(2*sumWeightingFactor);
 }
@@ -365,12 +377,12 @@ void PopulationDiversityWriter<ELEMENT_DIM, SPACE_DIM>::Visit(NodeBasedCellPopul
                 numberOfCells +=1;
             }
         }
-
+        
         mNumberOfCells = numberOfCells;
 
         for(unsigned i=0; i<mNumberOfCellsOfType.size(); i++)
         {
-            mProbabilityOfType[i] = mNumberOfCellsOfType[i]/numberOfCells;
+            mProbabilityOfType[i] = mNumberOfCellsOfType[i]/ (double) numberOfCells;
         }
 
         diversityIndex = CalculateDiversityIndex(numberOfCells);
