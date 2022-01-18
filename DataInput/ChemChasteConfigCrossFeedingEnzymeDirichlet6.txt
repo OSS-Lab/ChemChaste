@@ -1,12 +1,12 @@
 # simulation
-output_filename = ChemChaste/CrossFeedingEnzymeLongIrrLong7_3Dirichlet
-simulation_end_time = 1e-1
+output_filename = ChemChaste/CrossFeedingEnzymeLongIrrLong6_3Dirichlet
+simulation_end_time = 10
 number_of_reaction_pdes = 4
 spatial_dimensions = 2
 FE_element_dimension = 2
 
 # bulk
-domain_file_root = /home/chaste/projects/ChemChaste/DataInput/Data/CrossFeedingEnzymeDirichlet7/DomainField/
+domain_file_root = /home/chaste/projects/ChemChaste/DataInput/Data/CrossFeedingEnzymeDirichlet6/DomainField/
 domain_file = Domain.csv
 domain_key_file = DomainKey.csv
 ode_file = NodeSelector.csv
@@ -16,7 +16,7 @@ initial_conditions = InitialConditionFile.csv
 boundary_conditions = BoundaryConditionFile.csv
 
 # cell
-cell_file_root = /home/chaste/projects/ChemChaste/DataInput/Data/CrossFeedingEnzymeDirichlet7/Cell/
+cell_file_root = /home/chaste/projects/ChemChaste/DataInput/Data/CrossFeedingEnzymeDirichlet6/Cell/
 cell_file = CellLayerTopology.csv
 cell_key_file = CellLayerKey.csv
 

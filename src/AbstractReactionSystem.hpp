@@ -125,7 +125,7 @@ void AbstractReactionSystem::DistributeCellPtr()
             ++reaction_iter)
     {
         AbstractReaction *p_system_reaction = dynamic_cast<AbstractReaction*>(*reaction_iter);
-        std::cout<<"AbstractReactionSystem::DistributeCellPtr()"<<std::endl;
+        //std::cout<<"AbstractReactionSystem::DistributeCellPtr()"<<std::endl;
         p_system_reaction -> GiveCell(mpCell); // some reactions may need the cell to extract properties 
 
     }

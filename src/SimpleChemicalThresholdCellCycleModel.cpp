@@ -19,7 +19,6 @@ SimpleChemicalThresholdCellCycleModel::SimpleChemicalThresholdCellCycleModel(con
     mMinThresholdConcentrationValues(rModel.mMinThresholdConcentrationValues),
     mIsMinimumThresholdSet(rModel.mIsMinimumThresholdSet)
 {
-    std::cout<<"Call copy constructor ---       SimpleChemicalThresholdCellCycleModel"<<std::endl;
     std::vector<double> mSpeciesConcentrations(mNumberThresholdSpecies,0.0);
     SetSpeciesConcentrations(mSpeciesConcentrations);
     mCurrentStarvationOnsetTime = SimulationTime::Instance()->GetTime();
@@ -28,7 +27,7 @@ SimpleChemicalThresholdCellCycleModel::SimpleChemicalThresholdCellCycleModel(con
 
 void SimpleChemicalThresholdCellCycleModel::SetUp(AbstractChemistry* thresholdChemistry)
 {
-    std::cout<<"---------------------------------------------------setup ccm-------------"<<std::endl;
+    //std::cout<<"---------------------------------------------------setup ccm-------------"<<std::endl;
     SetThresholdChemistry(thresholdChemistry);
     SetNumberThresholdSpecies(thresholdChemistry->GetNumberChemicals());
 

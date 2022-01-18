@@ -202,10 +202,10 @@ void OsmoticTransportReaction::ParseReactionInformation(std::string reaction_inf
         if(reaction_information.find(mGibbsDelimiter) != std::string::npos)
         {
             size_t pos= reaction_information.find(mGibbsDelimiter);
-            std::cout<<"Gibbs raw: "<<reaction_information.substr(pos+mGibbsDelimiter.size()+1,std::string::npos).c_str()<<std::endl;
+            //std::cout<<"Gibbs raw: "<<reaction_information.substr(pos+mGibbsDelimiter.size()+1,std::string::npos).c_str()<<std::endl;
             mGibbsFreeEnergy = atof(reaction_information.substr(pos+mGibbsDelimiter.size()+1,std::string::npos).c_str());
             mIsGibbs = true;
-            std::cout<<"Gibbs translated: "<<mGibbsFreeEnergy<<std::endl;
+            //std::cout<<"Gibbs translated: "<<mGibbsFreeEnergy<<std::endl;
         }
         else
         {

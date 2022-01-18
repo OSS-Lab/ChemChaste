@@ -662,8 +662,8 @@ void InhomogenousCoupledPdeOdeCoupledCellSolver<ELEMENT_DIM, SPACE_DIM, PROBLEM_
                             name_of_pde_index = mpPdeSystem->GetStateVariableRegister()->RetrieveStateVariableName(pde_index);
                             if(pEnvironmentRegister->IsStateVariablePresent(name_of_pde_index))
                             {
-                                std::cout<<"Environment: "<<name_of_pde_index<<" : "<<mU[pde_index]<<std::endl;
-                                std::cout<<"Preferred: "<<name_of_pde_index<<" : "<<environment_cell_property->GetPreferredEnvironmentValueByName(name_of_pde_index)<<std::endl;
+                                //std::cout<<"Environment: "<<name_of_pde_index<<" : "<<mU[pde_index]<<std::endl;
+                                //std::cout<<"Preferred: "<<name_of_pde_index<<" : "<<environment_cell_property->GetPreferredEnvironmentValueByName(name_of_pde_index)<<std::endl;
                                 environment_cell_property->SetEnvironmentValueByIndex(pEnvironmentRegister->RetrieveStateVariableIndex(name_of_pde_index),mU[pde_index]);
                             }
                             

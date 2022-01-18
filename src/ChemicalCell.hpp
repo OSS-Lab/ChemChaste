@@ -81,7 +81,7 @@ ChemicalCell::ChemicalCell(
 
 CellPtr ChemicalCell::Divide()
 {
-    std::cout<<"ChemicalCell::Divide()"<<std::endl;
+    //std::cout<<"ChemicalCell::Divide()"<<std::endl;
     // Check we're allowed to divide
     assert(!IsDead());
     assert(mCanDivide);

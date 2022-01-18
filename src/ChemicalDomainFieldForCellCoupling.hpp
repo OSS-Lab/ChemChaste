@@ -489,7 +489,6 @@ ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ChemicalD
     void ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::FormCellMesh()
     {
         // use the aforementioned mesh dimension to produce a new honeycomb mesh, as mutable mesh type
-        std::cout<<"ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::FormCellMesh()"<<std::endl;
         switch (SPACE_DIM)
         {
             case 2:
@@ -631,9 +630,6 @@ ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ChemicalD
             case 1:
                 std::cout<<"Error: ChemicalDomainFieldForCellCoupling 1D domain not supported"<<std::endl;
                 break;
-
-
-
         }
 
 
@@ -672,7 +668,6 @@ ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ChemicalD
     template<unsigned ELEMENT_DIM,unsigned SPACE_DIM,unsigned PROBLEM_DIM>
     void ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::MapToChasteCartesianCellLayer()
     {
-        
         std::vector<double> cartesianChasteCellScaleXY;
         if(mIsCellHoneyCombMesh)
         {
@@ -713,10 +708,8 @@ ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ChemicalD
 
             cartesianChasteCellLayer.push_back(rowVector);
         }
-
         AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::printMatrix(mCellLabels);
         AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::printMatrix(cartesianChasteCellLayer);
-
         SetCartesianChasteCellLayer(cartesianChasteCellLayer);
         SetCartesianChasteCellDimensions(cartesianChasteCellDimensions);
 
@@ -766,22 +759,22 @@ ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ChemicalD
 
                 // for the y position
 
-                for(unsigned i=1; i<(mCartesianCellLayerDimensions[1]+1); i++) // top to bottom
+                for(unsigned i=0; i<(mCartesianCellLayerDimensions[1]); i++) // top to bottom
                 {
-                    if(positionY <= i*mCartesianCellLayerScaleXY[1])
+                    if(fabs(positionY - i*mCartesianCellLayerScaleXY[1])<1e-6)
                     {
-                        labelYIndex = i-1;
+                        labelYIndex = i;
                         break;
                     }
                 }
 
                 // for the x position
 
-                for(unsigned i=1; i<(mCartesianCellLayerDimensions[0]+1); i++)
+                for(unsigned i=0; i<(mCartesianCellLayerDimensions[0]); i++)
                 {
-                    if(positionX <= i*mCartesianCellLayerScaleXY[0])
+                    if(fabs(positionX - i*mCartesianCellLayerScaleXY[0])<1e-6)
                     {
-                        labelXIndex = i-1;
+                        labelXIndex = i;
                         break;
                     }
                 }
@@ -828,7 +821,6 @@ ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ChemicalD
                 std::cout<<"Error: ChemicalDomainFieldForCellCoupling A 1D cell layer not supported"<<std::endl;
                 break;
         }
-
 
         return mCellLabels[labelZIndex][labelYIndex][labelXIndex];
     }

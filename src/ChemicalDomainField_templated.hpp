@@ -388,14 +388,14 @@ boost::shared_ptr<BoundaryConditionsContainer<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>
 
                         double x = (*node_iter)->GetPoint()[0];
                         double y = (*node_iter)->GetPoint()[1];
-                        if (x==0)
+                        if (fabs(x)<1e-6)
                         {
                             if(boundaryConditionTypes[pdeDim+0]=="Dirichlet")
                             {
                                 p_bcc->AddDirichletBoundaryCondition(*node_iter, vectorConstBCs[pdeDim+0], pdeDim);
                             }
                         }
-                        else if(y==0)
+                        else if(fabs(y)<1e-6)
                         {
                             if(boundaryConditionTypes[pdeDim+1]=="Dirichlet")
                             {
@@ -434,14 +434,14 @@ boost::shared_ptr<BoundaryConditionsContainer<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>
                         double x = this->mpFeMesh->GetNode(node_index)->GetPoint()[0];
                         double y = this->mpFeMesh->GetNode(node_index)->GetPoint()[1];
     
-                        if (x==0)
+                        if (fabs(x)<1e-6)
                         {
                             if(boundaryConditionTypes[pdeDim+0]=="Neumann")
                             {
                                 p_bcc->AddNeumannBoundaryCondition(*boundary_iter, vectorConstBCs[pdeDim+0], pdeDim);
                             }
                         }
-                        else if(y==0)
+                        else if(fabs(y)<1e-6)
                         {
                             if(boundaryConditionTypes[pdeDim+1]=="Neumann")
                             {

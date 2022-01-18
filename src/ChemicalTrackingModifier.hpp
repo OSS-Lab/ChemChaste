@@ -69,9 +69,7 @@ ChemicalTrackingModifier<ELEMENT_DIM,SPACE_DIM>::~ChemicalTrackingModifier()
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 void ChemicalTrackingModifier<ELEMENT_DIM, SPACE_DIM>::UpdateAtEndOfTimeStep(AbstractCellPopulation<ELEMENT_DIM,SPACE_DIM>& rCellPopulation)
 {
-    std::cout<<"ChemicalTrackingModifier<ELEMENT_DIM,SPACE_DIM>::UpdateAtEndOfTimeStep - start"<<std::endl;
     UpdateCellData(rCellPopulation);
-    std::cout<<"ChemicalTrackingModifier<ELEMENT_DIM,SPACE_DIM>::UpdateAtEndOfTimeStep - end"<<std::endl;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
@@ -87,7 +85,6 @@ void ChemicalTrackingModifier<ELEMENT_DIM,SPACE_DIM>::SetupSolve(AbstractCellPop
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 void ChemicalTrackingModifier<ELEMENT_DIM,SPACE_DIM>::SetupSRNFromCellData(AbstractCellPopulation<ELEMENT_DIM,SPACE_DIM>& rCellPopulation)
 {
-    std::cout<<"ChemicalTrackingModifier<ELEMENT_DIM,SPACE_DIM>::SetupSRNFromCellData - start"<<std::endl;
     rCellPopulation.Update();
 
     for (typename AbstractCellPopulation<SPACE_DIM>::Iterator cell_iter = rCellPopulation.Begin();
@@ -113,14 +110,12 @@ void ChemicalTrackingModifier<ELEMENT_DIM,SPACE_DIM>::SetupSRNFromCellData(Abstr
         p_model->GetOdeSystem()->SetStateVariables(this_SRN_concentration_vector);
 
     }
-    std::cout<<"ChemicalTrackingModifier<ELEMENT_DIM,SPACE_DIM>::SetupSRNFromCellData - end"<<std::endl;
 }
 
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 void ChemicalTrackingModifier<ELEMENT_DIM,SPACE_DIM>::UpdateCellData(AbstractCellPopulation<ELEMENT_DIM,SPACE_DIM>& rCellPopulation)
 {
-    std::cout<<"ChemicalTrackingModifier<ELEMENT_DIM,SPACE_DIM>::UpdateCellData( - start"<<std::endl;
     // Make sure the cell population is updated, i.e cell cycle, cell state
     rCellPopulation.Update();
 
@@ -244,8 +239,6 @@ void ChemicalTrackingModifier<ELEMENT_DIM,SPACE_DIM>::UpdateCellData(AbstractCel
 
         count++;
     }
-
-    std::cout<<"ChemicalTrackingModifier<ELEMENT_DIM,SPACE_DIM>::UpdateCellData( - end"<<std::endl;
 
 }
 

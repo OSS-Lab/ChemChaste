@@ -201,7 +201,7 @@ void SetupAndRunSimulation(unsigned simulation_id, boost::program_options::varia
 RandomNumberGenerator::Instance()->Reseed(simulation_id);
 
 // System properties
-const unsigned probDim =1;
+const unsigned probDim =4;
 const unsigned spaceDim=2;
 const unsigned elementDim=2;
 
@@ -406,7 +406,7 @@ else if(variables_map["simulation_type"].as<std::string>()=="complex_cell")
 if(variables_map["cell_file"].as<std::string>()!="")
 {
 // cell population topology is defined so read cell layer from files
-std::cout<<"---------------------------here"<<std::endl;
+
 // run the domain field set up and parse files
 ChemicalDomainFieldForCellCoupling<elementDim,spaceDim,probDim>* p_Pde_field = new ChemicalDomainFieldForCellCoupling<elementDim,spaceDim,probDim>
 (   variables_map["domain_file_root"].as<std::string>(),
@@ -454,11 +454,6 @@ true
 p_cell_reader->SetCellTypeName(cell_key);
 p_cell_reader->SetUp();
 
-
-std::cout<<"Division file root: "<<given_cell_root+"SpeciesDivisionRules.csv"<<std::endl;
-std::cout<<"test for cell properties"<<std::endl;
-std::cout<<"has membrane: "<<p_cell_reader -> GetCellPtr() -> rGetCellPropertyCollection().HasProperty<MembraneCellProperty>()<<std::endl;
-std::cout<<"has transport: "<<p_cell_reader -> GetCellPtr() -> rGetCellPropertyCollection().HasProperty<TransportCellProperty>()<<std::endl;
 
 boost::static_pointer_cast<CellAnalyticsProperty>(p_cell_reader -> GetCellPtr() -> rGetCellPropertyCollection().GetPropertiesType<CellAnalyticsProperty>().GetProperty()) -> SetPopulationCellTypeNames(p_Pde_field -> GetCellKeyVector());
 
@@ -665,7 +660,7 @@ else if(variables_map["simulation_type"].as<std::string>()=="environment_cell")
 if(variables_map["cell_file"].as<std::string>()!="")
 {
 // cell population topology is defined so read cell layer from files
-std::cout<<"---------------------------here"<<std::endl;
+
 // run the domain field set up and parse files
 ChemicalDomainFieldForCellCoupling<elementDim,spaceDim,probDim>* p_Pde_field = new ChemicalDomainFieldForCellCoupling<elementDim,spaceDim,probDim>
 (   variables_map["domain_file_root"].as<std::string>(),
@@ -712,11 +707,8 @@ true
 p_cell_reader->SetCellTypeName(cell_key);
 p_cell_reader->SetUp();
 
+boost::static_pointer_cast<CellAnalyticsProperty>(p_cell_reader -> GetCellPtr() -> rGetCellPropertyCollection().GetPropertiesType<CellAnalyticsProperty>().GetProperty()) -> SetPopulationCellTypeNames(p_Pde_field -> GetCellKeyVector());
 
-std::cout<<"Division file root: "<<given_cell_root+"SpeciesDivisionRules.csv"<<std::endl;
-std::cout<<"test for cell properties"<<std::endl;
-std::cout<<"has membrane: "<<p_cell_reader -> GetCellPtr() -> rGetCellPropertyCollection().HasProperty<MembraneCellProperty>()<<std::endl;
-std::cout<<"has transport: "<<p_cell_reader -> GetCellPtr() -> rGetCellPropertyCollection().HasProperty<TransportCellProperty>()<<std::endl;
 cells.push_back(p_cell_reader -> GetCellPtr());
 }
 
@@ -859,8 +851,6 @@ NodeBasedCellPopulation<spaceDim> cell_population(mesh, cells);
 ChastePoint<spaceDim> lower(variables_map["cell_mesh_origin"].as<double>(),variables_map["cell_mesh_origin"].as<double>());
 ChastePoint<spaceDim> upper(10.0, 10.0);
 MAKE_PTR_ARGS(ChasteCuboid<spaceDim>, p_cuboid, (lower, upper));
-
-
 
 double feMeshStepSize = variables_map["FE_mesh_step_size"].as<double>();
 

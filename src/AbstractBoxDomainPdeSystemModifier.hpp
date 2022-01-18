@@ -208,13 +208,10 @@ void AbstractBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::Gene
     ChastePoint<SPACE_DIM> lower = pMeshCuboid->rGetLowerCorner();
     c_vector<double,SPACE_DIM> centre_of_cuboid = 0.5*(upper.rGetLocation() + lower.rGetLocation());
 
-    //std::cout<<"cuboid upper: x= "<<upper[0]<<" y="<<upper[1]<<std::endl;
-    //std::cout<<"cuboid lower: x= "<<lower[0]<<" y="<<lower[1]<<std::endl;
 
     this->mpCoupledDomainField -> GenerateFeMesh();
     this->mpCoupledDomainField -> SetUpDomainFromFiles();
 
- //   std::cout<<"AbstractBoxDomain::generateFeMesh ScaleFeMesh"<<std::endl;
     this->mpCoupledDomainField -> ScaleFeMesh();
     
     this->mpFeMesh = this->mpCoupledDomainField -> rGetDomainFeMesh();
@@ -226,7 +223,6 @@ void AbstractBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::Gene
 
     if(isCenterMesh)
     {
-        //std::cout<<"AbstractBoxDomain::generateFeMesh IsCenterMesh"<<std::endl;
         // calculate the center of both meshes
         // Find the centre of the PDE mesh
         c_vector<double,SPACE_DIM> centre_of_coarse_mesh = zero_vector<double>(SPACE_DIM);
@@ -238,21 +234,19 @@ void AbstractBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::Gene
 
         // Find the centre of the cell mesh
         c_vector<double,SPACE_DIM> centre_of_cell_mesh = zero_vector<double>(SPACE_DIM);
+        unsigned numberOfCells =0;
         for (unsigned i=0; i<this->mpCoupledDomainField ->rGetCellMesh()->GetNumNodes(); i++)
         {
             centre_of_cell_mesh += this->mpCoupledDomainField ->rGetCellMesh()->GetNode(i)->rGetLocation();
+            numberOfCells +=1;
         }
-        centre_of_cell_mesh /= this->mpFeMesh->GetNumNodes();
+        centre_of_cell_mesh /= numberOfCells;
 
-        //std::cout<<"centre_of_cell_mesh: x="<<centre_of_cell_mesh(0)<<" y="<<centre_of_cell_mesh(1)<<std::endl;
-        //std::cout<<"centre_of_coarse_mesh: x="<<centre_of_coarse_mesh(0)<<" y="<<centre_of_coarse_mesh(1)<<std::endl;
-        //std::cout<<"difference: x="<<-centre_of_cell_mesh(0) + centre_of_coarse_mesh(0)<<" y="<<centre_of_cell_mesh(1) - centre_of_coarse_mesh(1)<<std::endl;
         for(unsigned dim=0; dim<SPACE_DIM; dim++)
         {
             
             offset[dim] = centre_of_coarse_mesh(dim) - centre_of_cell_mesh(dim);
             origin[dim] = centre_of_coarse_mesh(dim) - centre_of_cell_mesh(dim);
-            //std::cout<<"dim: "<<dim<<" offset: "<<offset[dim]<<std::endl;
         }
 
     }
@@ -270,32 +264,9 @@ void AbstractBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::Gene
     mOffset = offset;    
 
     // Now move the mesh to the correct location
-    //this->mpFeMesh->Translate(centre_of_cuboid - offset);
-    //this->mpFeMesh->Translate(offset);
-    //this->mpCoupledDomainField ->rGetCellMesh()->Translate(800,800);
+
     this->mpCoupledDomainField -> SetLabelOrigin(origin);
 
-
-    // c_vector<double,SPACE_DIM> centre_of_coarse_mesh = zero_vector<double>(SPACE_DIM);
-    // for (unsigned i=0; i<this->mpFeMesh->GetNumNodes(); i++)
-    // {
-    //     centre_of_coarse_mesh += this->mpFeMesh->GetNode(i)->rGetLocation();
-    // }
-    // centre_of_coarse_mesh /= this->mpFeMesh->GetNumNodes();
-
-    // // Find the centre of the cell mesh
-    // c_vector<double,SPACE_DIM> centre_of_cell_mesh = zero_vector<double>(SPACE_DIM);
-    // for (unsigned i=0; i<this->mpCoupledDomainField ->rGetCellMesh()->GetNumNodes(); i++)
-    // {
-    //     centre_of_cell_mesh += this->mpCoupledDomainField ->rGetCellMesh()->GetNode(i)->rGetLocation();
-    // }
-    // centre_of_cell_mesh /= this->mpFeMesh->GetNumNodes();
-
-    // std::cout<<"centre_of_cell_mesh: x="<<centre_of_cell_mesh(0)<<" y="<<centre_of_cell_mesh(1)<<std::endl;
-    // std::cout<<"centre_of_coarse_mesh: x="<<centre_of_coarse_mesh(0)<<" y="<<centre_of_coarse_mesh(1)<<std::endl;
-    // std::cout<<"difference: x="<<-centre_of_cell_mesh(0) + centre_of_coarse_mesh(0)<<" y="<<centre_of_cell_mesh(1) - centre_of_coarse_mesh(1)<<std::endl;
-
-    //std::cout<<"AbstractBoxDomainPdeSystemModifier<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::GenerateFeMesh - end"<<std::endl;
 }
 
 

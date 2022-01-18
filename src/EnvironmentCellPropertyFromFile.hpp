@@ -129,7 +129,6 @@ EnvironmentCellPropertyFromFile::EnvironmentCellPropertyFromFile(std::string fil
 
 void EnvironmentCellPropertyFromFile::SetUpEnvironmentProperty(CellPtr p_cell)
 {
-    std::cout<<"EnvironmentCellPropertyFromFile::SetUpEnvironmentProperty(CellPtr p_cell) - start"<<std::endl;
     boost::shared_ptr<EnvironmentCellProperty> p_environment = boost::static_pointer_cast<EnvironmentCellProperty>(p_cell->rGetCellPropertyCollection().GetPropertiesType<EnvironmentCellProperty>().GetProperty());
     
     
@@ -137,9 +136,9 @@ void EnvironmentCellPropertyFromFile::SetUpEnvironmentProperty(CellPtr p_cell)
 
     p_environment -> SetUp(p_cell, p_preferred_environment_from_file->GetEnvironmentNamesVector());
     p_environment -> SetPreferredEnvironmentVector(p_preferred_environment_from_file->GetEnvironmentValueVector());
-    std::cout<<"Environment property from file"<<std::endl;
+
     SetEnvironmentProperty(p_environment);
-    std::cout<<"EnvironmentCellPropertyFromFile::SetUpEnvironmentProperty(CellPtr p_cell) - end"<<std::endl;
+
 }
 
 

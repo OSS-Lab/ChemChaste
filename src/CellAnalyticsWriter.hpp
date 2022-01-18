@@ -49,7 +49,6 @@ double CellAnalyticsWriter<ELEMENT_DIM, SPACE_DIM>::GetCellDataForVtkOutput(Cell
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 void CellAnalyticsWriter<ELEMENT_DIM, SPACE_DIM>::VisitCell(CellPtr pCell, AbstractCellPopulation<ELEMENT_DIM, SPACE_DIM>* pCellPopulation)
 {
-    std::cout<<"cellAnalytics - visit cell start"<<std::endl;
 
     if(pCell->rGetCellPropertyCollection().HasProperty<CellAnalyticsProperty>())
     {

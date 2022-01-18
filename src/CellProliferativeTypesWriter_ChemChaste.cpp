@@ -41,33 +41,33 @@ double CellProliferativeTypesWriter<ELEMENT_DIM, SPACE_DIM>::GetCellDataForVtkOu
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 void CellProliferativeTypesWriter<ELEMENT_DIM, SPACE_DIM>::VisitCell(CellPtr pCell, AbstractCellPopulation<ELEMENT_DIM, SPACE_DIM>* pCellPopulation)
 {
-std::cout<<"CellProliferativeTypesWriter::VisitCell"<<std::endl;
+//std::cout<<"CellProliferativeTypesWriter::VisitCell"<<std::endl;
     unsigned colour = pCell->GetCellProliferativeType()->GetColour();
-std::cout<<"CPTW 0"<<std::endl;
+//std::cout<<"CPTW 0"<<std::endl;
     // Set colour dependent on cell mutation state
     if (!pCell->GetMutationState()->IsType<WildTypeCellMutationState>())
     {
-std::cout<<"CPTW 0 in"<<std::endl;
+//std::cout<<"CPTW 0 in"<<std::endl;
         colour = pCell->GetMutationState()->GetColour();
     }
-std::cout<<"CPTW 1"<<std::endl;
+//std::cout<<"CPTW 1"<<std::endl;
     if (pCell->rGetCellPropertyCollection().HasProperty<CellLabel>())
     {
-std::cout<<"CPTW 1 in"<<std::endl;
+//std::cout<<"CPTW 1 in"<<std::endl;
         CellPropertyCollection collection = pCell->rGetCellPropertyCollection().GetProperties<CellLabel>();
         boost::shared_ptr<CellLabel> p_label = boost::static_pointer_cast<CellLabel>(collection.GetProperty());
         colour = p_label->GetColour();
     }
-std::cout<<"CPTW 2"<<std::endl;
+//std::cout<<"CPTW 2"<<std::endl;
     if (pCell->rGetCellPropertyCollection().HasProperty<ApoptoticCellProperty>() || pCell->HasApoptosisBegun())
     {
-std::cout<<"CPTW 2 in"<<std::endl;
+//std::cout<<"CPTW 2 in"<<std::endl;
         ///\todo: replace this hard-coded 6 with the ApoptoticCellProperty member mColour? (#2512)
         colour = 6;
     }
-std::cout<<"CPTW 3"<<std::endl;
+//std::cout<<"CPTW 3"<<std::endl;
     *this->mpOutStream << colour << " ";
-std::cout<<"CPTW 4"<<std::endl;
+//std::cout<<"CPTW 4"<<std::endl;
 }
 
 // Explicit instantiation

@@ -750,9 +750,7 @@ void AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ParseIniti
                     init_conds[numberOfStateVariables*node_index + pdeDim] =fabs(RandomNumberGenerator::Instance()->ranf());
                 }
             }
-
-
-            std::cout<<"Initial condition: State: "<<stateName<<" "<<init_conds[numberOfStateVariables*node_index + pdeDim]<<std::endl;
+            //std::cout<<"Initial condition: State: "<<stateName<<" "<<init_conds[numberOfStateVariables*node_index + pdeDim]<<std::endl;
         }
         // each node pde is set
     }
@@ -896,7 +894,7 @@ void AbstractDomainFieldTemplated<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ParseBound
             }
         }
         // if state isn't found, leave as default, 0.0 Dirichlet
-        std::cout<<"Boundary condition: State: "<<stateName<<" "<<boundaryConditionValues[pdeDim]<<std::endl;
+        //std::cout<<"Boundary condition: State: "<<stateName<<" "<<boundaryConditionValues[pdeDim]<<std::endl;
 
     }
 

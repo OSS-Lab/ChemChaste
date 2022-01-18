@@ -56,9 +56,7 @@ CellStateTrackingModifier<ELEMENT_DIM,SPACE_DIM>::~CellStateTrackingModifier()
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 void CellStateTrackingModifier<ELEMENT_DIM, SPACE_DIM>::UpdateAtEndOfTimeStep(AbstractCellPopulation<ELEMENT_DIM,SPACE_DIM>& rCellPopulation)
 {
-    std::cout<<"CellStateTrackingModifier<ELEMENT_DIM,SPACE_DIM>::UpdateAtEndOfTimeStep - start"<<std::endl;
     UpdateCellData(rCellPopulation);
-    std::cout<<"CellStateTrackingModifier<ELEMENT_DIM,SPACE_DIM>::UpdateAtEndOfTimeStep - end"<<std::endl;
 }
 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>

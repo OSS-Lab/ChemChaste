@@ -406,7 +406,7 @@ void SetupAndRunSimulation(unsigned simulation_id, boost::program_options::varia
         if(variables_map["cell_file"].as<std::string>()!="")
         {
             // cell population topology is defined so read cell layer from files
-            std::cout<<"---------------------------here"<<std::endl;
+            
             // run the domain field set up and parse files
             ChemicalDomainFieldForCellCoupling<elementDim,spaceDim,probDim>* p_Pde_field = new ChemicalDomainFieldForCellCoupling<elementDim,spaceDim,probDim>
                                     (   variables_map["domain_file_root"].as<std::string>(),
@@ -455,11 +455,6 @@ void SetupAndRunSimulation(unsigned simulation_id, boost::program_options::varia
                 p_cell_reader->SetUp();
 
                                     
-                std::cout<<"Division file root: "<<given_cell_root+"SpeciesDivisionRules.csv"<<std::endl;
-                std::cout<<"test for cell properties"<<std::endl;
-                std::cout<<"has membrane: "<<p_cell_reader -> GetCellPtr() -> rGetCellPropertyCollection().HasProperty<MembraneCellProperty>()<<std::endl;
-std::cout<<"has transport: "<<p_cell_reader -> GetCellPtr() -> rGetCellPropertyCollection().HasProperty<TransportCellProperty>()<<std::endl;
-         
                 boost::static_pointer_cast<CellAnalyticsProperty>(p_cell_reader -> GetCellPtr() -> rGetCellPropertyCollection().GetPropertiesType<CellAnalyticsProperty>().GetProperty()) -> SetPopulationCellTypeNames(p_Pde_field -> GetCellKeyVector());
 
                 cells.push_back(p_cell_reader -> GetCellPtr());
@@ -665,7 +660,7 @@ std::cout<<"has transport: "<<p_cell_reader -> GetCellPtr() -> rGetCellPropertyC
         if(variables_map["cell_file"].as<std::string>()!="")
         {
             // cell population topology is defined so read cell layer from files
-            std::cout<<"---------------------------here"<<std::endl;
+            
             // run the domain field set up and parse files
             ChemicalDomainFieldForCellCoupling<elementDim,spaceDim,probDim>* p_Pde_field = new ChemicalDomainFieldForCellCoupling<elementDim,spaceDim,probDim>
                                     (   variables_map["domain_file_root"].as<std::string>(),
@@ -711,12 +706,6 @@ std::cout<<"has transport: "<<p_cell_reader -> GetCellPtr() -> rGetCellPropertyC
                                     );
                 p_cell_reader->SetCellTypeName(cell_key);
                 p_cell_reader->SetUp();
-
-                                    
-                std::cout<<"Division file root: "<<given_cell_root+"SpeciesDivisionRules.csv"<<std::endl;
-                std::cout<<"test for cell properties"<<std::endl;
-                std::cout<<"has membrane: "<<p_cell_reader -> GetCellPtr() -> rGetCellPropertyCollection().HasProperty<MembraneCellProperty>()<<std::endl;
-std::cout<<"has transport: "<<p_cell_reader -> GetCellPtr() -> rGetCellPropertyCollection().HasProperty<TransportCellProperty>()<<std::endl;
 
                 boost::static_pointer_cast<CellAnalyticsProperty>(p_cell_reader -> GetCellPtr() -> rGetCellPropertyCollection().GetPropertiesType<CellAnalyticsProperty>().GetProperty()) -> SetPopulationCellTypeNames(p_Pde_field -> GetCellKeyVector());
 

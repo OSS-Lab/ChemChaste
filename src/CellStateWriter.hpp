@@ -50,7 +50,6 @@ double CellStateWriter<ELEMENT_DIM, SPACE_DIM>::GetCellDataForVtkOutput(CellPtr 
 template<unsigned ELEMENT_DIM, unsigned SPACE_DIM>
 void CellStateWriter<ELEMENT_DIM, SPACE_DIM>::VisitCell(CellPtr pCell, AbstractCellPopulation<ELEMENT_DIM, SPACE_DIM>* pCellPopulation)
 {
-    std::cout<<"cellState - visit cell start"<<std::endl;
 /*
     if(pCell->rGetCellPropertyCollection().HasProperty<CellStateSwitchingProperty>())
     {

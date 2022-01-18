@@ -101,7 +101,6 @@ EnvironmentDependentReaction::EnvironmentDependentReaction(
 
 void EnvironmentDependentReaction::UpdateReactionRate(AbstractChemistry* systemChemistry, const std::vector<double>& currentSystemConc)
 {
-    std::cout<<"EnvironmentDependentReaction::UpdateReactionRate - start"<<std::endl;
     // multiply the reaction rate constant by the product of the species set concentrations
 
     double environmentConcentration =1.0;
@@ -124,7 +123,6 @@ void EnvironmentDependentReaction::UpdateReactionRate(AbstractChemistry* systemC
         
     };
     SetReactionRate(mReactionRateConstant*environmentConcentration);
-    std::cout<<"EnvironmentDependentReaction::UpdateReactionRate - end"<<std::endl;
 }
 
 

@@ -110,7 +110,6 @@ ComplexCell::ComplexCell(
 
 CellPtr ComplexCell::Divide()
 {
-    std::cout<<"ComplexCell::Divide()#######################################"<<std::endl;
     // Check we're allowed to divide
     assert(!IsDead());
     assert(mCanDivide);
@@ -127,7 +126,6 @@ CellPtr ComplexCell::Divide()
     daughter_property_collection.RemoveProperty<CellId>();
 
     // copy cell data
-    std::cout<<"here0"<<std::endl;
     // Copy all cell data (note we create a new object not just copying the pointer)
     assert(daughter_property_collection.HasPropertyType<CellData>());
     // Get the existing copy of the cell data and remove it from the daughter cell
@@ -150,7 +148,6 @@ CellPtr ComplexCell::Divide()
         //MAKE_PTR_ARGS(CellVecData, p_daughter_cell_vec_data, (*p_cell_vec_data));
         daughter_property_collection.AddProperty(p_daughter_cell_vec_data);
     }
-std::cout<<"here1"<<std::endl;
 
     // record the cell chemistry for splitting cell data
     AbstractChemistry* cellChemistry = new AbstractChemistry();
@@ -160,13 +157,13 @@ std::cout<<"here1"<<std::endl;
         ChemicalSrnModel* p_srn_model = static_cast<ChemicalSrnModel*>(mpSrnModel);
         cellChemistry -> AddChemistry(p_srn_model->GetCellChemistry()); // from SRN
     }
-std::cout<<"here2"<<std::endl;
+
     if(static_cast<SimpleChemicalThresholdCellCycleModel*>(mpCellCycleModel)->CellCycleType()=="Chemical")
     {
         SimpleChemicalThresholdCellCycleModel* p_cc_model = static_cast<SimpleChemicalThresholdCellCycleModel*>(mpCellCycleModel);
         cellChemistry -> AddChemistry(p_cc_model->GetThresholdChemistry()); // from cell cycle model
     }
-std::cout<<"here3"<<std::endl;
+
     // transport property
     if(mCellPropertyCollection.HasProperty<TransportCellProperty>())
     {
@@ -175,7 +172,7 @@ std::cout<<"here3"<<std::endl;
         // add the cell chemistry due to transport
         cellChemistry -> AddChemistry(transportChemistry);
     }
-std::cout<<"here4"<<std::endl;
+
     // membrane property
     if(mCellPropertyCollection.HasProperty<MembraneCellProperty>())
     {
@@ -185,7 +182,6 @@ std::cout<<"here4"<<std::endl;
         cellChemistry -> AddChemistry(membraneChemistry);
     }
 
-std::cout<<"here5"<<std::endl;
     // based on the parent cell data determine the split ratio
     DetermineSplitRatio();
 
@@ -195,7 +191,7 @@ std::cout<<"here5"<<std::endl;
     double new_parent_species_concentration=0.0;
     double daughter_species_concentration=0.0;
     unsigned numberOfChemicals = cellChemistry -> GetNumberChemicals();
-std::cout<<"here6"<<std::endl;
+
     for(unsigned i=0; i<numberOfChemicals; i++)
     {
         
@@ -204,7 +200,6 @@ std::cout<<"here6"<<std::endl;
 
         if(IsChemicalShared(cellChemistry -> GetChemicalNamesByIndex(i)))
         {
-            std::cout<<"shared"<<std::endl;
             // chemical concentration is shared upon division
             new_parent_species_concentration = SplitParentCellData(parent_species_concentration);
 
@@ -212,7 +207,6 @@ std::cout<<"here6"<<std::endl;
         }
         else
         {
-            std::cout<<"duplicate"<<std::endl;
             // chemical concentration is duplicated upon division
             new_parent_species_concentration = parent_species_concentration;
             daughter_species_concentration = parent_species_concentration;
@@ -228,7 +222,6 @@ std::cout<<"here6"<<std::endl;
         this->GetCellData()->SetItem(cellChemistry -> GetChemicalNamesByIndex(i), new_parent_species_concentration);
         p_daughter_cell_data->SetItem(cellChemistry -> GetChemicalNamesByIndex(i), daughter_species_concentration);
     }
-std::cout<<"here7"<<std::endl;
 
     // run through cell properties and create new objects for them 
     
@@ -287,7 +280,7 @@ std::cout<<"here7"<<std::endl;
         p_daughter_cellAnalytics_property->PreparePostDivisionDaughter(*cellAnalytics_cell_property, mSplitRatio);
 
     }
-std::cout<<"here8"<<std::endl;
+
     // environment property
     if(mCellPropertyCollection.HasProperty<EnvironmentCellProperty>())
     {
@@ -324,12 +317,12 @@ std::cout<<"here8"<<std::endl;
 
     }
 */
-std::cout<<"here9"<<std::endl;
+
     // create new chemical cell
     // Create daughter cell with modified cell property collection
     CellPtr p_new_cell(new ComplexCell(GetMutationState(), mpCellCycleModel->CreateCellCycleModel(), mpSrnModel->CreateSrnModel(), false, daughter_property_collection));
     // Initialise properties of daughter cell
-std::cout<<"here10"<<std::endl;
+
     p_new_cell->GetCellCycleModel()->InitialiseDaughterCell();
 //    if(static_cast<SimpleChemicalThresholdCellCycleModel*>(mpCellCycleModel)->CellCycleType()=="Chemical")
 //   {
@@ -375,9 +368,6 @@ std::cout<<"here10"<<std::endl;
     }
 
 
-
-
-std::cout<<"here11"<<std::endl;
     // Set the daughter cell to inherit the apoptosis time of the parent cell
     p_new_cell->SetApoptosisTime(mApoptosisTime);
 
@@ -385,14 +375,12 @@ std::cout<<"here11"<<std::endl;
 
     boost::static_pointer_cast<ComplexCell>(p_new_cell)->SetChemicalDivsionRules(mChemicalDivsionRules);
 
-std::cout<<"here12"<<std::endl;
     std::vector<double> prime_cell_threshold_species_concentrations(static_cast<SimpleChemicalThresholdCellCycleModel*>(this->GetCellCycleModel())->GetNumberThresholdSpecies(),0.0);
     std::vector<double> daughter_cell_threshold_species_concentrations(static_cast<SimpleChemicalThresholdCellCycleModel*>(p_new_cell->GetCellCycleModel())->GetNumberThresholdSpecies(),0.0);
 
     AbstractChemistry* thresholdChemistry = static_cast<SimpleChemicalThresholdCellCycleModel*>(this->GetCellCycleModel())->GetThresholdChemistry();
     std::string chemicalName;
 
-std::cout<<"here13"<<std::endl;
     for(unsigned i=0; i<numberOfChemicals; i++)
     {
         chemicalName = cellChemistry -> GetChemicalNamesByIndex(i);
@@ -415,30 +403,29 @@ std::cout<<"here13"<<std::endl;
             //std::cout<<"daughter concentration: "<<chemicalName<<" : "<<p_daughter_cell_data->GetItem(chemicalName)<<std::endl;
         }
     }
-std::cout<<"here14"<<std::endl;
+
     // update chemical cell cycles for each of the daughter cells
      
   //  static_cast<SimpleChemicalThresholdCellCycleModel*>(p_new_cell->GetCellCycleModel())->SetUp(static_cast<SimpleChemicalThresholdCellCycleModel*>(mpCellCycleModel)->GetThresholdChemistry());
     static_cast<SimpleChemicalThresholdCellCycleModel*>(this->GetCellCycleModel())->SetSpeciesConcentrations(prime_cell_threshold_species_concentrations);
     static_cast<SimpleChemicalThresholdCellCycleModel*>(p_new_cell->GetCellCycleModel())->SetSpeciesConcentrations(daughter_cell_threshold_species_concentrations);
-std::cout<<"here15"<<std::endl;
+
     // update Ode from cell data for each of the daughter cells
     static_cast<ChemicalSrnModel*>(this->GetSrnModel())->UpdateOdeStatesFromCellData();
     static_cast<ChemicalSrnModel*>(p_new_cell->GetSrnModel())->UpdateOdeStatesFromCellData();
-std::cout<<"here16"<<std::endl;
+
     ChemicalSrnModel *p_chemical_srn = static_cast<ChemicalSrnModel*>(p_new_cell->GetSrnModel());
     p_chemical_srn->GetReactionSystem()->SetCell(p_new_cell); 
     p_chemical_srn->GetReactionSystem()->DistributeCellPtr();
-    std::cout<<"here17"<<std::endl;
+
     return p_new_cell;
 }
 
 
 bool ComplexCell::ReadyToDivide()
 {
-    std::cout<<"ComplexCell::ReadyToDivide()"<<std::endl;
     bool readyToDivide = Cell::ReadyToDivide();
-    std::cout<<"ReadtToDivide? "<<readyToDivide<<std::endl;
+
     return readyToDivide;
 }
 
@@ -463,7 +450,7 @@ bool ComplexCell::IsChemicalShared(std::string chemical_name)
 
     for(unsigned i=0; i<mChemicalNames.size(); i++)
     {
-        std::cout<<mChemicalNames[i]<<std::endl;
+        //std::cout<<mChemicalNames[i]<<std::endl;
         // for each cellular chemical
         if(mChemicalNames[i]==chemical_name)
         {
@@ -488,9 +475,7 @@ double ComplexCell::GetSplitRatio()
 
 void ComplexCell::SetSplitRatio(double split_ratio)
 {
-    std::cout<<"ComplexCell::SetSplitRatio(double split_ratio) - start"<<std::endl;
     mSplitRatio = split_ratio;
-    std::cout<<"ComplexCell::SetSplitRatio(double split_ratio) - end"<<std::endl;
 }
 
 std::vector<std::string> ComplexCell::GetShareKey()
