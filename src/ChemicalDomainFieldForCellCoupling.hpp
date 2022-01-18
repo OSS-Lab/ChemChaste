@@ -784,33 +784,33 @@ ChemicalDomainFieldForCellCoupling<ELEMENT_DIM,SPACE_DIM,PROBLEM_DIM>::ChemicalD
             case 3:
                 // for the z position
 
-                for(unsigned i=1; i<(mCartesianCellLayerDimensions[2]+1); i++) // top to bottom
+                for(unsigned i=0; i<(mCartesianCellLayerDimensions[2]); i++) // top to bottom
                 {
-                    if(positionZ <= i*mCartesianCellLayerScaleXY[2])
+                    if(fabs(positionZ - i*mCartesianCellLayerScaleXY[2])<1e-6)
                     {
-                        labelZIndex = i-1;
+                        labelZIndex = i;
                         break;
                     }
                 }
                 
                 // for the y position
 
-                for(unsigned i=1; i<(mCartesianCellLayerDimensions[1]+1); i++) // top to bottom
+                for(unsigned i=0; i<(mCartesianCellLayerDimensions[1]); i++) // top to bottom
                 {
-                    if(positionY <= i*mCartesianCellLayerScaleXY[1])
+                    if(fabs(positionY - i*mCartesianCellLayerScaleXY[1])<1e-6)
                     {
-                        labelYIndex = i-1;
+                        labelYIndex = i;
                         break;
                     }
                 }
 
                 // for the x position
 
-                for(unsigned i=1; i<(mCartesianCellLayerDimensions[0]+1); i++)
+                for(unsigned i=0; i<(mCartesianCellLayerDimensions[0]); i++)
                 {
-                    if(positionX <= i*mCartesianCellLayerScaleXY[0])
+                    if(fabs(positionX - i*mCartesianCellLayerScaleXY[0])<1e-6)
                     {
-                        labelXIndex = i-1;
+                        labelXIndex = i;
                         break;
                     }
                 }
