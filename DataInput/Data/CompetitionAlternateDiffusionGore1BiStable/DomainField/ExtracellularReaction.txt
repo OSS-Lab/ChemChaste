@@ -1,0 +1,3 @@
+Domain : Bulk
+MassActionReaction : pH -> 0 ; kf = 0
+MassActionReaction : S -> 0 ; kf = 0
