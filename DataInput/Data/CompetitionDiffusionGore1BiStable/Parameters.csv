@@ -1,0 +1,5 @@
+# parameter, values (use : to provide a range)
+&Comp, 4
+&ADBiS, 0.1,1.0,10.0
+&gore_kinetic_A1, 1.0, 2.0
+&gore_kinetic_B1, 1.0, 2.0

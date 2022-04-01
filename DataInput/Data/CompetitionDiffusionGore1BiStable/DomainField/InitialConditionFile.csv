@@ -1,0 +1,3 @@
+# initial conditions for the states: state,subdomain,value,perturb?
+pH,Bulk,5.0,false
+S,Bulk,1.0,false
