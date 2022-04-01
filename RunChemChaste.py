@@ -37,12 +37,47 @@ configEnvironmentParameterSweep = "/home/chaste/projects/ChemChaste/DataInput/Ch
 
 configCrossfeedingPaper = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigCrossFeedingEnzymePaper.txt"
 
-# timesteps for time parameter sweeping, Figure 2
+configsweep1 = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigAlternateDiffusionGore1BiStable.txt"
+configsweep2 = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigAlternateDiffusionGore2BiStable.txt"
+configsweep3 = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigAlternateDiffusionGore3BiStable.txt"
+
+configsweep4 = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigCompetitionAlternateDiffusionGore1BiStable.txt"
+configsweep5 = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigCompetitionAlternateDiffusionGore2BiStable.txt"
+configsweep6 = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigCompetitionAlternateDiffusionGore3BiStable.txt"
+
+configsweep7 = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigCompetitionDiffusionGore1BiStable.txt"
+configsweep8 = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigCompetitionDiffusionGore2BiStable.txt"
+configsweep9 = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigCompetitionDiffusionGore3BiStable.txt"
+
+configsweep10 = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigLayerDiffusionGore1BiStable.txt"
+configsweep11 = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigLayerDiffusionGore2BiStable.txt"
+configsweep12 = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigLayerDiffusionGore3BiStable.txt"
+
+configsweep13 = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigDecayDiffusionGore1BiStable.txt"
+configsweep14 = "/home/chaste/projects/ChemChaste/DataInput/ChemChasteConfigDecayDiffusionGore3BiStable.txt"
+
+
+sweep1 = ParameterSweeping(configsweep1)
+sweep2 = ParameterSweeping(configsweep2)
+sweep3 = ParameterSweeping(configsweep3)
+sweep4 = ParameterSweeping(configsweep4)
+sweep5 = ParameterSweeping(configsweep5)
+sweep6 = ParameterSweeping(configsweep6)
+sweep7 = ParameterSweeping(configsweep7)
+sweep8 = ParameterSweeping(configsweep8)
+sweep9 = ParameterSweeping(configsweep9)
+sweep10 = ParameterSweeping(configsweep10)
+sweep11 = ParameterSweeping(configsweep11)
+sweep12 = ParameterSweeping(configsweep12)
+
+
+
+
 timesteps = [1,0.1,0.01,0.001,0.0001,0.08,0.06,0.04,0.02,0.008,0.006,0.004,0.002,0.0008,0.0006,0.0004,0.0002]
 
 sweepConfigList = ParameterSweeping(configEnvironmentParameterSweep)
 
-for paramSimConfig in sweepConfigList:
+for paramSimConfig in sweep1:
     simulationExecutable = str(determineExecutable(paramSimConfig))
     command = simulationExecutable + str(1)
     # add config
@@ -50,15 +85,183 @@ for paramSimConfig in sweepConfigList:
     # add simulation type (default "coupled_cell")
     command += " --simulation_type=environment_cell"
     # add additional commands to override config
-    command += " --simulation_timestep=1e-2"
+    command += " --simulation_timestep=1e-3"
+    command += " --sampling_timestep=1e-1"
+
+    # add simulation to the list
+    command_list.append(command)
+
+for paramSimConfig in sweep1:
+    simulationExecutable = str(determineExecutable(paramSimConfig))
+    command = simulationExecutable + str(1)
+    # add config
+    command +=  " --config="+paramSimConfig
+    # add simulation type (default "coupled_cell")
+    command += " --simulation_type=environment_cell"
+    # add additional commands to override config
+    command += " --simulation_timestep=1e-3"
+    command += " --sampling_timestep=1e-1"
+
+    # add simulation to the list
+    command_list.append(command)
+
+for paramSimConfig in sweep2:
+    simulationExecutable = str(determineExecutable(paramSimConfig))
+    command = simulationExecutable + str(1)
+    # add config
+    command +=  " --config="+paramSimConfig
+    # add simulation type (default "coupled_cell")
+    command += " --simulation_type=environment_cell"
+    # add additional commands to override config
+    command += " --simulation_timestep=1e-3"
+    command += " --sampling_timestep=1e-1"
+
+    # add simulation to the list
+    command_list.append(command)
+
+for paramSimConfig in sweep3:
+    simulationExecutable = str(determineExecutable(paramSimConfig))
+    command = simulationExecutable + str(1)
+    # add config
+    command +=  " --config="+paramSimConfig
+    # add simulation type (default "coupled_cell")
+    command += " --simulation_type=environment_cell"
+    # add additional commands to override config
+    command += " --simulation_timestep=1e-3"
+    command += " --sampling_timestep=1e-1"
+
+    # add simulation to the list
+    command_list.append(command)
+
+for paramSimConfig in sweep4:
+    simulationExecutable = str(determineExecutable(paramSimConfig))
+    command = simulationExecutable + str(1)
+    # add config
+    command +=  " --config="+paramSimConfig
+    # add simulation type (default "coupled_cell")
+    command += " --simulation_type=environment_cell"
+    # add additional commands to override config
+    command += " --simulation_timestep=1e-3"
+    command += " --sampling_timestep=1e-1"
+
+    # add simulation to the list
+    command_list.append(command)
+
+for paramSimConfig in sweep5:
+    simulationExecutable = str(determineExecutable(paramSimConfig))
+    command = simulationExecutable + str(1)
+    # add config
+    command +=  " --config="+paramSimConfig
+    # add simulation type (default "coupled_cell")
+    command += " --simulation_type=environment_cell"
+    # add additional commands to override config
+    command += " --simulation_timestep=1e-3"
+    command += " --sampling_timestep=1e-1"
+
+    # add simulation to the list
+    command_list.append(command)
+
+for paramSimConfig in sweep6:
+    simulationExecutable = str(determineExecutable(paramSimConfig))
+    command = simulationExecutable + str(1)
+    # add config
+    command +=  " --config="+paramSimConfig
+    # add simulation type (default "coupled_cell")
+    command += " --simulation_type=environment_cell"
+    # add additional commands to override config
+    command += " --simulation_timestep=1e-3"
+    command += " --sampling_timestep=1e-1"
+
+    # add simulation to the list
+    command_list.append(command)
+
+for paramSimConfig in sweep7:
+    simulationExecutable = str(determineExecutable(paramSimConfig))
+    command = simulationExecutable + str(1)
+    # add config
+    command +=  " --config="+paramSimConfig
+    # add simulation type (default "coupled_cell")
+    command += " --simulation_type=environment_cell"
+    # add additional commands to override config
+    command += " --simulation_timestep=1e-3"
+    command += " --sampling_timestep=1e-1"
+
+    # add simulation to the list
+    command_list.append(command)
+
+for paramSimConfig in sweep8:
+    simulationExecutable = str(determineExecutable(paramSimConfig))
+    command = simulationExecutable + str(1)
+    # add config
+    command +=  " --config="+paramSimConfig
+    # add simulation type (default "coupled_cell")
+    command += " --simulation_type=environment_cell"
+    # add additional commands to override config
+    command += " --simulation_timestep=1e-3"
+    command += " --sampling_timestep=1e-1"
+
+    # add simulation to the list
+    command_list.append(command)
+
+for paramSimConfig in sweep9:
+    simulationExecutable = str(determineExecutable(paramSimConfig))
+    command = simulationExecutable + str(1)
+    # add config
+    command +=  " --config="+paramSimConfig
+    # add simulation type (default "coupled_cell")
+    command += " --simulation_type=environment_cell"
+    # add additional commands to override config
+    command += " --simulation_timestep=1e-3"
+    command += " --sampling_timestep=1e-1"
+
+    # add simulation to the list
+    command_list.append(command)
+
+for paramSimConfig in sweep10:
+    simulationExecutable = str(determineExecutable(paramSimConfig))
+    command = simulationExecutable + str(1)
+    # add config
+    command +=  " --config="+paramSimConfig
+    # add simulation type (default "coupled_cell")
+    command += " --simulation_type=environment_cell"
+    # add additional commands to override config
+    command += " --simulation_timestep=1e-3"
+    command += " --sampling_timestep=1e-1"
+
+    # add simulation to the list
+    command_list.append(command)
+
+for paramSimConfig in sweep11:
+    simulationExecutable = str(determineExecutable(paramSimConfig))
+    command = simulationExecutable + str(1)
+    # add config
+    command +=  " --config="+paramSimConfig
+    # add simulation type (default "coupled_cell")
+    command += " --simulation_type=environment_cell"
+    # add additional commands to override config
+    command += " --simulation_timestep=1e-3"
     command += " --sampling_timestep=1e-1"
 
     # add simulation to the list
     command_list.append(command)
 
 
+for paramSimConfig in sweep12:
+    simulationExecutable = str(determineExecutable(paramSimConfig))
+    command = simulationExecutable + str(1)
+    # add config
+    command +=  " --config="+paramSimConfig
+    # add simulation type (default "coupled_cell")
+    command += " --simulation_type=environment_cell"
+    # add additional commands to override config
+    command += " --simulation_timestep=1e-3"
+    command += " --sampling_timestep=1e-1"
+
+    # add simulation to the list
+    command_list.append(command)
+
 # use `count' no of processes 
-count = 3 # use multiprocessing.cpu_count() for the number of cores on your machine
+count = multiprocessing.cpu_count()# for the number of cores on your machine
 
 # generate a pool of workers
 pool = multiprocessing.Pool(processes=count)
