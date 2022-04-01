@@ -1,0 +1,4 @@
+# parameter, values (use : to provide a range)
+&DBiS, 0.1,1.0,5.0,10.0
+&gore_kinetic_A3, 1.0, 2.0
+&gore_kinetic_B3, 1.0, 2.0
