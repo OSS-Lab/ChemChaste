@@ -1,0 +1,2 @@
+Domain : membrane
+PreferredEnvironmentMassActionReaction : 0 -> Biomass ; kf = &gore_kinetic_B3 Environment = pH
