@@ -1,0 +1,5 @@
+# parameter, values (use : to provide a range)
+&Decay, 0.0001, 0.001, 0.01, 0.1
+&DBiS, 1.0
+&gore_kinetic_A1, 2.0
+&gore_kinetic_B1, 2.0
